@@ -2,18 +2,16 @@
 
 import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
-import { User, Mail, FileText } from 'lucide-react'
+import { User, Mail } from 'lucide-react'
 import ProfileInformation from "./components/profileInformation"
 import EmailSMTP from "./components/EmailSMTP"
-import Broucher from "./components/Broucher"
  
 export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("profile")
 
   const tabs = [
-    { id: "profile", name: "Profile Information", icon: <User className="h-4 w-4" /> },
-    { id: "security", name: "Email & Security", icon: <Mail className="h-4 w-4" /> },
-    { id: "broucher", name: "Broucher", icon: <FileText className="h-4 w-4" /> }
+    { id: "profile", name: "Company Information", icon: <User className="h-4 w-4" /> },
+    { id: "security", name: "Email & SMTP", icon: <Mail className="h-4 w-4" /> }
   ]
 
   return (
@@ -22,7 +20,7 @@ export default function ProfilePage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-4xl font-bold bg-admin-gradient bg-clip-text text-transparent">Profile Settings</h1>
-          <p className="text-gray-600 mt-2">Manage your account information and email configuration</p>
+          <p className="text-gray-600 mt-2">Manage company information and email settings</p>
         </div>
       </div>
 
@@ -52,7 +50,6 @@ export default function ProfilePage() {
         <CardContent className="p-8">
           {activeTab === "profile" && <ProfileInformation />}
           {activeTab === "security" && <EmailSMTP />}
-          {activeTab === "broucher" && <Broucher />}
         </CardContent>
       </Card>
     </div>

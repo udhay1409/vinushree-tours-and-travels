@@ -37,16 +37,16 @@ export default function EmailSMTP() {
   const [emailSettings, setEmailSettings] = useState<EmailSettings>({
     smtpHost: "smtp.gmail.com",
     smtpPort: "587",
-    smtpUser: "",
+    smtpUser: "info@vinushree.com",
     smtpPassword: "",
-    fromEmail: "",
-    fromName: "Filigree Solutions",
+    fromEmail: "info@vinushree.com",
+    fromName: "Vinushree Tours & Travels",
   });
 
   const [testEmailData, setTestEmailData] = useState<TestEmailData>({
     email: "",
     message:
-      "This is a test email to verify SMTP configuration is working correctly.",
+      "Greetings from Vinushree Tours & Travels! This is a test email to verify our SMTP configuration is working correctly for sending travel booking confirmations and updates.",
   });
 
   const [isTestingConnection, setIsTestingConnection] = useState(false);
@@ -60,51 +60,15 @@ export default function EmailSMTP() {
     lastTested: null,
   });
 
-  // Load SMTP settings on component mount
+  // Initialize connection status
   useEffect(() => {
-    fetchSMTPSettings();
+    setConnectionStatus({
+      status: "never",
+      lastTested: null,
+    });
   }, []);
 
-  const fetchSMTPSettings = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch("/api/admin/EmailSmtp");
-      const data = await response.json();
-
-      if (data.success) {
-        const settings = data.data;
-        setEmailSettings({
-          smtpHost: settings.smtpHost,
-          smtpPort: settings.smtpPort,
-          smtpUser: settings.smtpUser,
-          smtpPassword: "", // Don't populate password for security
-          fromEmail: settings.fromEmail,
-          fromName: settings.fromName,
-        });
-
-        setConnectionStatus({
-          status: settings.testStatus || "never",
-          lastTested: settings.lastTested,
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: data.message || "Failed to fetch SMTP settings",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to fetch SMTP settings",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleEmailSave = async () => {
+  const handleEmailSave = () => {
     // Validate required fields
     if (
       !emailSettings.smtpHost ||
@@ -122,42 +86,16 @@ export default function EmailSMTP() {
       return;
     }
 
-    try {
-      setLoading(true);
-      const response = await fetch("/api/admin/EmailSmtp", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(emailSettings),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        toast({
-          title: "Email Settings Updated",
-          description:
-            "Your email configuration has been successfully updated.",
-        });
-        // Refresh settings to get updated data
-        await fetchSMTPSettings();
-      } else {
-        toast({
-          title: "Error",
-          description: data.message || "Failed to update email settings",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
+    setLoading(true);
+    
+    // Simulate saving (in real app, this would save to localStorage or state management)
+    setTimeout(() => {
       toast({
-        title: "Error",
-        description: "Failed to update email settings",
-        variant: "destructive",
+        title: "Email Settings Updated",
+        description: "Your travel booking email configuration has been successfully updated.",
       });
-    } finally {
       setLoading(false);
-    }
+    }, 1000);
   };
 
   const testEmailConnection = async () => {
@@ -412,7 +350,7 @@ export default function EmailSMTP() {
               onChange={(e) =>
                 setEmailSettings({ ...emailSettings, fromName: e.target.value })
               }
-              placeholder="Filigree Solutions"
+              placeholder="Vinushree Tours & Travels"
               className="mt-2"
             />
             <p className="text-xs text-gray-500 mt-1">

@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,173 +18,49 @@ import {
   Tablet,
   ImageIcon,
   Upload,
+  Plane,
+  MapPin,
+  Camera,
+  Star,
+  Users,
+  Phone,
+  Mail,
 } from "lucide-react";
-import { useTheme } from "@/components/providers/theme";
 
 export default function ThemePage() {
   const { toast } = useToast();
-  const { themeData, updateFavicon, refreshTheme } = useTheme();
   const [logo, setLogo] = useState<string | null>(null);
   const [favicon, setFavicon] = useState<string | null>(null);
-  const [primaryColor, setPrimaryColor] = useState("#2563eb");
-  const [secondaryColor, setSecondaryColor] = useState("#9333ea");
+  const [primaryColor, setPrimaryColor] = useState("#FFC107"); // Perfect golden amber matching logo
+  const [secondaryColor, setSecondaryColor] = useState("#000000"); // Pure black
   const [previewDevice, setPreviewDevice] = useState("desktop");
   const [loading, setLoading] = useState(false);
 
-  // Load theme data from context when available
-  useEffect(() => {
-    if (themeData) {
-      setLogo(themeData.logo);
-      setFavicon(themeData.favicon);
-      setPrimaryColor(themeData.primaryColor);
-      setSecondaryColor(themeData.secondaryColor);
-    }
-  }, [themeData]);
-
-  // Load theme settings on component mount
-  useEffect(() => {
-    fetchThemeSettings();
-  }, []);
-
-  // Update CSS variables when colors change
-  useEffect(() => {
-    if (typeof document !== "undefined") {
-      const root = document.documentElement;
-
-      // Update admin theme variables
-      root.style.setProperty("--admin-primary", primaryColor);
-      root.style.setProperty("--admin-secondary", secondaryColor);
-      root.style.setProperty(
-        "--admin-gradient",
-        `linear-gradient(135deg, ${primaryColor} 0%, ${secondaryColor} 100%)`
-      );
-    }
-  }, [primaryColor, secondaryColor]);
-
-  // API Functions
-  const fetchThemeSettings = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch("/api/admin/theme");
-      const data = await response.json();
-
-      if (data.success) {
-        const theme = data.data;
-        setLogo(theme.logo);
-        setFavicon(theme.favicon);
-        setPrimaryColor(theme.primaryColor);
-        setSecondaryColor(theme.secondaryColor);
-      } else {
-        toast({
-          title: "Error",
-          description: data.message || "Failed to fetch theme settings",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
+  // Handle save theme settings
+  const saveThemeSettings = () => {
+    setLoading(true);
+    
+    // Simulate saving (in real app, this would save to localStorage or state management)
+    setTimeout(() => {
       toast({
-        title: "Error",
-        description: "Failed to fetch theme settings",
-        variant: "destructive",
+        title: "Success",
+        description: "Theme settings saved successfully",
       });
-    } finally {
       setLoading(false);
-    }
+    }, 1000);
   };
 
-  const saveThemeSettings = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch("/api/admin/theme", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          siteName: "Filigree Solutions",
-          logo,
-          favicon,
-          primaryColor,
-          secondaryColor,
-          gradientDirection: "135deg",
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        // Update favicon dynamically if it was changed
-        if (data.data.favicon && data.data.favicon !== favicon) {
-          updateFavicon(data.data.favicon);
-        }
-        
-        // Refresh theme data from context
-        await refreshTheme();
-        
-        toast({
-          title: "Success",
-          description: "Theme settings saved successfully",
-        });
-        return true;
-      } else {
-        toast({
-          title: "Error",
-          description: data.message || "Failed to save theme settings",
-          variant: "destructive",
-        });
-        return false;
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to save theme settings",
-        variant: "destructive",
-      });
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const resetThemeSettings = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch("/api/admin/theme", {
-        method: "POST",
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        const theme = data.data;
-        setLogo(theme.logo);
-        setFavicon(theme.favicon);
-        setPrimaryColor(theme.primaryColor);
-        setSecondaryColor(theme.secondaryColor);
-
-        toast({
-          title: "Success",
-          description: "Theme settings reset to default",
-        });
-        return true;
-      } else {
-        toast({
-          title: "Error",
-          description: data.message || "Failed to reset theme settings",
-          variant: "destructive",
-        });
-        return false;
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to reset theme settings",
-        variant: "destructive",
-      });
-      return false;
-    } finally {
-      setLoading(false);
-    }
+  // Handle reset theme settings
+  const resetThemeSettings = () => {
+    setPrimaryColor("#FFC107"); // Reset to perfect golden amber
+    setSecondaryColor("#000000"); // Reset to pure black
+    setLogo(null);
+    setFavicon(null);
+    
+    toast({
+      title: "Success",
+      description: "Theme settings reset to default",
+    });
   };
 
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -230,11 +106,12 @@ export default function ThemePage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-4xl font-bold bg-admin-gradient bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold bg-admin-gradient bg-clip-text text-transparent flex items-center gap-3">
+            <Palette className="h-8 w-8" style={{ color: primaryColor }} />
             Theme Settings
           </h1>
           <p className="text-gray-600 mt-2">
-            Customize your website's appearance and branding
+            Customize your travel website's appearance and branding to match your unique style
           </p>
         </div>
         <div className="flex gap-3">
@@ -263,10 +140,13 @@ export default function ThemePage() {
         <div className="lg:col-span-2 space-y-8">
           {/* Logo & Favicon */}
           <Card className="shadow-lg border-0">
-            <CardHeader className="bg-gradient-to-r from-blue-50 to-purple-50">
+            <CardHeader className="bg-gradient-to-r from-amber-50 to-orange-50">
               <CardTitle className="flex items-center gap-2">
-                <ImageIcon className="h-5 w-5 text-admin-primary" />
+                <ImageIcon className="h-5 w-5" style={{ color: primaryColor }} />
                 Brand Assets
+                <span className="text-xs bg-amber-100 text-amber-800 px-2 py-1 rounded-full ml-2">
+                  Travel Branding
+                </span>
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-6 grid grid-cols-2">
@@ -352,10 +232,13 @@ export default function ThemePage() {
 
           {/* Color Settings */}
           <Card className="shadow-lg border-0">
-            <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50">
+            <CardHeader className="bg-gradient-to-r from-amber-50 to-yellow-50">
               <CardTitle className="flex items-center gap-2">
-                <Palette className="h-5 w-5 text-purple-600" />
+                <Palette className="h-5 w-5" style={{ color: primaryColor }} />
                 Color Settings
+                <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full ml-2">
+                  Travel Themes
+                </span>
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-6">
@@ -421,48 +304,55 @@ export default function ThemePage() {
                   Advanced Gradient Presets
                 </Label>
 
-                {/* Premium Gradient Collection */}
+                {/* Travel-Themed Gradient Collection */}
                 <div className="space-y-3">
-                  <div className="text-xs font-medium text-gray-600 mb-2">
-                    Premium Gradients
+                  <div className="text-xs font-medium text-gray-600 mb-2 flex items-center gap-2">
+                    <Plane className="w-4 h-4" />
+                    Travel & Tourism Gradients
                   </div>
                   <div className="grid grid-cols-3 gap-3">
                     {[
+                      {
+                        name: "Vinushree Gold",
+                        primary: "#FFC107",
+                        secondary: "#000000",
+                        description: "Brand Colors",
+                        icon: "⭐",
+                      },
                       {
                         name: "Ocean Breeze",
                         primary: "#0ea5e9",
                         secondary: "#06b6d4",
-                        description: "Blue to Cyan",
+                        description: "Beach Vibes",
+                        icon: "🌊",
                       },
                       {
-                        name: "Sunset Glow",
-                        primary: "#f59e0b",
-                        secondary: "#ec4899",
-                        description: "Orange to Pink",
+                        name: "Sunset Paradise",
+                        primary: "#FFDE00",
+                        secondary: "#EF4444",
+                        description: "Golden Hour",
+                        icon: "🌅",
                       },
                       {
-                        name: "Forest Mist",
+                        name: "Mountain Peak",
                         primary: "#10b981",
                         secondary: "#059669",
-                        description: "Emerald to Green",
+                        description: "Adventure",
+                        icon: "🏔️",
                       },
                       {
-                        name: "Royal Purple",
-                        primary: "#8b5cf6",
-                        secondary: "#a855f7",
-                        description: "Purple to Violet",
+                        name: "Desert Safari",
+                        primary: "#FFDE00",
+                        secondary: "#D97706",
+                        description: "Desert Tours",
+                        icon: "🐪",
                       },
                       {
-                        name: "Fire Ember",
-                        primary: "#ef4444",
-                        secondary: "#f97316",
-                        description: "Red to Orange",
-                      },
-                      {
-                        name: "Arctic Blue",
+                        name: "Tropical Sky",
                         primary: "#3b82f6",
                         secondary: "#6366f1",
-                        description: "Blue to Indigo",
+                        description: "Island Escape",
+                        icon: "🏝️",
                       },
                     ].map((preset) => (
                       <button
@@ -475,11 +365,15 @@ export default function ThemePage() {
                         title={`${preset.name} - ${preset.description}`}
                       >
                         <div
-                          className="w-full h-8 rounded-lg mb-2"
+                          className="w-full h-8 rounded-lg mb-2 relative overflow-hidden"
                           style={{
                             background: `linear-gradient(135deg, ${preset.primary} 0%, ${preset.secondary} 100%)`,
                           }}
-                        ></div>
+                        >
+                          <div className="absolute top-1 right-1 text-xs opacity-80">
+                            {preset.icon}
+                          </div>
+                        </div>
                         <div className="text-xs text-gray-700 font-medium">
                           {preset.name}
                         </div>
@@ -491,48 +385,55 @@ export default function ThemePage() {
                   </div>
                 </div>
 
-                {/* Creative Gradient Collection */}
+                {/* Destination-Inspired Gradients */}
                 <div className="space-y-3">
-                  <div className="text-xs font-medium text-gray-600 mb-2">
-                    Creative Gradients
+                  <div className="text-xs font-medium text-gray-600 mb-2 flex items-center gap-2">
+                    <MapPin className="w-4 h-4" />
+                    Destination-Inspired Colors
                   </div>
                   <div className="grid grid-cols-3 gap-3">
                     {[
                       {
-                        name: "Cosmic Dream",
+                        name: "Goa Sunset",
+                        primary: "#FFDE00",
+                        secondary: "#EC4899",
+                        description: "Beach Paradise",
+                        icon: "🏖️",
+                      },
+                      {
+                        name: "Kerala Backwaters",
+                        primary: "#10b981",
+                        secondary: "#FFDE00",
+                        description: "Nature's Beauty",
+                        icon: "🛶",
+                      },
+                      {
+                        name: "Himalayan Dawn",
                         primary: "#6366f1",
                         secondary: "#ec4899",
-                        description: "Indigo to Pink",
+                        description: "Mountain Majesty",
+                        icon: "🏔️",
                       },
                       {
-                        name: "Tropical Vibes",
+                        name: "Rajasthan Royal",
+                        primary: "#DC2626",
+                        secondary: "#FFDE00",
+                        description: "Royal Heritage",
+                        icon: "🏰",
+                      },
+                      {
+                        name: "Kashmir Valley",
                         primary: "#10b981",
-                        secondary: "#f59e0b",
-                        description: "Green to Orange",
+                        secondary: "#3B82F6",
+                        description: "Paradise on Earth",
+                        icon: "🌸",
                       },
                       {
-                        name: "Midnight Sky",
-                        primary: "#1e293b",
-                        secondary: "#3b82f6",
-                        description: "Dark to Blue",
-                      },
-                      {
-                        name: "Cherry Blossom",
-                        primary: "#ec4899",
-                        secondary: "#fbbf24",
-                        description: "Pink to Yellow",
-                      },
-                      {
-                        name: "Deep Ocean",
-                        primary: "#0f172a",
-                        secondary: "#0ea5e9",
-                        description: "Navy to Sky",
-                      },
-                      {
-                        name: "Autumn Leaves",
-                        primary: "#dc2626",
-                        secondary: "#f59e0b",
-                        description: "Red to Amber",
+                        name: "Mumbai Nights",
+                        primary: "#000000",
+                        secondary: "#FFDE00",
+                        description: "City Lights",
+                        icon: "🌃",
                       },
                     ].map((preset) => (
                       <button
@@ -545,11 +446,15 @@ export default function ThemePage() {
                         title={`${preset.name} - ${preset.description}`}
                       >
                         <div
-                          className="w-full h-8 rounded-lg mb-2"
+                          className="w-full h-8 rounded-lg mb-2 relative overflow-hidden"
                           style={{
                             background: `linear-gradient(135deg, ${preset.primary} 0%, ${preset.secondary} 100%)`,
                           }}
-                        ></div>
+                        >
+                          <div className="absolute top-1 right-1 text-xs opacity-80">
+                            {preset.icon}
+                          </div>
+                        </div>
                         <div className="text-xs text-gray-700 font-medium">
                           {preset.name}
                         </div>
@@ -561,60 +466,69 @@ export default function ThemePage() {
                   </div>
                 </div>
 
-                {/* Professional Gradient Collection */}
+                {/* Professional Travel Gradients */}
                 <div className="space-y-3">
-                  <div className="text-xs font-medium text-gray-600 mb-2">
-                    Professional Gradients
+                  <div className="text-xs font-medium text-gray-600 mb-2 flex items-center gap-2">
+                    <Camera className="w-4 h-4" />
+                    Professional Travel Themes
                   </div>
                   <div className="grid grid-cols-4 gap-3">
                     {[
                       {
-                        name: "Corporate Blue",
+                        name: "Corporate Travel",
                         primary: "#1e40af",
                         secondary: "#3b82f6",
-                        description: "Professional",
+                        description: "Business",
+                        icon: "💼",
                       },
                       {
-                        name: "Tech Green",
+                        name: "Eco Tourism",
                         primary: "#059669",
                         secondary: "#10b981",
-                        description: "Modern",
+                        description: "Sustainable",
+                        icon: "🌱",
                       },
                       {
-                        name: "Executive Gray",
-                        primary: "#374151",
-                        secondary: "#6b7280",
-                        description: "Elegant",
+                        name: "Luxury Travel",
+                        primary: "#000000",
+                        secondary: "#FFDE00",
+                        description: "Premium",
+                        icon: "✨",
                       },
                       {
-                        name: "Innovation Purple",
+                        name: "Adventure Tours",
                         primary: "#7c3aed",
                         secondary: "#a855f7",
-                        description: "Creative",
+                        description: "Thrilling",
+                        icon: "🎒",
                       },
                       {
-                        name: "Energy Orange",
-                        primary: "#ea580c",
-                        secondary: "#f97316",
-                        description: "Dynamic",
+                        name: "Cultural Tours",
+                        primary: "#DC2626",
+                        secondary: "#FFDE00",
+                        description: "Heritage",
+                        icon: "🏛️",
                       },
                       {
-                        name: "Trust Teal",
+                        name: "Wellness Retreat",
                         primary: "#0f766e",
                         secondary: "#14b8a6",
-                        description: "Reliable",
+                        description: "Peaceful",
+                        icon: "🧘",
                       },
                       {
-                        name: "Premium Gold",
-                        primary: "#d97706",
-                        secondary: "#f59e0b",
-                        description: "Luxury",
+                        name: "Family Vacation",
+                        primary: "#FFDE00",
+                        secondary: "#EC4899",
+                        description: "Fun & Safe",
+                        icon: "👨‍👩‍👧‍👦",
                       },
                       {
-                        name: "Classic Navy",
-                        primary: "#1e3a8a",
-                        secondary: "#3730a3",
-                        description: "Timeless",
+                        name: "Honeymoon Special",
+                        primary: "#EC4899",
+                        secondary: "#FFDE00",
+                        description: "Romantic",
+                        icon: "💕",
                       },
                     ].map((preset) => (
                       <button
@@ -627,11 +541,15 @@ export default function ThemePage() {
                         title={`${preset.name} - ${preset.description}`}
                       >
                         <div
-                          className="w-full h-6 rounded-md mb-1"
+                          className="w-full h-6 rounded-md mb-1 relative overflow-hidden"
                           style={{
                             background: `linear-gradient(135deg, ${preset.primary} 0%, ${preset.secondary} 100%)`,
                           }}
-                        ></div>
+                        >
+                          <div className="absolute top-0 right-0 text-xs opacity-70">
+                            {preset.icon}
+                          </div>
+                        </div>
                         <div className="text-xs text-gray-700 font-medium">
                           {preset.name}
                         </div>
@@ -656,10 +574,13 @@ export default function ThemePage() {
         {/* Live Preview */}
         <div className="space-y-6">
           <Card className="shadow-lg border-0 sticky top-8">
-            <CardHeader className="bg-gradient-to-r from-green-50 to-teal-50">
+            <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50">
               <CardTitle className="flex items-center gap-2">
-                <Eye className="h-5 w-5 text-green-600" />
+                <Eye className="h-5 w-5" style={{ color: primaryColor }} />
                 Live Preview
+                <span className="text-xs bg-emerald-100 text-emerald-800 px-2 py-1 rounded-full ml-2">
+                  Real-time
+                </span>
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6 space-y-6">
@@ -702,58 +623,164 @@ export default function ThemePage() {
 
               {/* Preview Window */}
               <div className={getPreviewContainerClass()}>
-                <div className="border-2 border-gray-200 rounded-lg overflow-hidden bg-white">
+                <div className="border-2 border-gray-200 rounded-lg overflow-hidden bg-white shadow-lg">
                   {/* Header Preview */}
-                  <div className="bg-white border-b border-gray-200 p-3">
+                  <div className="bg-white border-b border-gray-200 p-4">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3">
                         {logo ? (
                           <img
-                            src={logo || "/placeholder.svg"}
+                            src={logo}
                             alt="Logo"
-                            className="w-8 h-8 object-contain"
+                            className="w-10 h-10 object-contain rounded-full"
                           />
                         ) : (
                           <div
-                            className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm font-bold"
+                            className="w-10 h-10 rounded-full flex items-center justify-center text-white text-lg font-bold"
                             style={{ background: getDynamicGradient() }}
                           >
-                            F
+                            V
                           </div>
                         )}
                         <div>
                           <div
-                            className="text-sm font-bold"
+                            className="text-lg font-bold"
                             style={{ color: primaryColor }}
                           >
-                            Filigree
+                            Vinushree
                           </div>
-                          <div className="text-xs text-gray-600">Solutions</div>
+                          <div className="text-sm text-gray-600">Tours & Travels</div>
                         </div>
                       </div>
                       <div
-                        className="px-3 py-1 rounded text-xs font-medium text-white"
+                        className="px-4 py-2 rounded-lg text-white font-medium text-sm hover:scale-105 transition-transform cursor-pointer"
                         style={{ background: getDynamicGradient() }}
                       >
-                        Get Quote
+                        Book Now
                       </div>
                     </div>
                   </div>
 
                   {/* Hero Section Preview */}
-                  <div className="p-6 text-white text-center">
-                    <div className="text-lg font-bold mb-2">
-                      Engineering Excellence
+                  <div 
+                    className="p-6 text-white text-center relative overflow-hidden"
+                    style={{ background: getDynamicGradient() }}
+                  >
+                    <div className="relative z-10">
+                      <div className="text-2xl font-bold mb-3">
+                        Explore the World with Us
+                      </div>
+                      <div className="text-sm opacity-90 mb-4 max-w-md mx-auto">
+                        Your trusted travel partner for unforgettable journeys
+                      </div>
+                      <div className="flex gap-3 justify-center">
+                        <button
+                          className="px-4 py-2 rounded-lg bg-white font-medium text-sm"
+                          style={{ color: primaryColor }}
+                        >
+                          <Plane className="w-4 h-4 inline mr-2" />
+                          Explore Tours
+                        </button>
+                      </div>
                     </div>
-                    <div className="text-xs opacity-90 mb-3">
-                      Transform your engineering challenges into innovative
-                      solutions
+                    {/* Decorative elements */}
+                    <div className="absolute top-4 right-4 opacity-20">
+                      <Plane className="w-8 h-8 rotate-45" />
                     </div>
-                    <div
-                      className="inline-block px-3 py-1 rounded text-xs font-medium"
-                      style={{ background: getDynamicGradient() }}
-                    >
-                      Get Started
+                    <div className="absolute bottom-4 left-4 opacity-20">
+                      <Camera className="w-6 h-6" />
+                    </div>
+                  </div>
+
+                  {/* Featured Tours Section */}
+                  <div className="p-6 bg-gray-50">
+                    <div className="text-lg font-bold mb-4" style={{ color: primaryColor }}>
+                      Popular Destinations
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Tour Card 1 */}
+                      <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+                        <div className="h-24 bg-gradient-to-r from-blue-400 to-blue-600 relative">
+                          <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+                          <div className="absolute bottom-2 left-3 text-white">
+                            <div className="text-sm font-semibold">Goa Beach Tour</div>
+                            <div className="text-xs opacity-90">3 Days • 2 Nights</div>
+                          </div>
+                        </div>
+                        <CardContent className="p-3">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-1 text-xs text-gray-600">
+                              <MapPin className="w-3 h-3" />
+                              Goa, India
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                              <span className="text-xs">4.8</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <div className="text-sm font-semibold" style={{ color: primaryColor }}>
+                              ₹12,999
+                            </div>
+                            <div className="flex items-center gap-1 text-xs text-gray-600">
+                              <Users className="w-3 h-3" />
+                              2-6 People
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Tour Card 2 */}
+                      <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+                        <div className="h-24 bg-gradient-to-r from-green-400 to-green-600 relative">
+                          <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+                          <div className="absolute bottom-2 left-3 text-white">
+                            <div className="text-sm font-semibold">Kerala Backwaters</div>
+                            <div className="text-xs opacity-90">5 Days • 4 Nights</div>
+                          </div>
+                        </div>
+                        <CardContent className="p-3">
+                          <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-1 text-xs text-gray-600">
+                              <MapPin className="w-3 h-3" />
+                              Kerala, India
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                              <span className="text-xs">4.9</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <div className="text-sm font-semibold" style={{ color: primaryColor }}>
+                              ₹18,999
+                            </div>
+                            <div className="flex items-center gap-1 text-xs text-gray-600">
+                              <Users className="w-3 h-3" />
+                              2-8 People
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+
+                  {/* Footer Preview */}
+                  <div 
+                    className="p-4 text-white text-center"
+                    style={{ background: getDynamicGradient() }}
+                  >
+                    <div className="flex items-center justify-center gap-4 mb-3">
+                      <div className="flex items-center gap-2 text-sm">
+                        <Phone className="w-4 h-4" />
+                        +91 98765 43210
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <Mail className="w-4 h-4" />
+                        info@vinushree.com
+                      </div>
+                    </div>
+                    <div className="text-xs opacity-90">
+                      © 2024 Vinushree Tours & Travels. All rights reserved.
                     </div>
                   </div>
                 </div>

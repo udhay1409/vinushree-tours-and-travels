@@ -79,11 +79,10 @@ export const Contact = ({ services, contactInfo }: ContactProps) => {
         fullName: formData.fullName,
         email: formData.email,
         phone: formData.phone,
-        company: "", // Contact form doesn't have company field
         service: formData.service,
         message: formData.message,
-        projectDescription: formData.message, // Use message as project description
-        additionalRequirements: "",
+        travelDate: "", // Travel specific field
+        destination: "", // Travel specific field
         formSource: "contact",
       };
 
@@ -142,7 +141,7 @@ export const Contact = ({ services, contactInfo }: ContactProps) => {
     {
       icon: <Mail className="h-5 w-5 text-white" />,
       title: "Email",
-      details: contactInfo?.email || "info@filigreesolutions.com",
+      details: contactInfo?.email || "info@vinushree.com",
       description: "We'll respond within 24 hours",
     },
     {
@@ -158,7 +157,14 @@ export const Contact = ({ services, contactInfo }: ContactProps) => {
     <>
       {/* Hero Section */}
       <section className="relative py-12 sm:py-16 md:py-20 lg:py-24 flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-admin-gradient"></div>
+        <div className="absolute inset-0">
+          <img
+            src="/kodaikanal-hills.png"
+            alt="Tamil Nadu Tourism"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-admin-gradient/80"></div>
+        </div>
 
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
@@ -188,7 +194,7 @@ export const Contact = ({ services, contactInfo }: ContactProps) => {
           />
         </div>
 
-        <div className="container mx-auto px-3 sm:px-4 lg:px-6 relative z-10">
+        <div className="container mx-auto px-3 sm:px-4 md:px-6 relative z-10">
           <motion.div
             className="max-w-4xl mx-auto text-center text-white"
             initial={{ opacity: 0, y: 30 }}
@@ -200,11 +206,11 @@ export const Contact = ({ services, contactInfo }: ContactProps) => {
               Get In Touch
             </Badge>
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 leading-tight px-2">
-              {contactInfo?.pageTitle || "Let's Discuss Your Engineering Needs"}
+              {contactInfo?.pageTitle || "Plan Your Perfect Journey"}
             </h1>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-6 sm:mb-8 text-white/90 max-w-3xl mx-auto leading-relaxed px-4">
               {contactInfo?.pageDescription ||
-                "Ready to transform your engineering challenges into innovative solutions? Contact our expert team today and start your journey to excellence."}
+                "Ready to explore Tamil Nadu's beautiful destinations? Contact our travel experts today and let us plan your perfect journey with comfort and safety."}
             </p>
           </motion.div>
         </div>
@@ -215,7 +221,7 @@ export const Contact = ({ services, contactInfo }: ContactProps) => {
         id="contact-form"
         className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gradient-to-br from-gray-50 to-white"
       >
-        <div className="container mx-auto px-3 sm:px-4 lg:px-6">
+        <div className="container mx-auto px-3 sm:px-4 md:px-6">
           <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 max-w-7xl mx-auto">
             {/* Contact Form */}
             <motion.div
@@ -341,7 +347,7 @@ export const Contact = ({ services, contactInfo }: ContactProps) => {
                         onChange={(e) =>
                           handleInputChange("message", e.target.value)
                         }
-                        placeholder="Tell us about your project requirements..."
+                        placeholder="Tell us about your travel requirements..."
                         rows={4}
                         className="mt-1.5 sm:mt-2 text-sm sm:text-base resize-none"
                       />
@@ -387,9 +393,9 @@ export const Contact = ({ services, contactInfo }: ContactProps) => {
                   Contact Information
                 </h2>
                 <p className="text-sm sm:text-base lg:text-lg text-gray-600 mb-4 sm:mb-6 lg:mb-8 leading-relaxed">
-                  Get in touch with our team of engineering experts. We're here
-                  to help you with all your CAD and CAE requirements and provide
-                  comprehensive solutions.
+                  Get in touch with our team of travel experts. We're here
+                  to help you with all your travel needs and provide
+                  exceptional travel experiences across Tamil Nadu.
                 </p>
               </motion.div>
 
@@ -424,7 +430,7 @@ export const Contact = ({ services, contactInfo }: ContactProps) => {
 
       {/* Google Maps Section */}
       <section className="mb-5 bg-white">
-        <div className="container mx-auto px-3 sm:px-4 lg:px-6">
+        <div className="container mx-auto px-3 sm:px-4 md:px-6">
           <motion.div
             className="text-center mb-8 sm:mb-12 lg:mb-16"
             variants={fadeInUp}

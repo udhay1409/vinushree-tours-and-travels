@@ -6,29 +6,20 @@ import {
   MapPin,
   Facebook,
   Twitter,
-  Linkedin,
   Instagram,
   ArrowRight,
   Clock,
   Award,
   Users,
-  Globe,
-  Youtube,
   MessageCircle,
-  Send,
-  Github,
-  Palette,
-  Dribbble,
+  Car,
+  Plane,
+  Calendar,
+  Shield
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTheme } from "./providers/theme";
 import Image from "next/image";
-
-interface Service {
-  _id: string;
-  title: string;
-  status: string;
-}
 
 interface ContactInfo {
   phone: string;
@@ -40,411 +31,259 @@ interface ContactInfo {
   country: string;
   facebook?: string;
   twitter?: string;
-  linkedin?: string;
   instagram?: string;
-  youtube?: string;
   whatsapp?: string;
-  telegram?: string;
-  github?: string;
-  behance?: string;
-  dribbble?: string;
 }
 
 export default function Footer() {
-  const [services, setServices] = useState<Service[]>([]);
   const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
   const { themeData } = useTheme();
 
   useEffect(() => {
-    const fetchServices = async () => {
-      try {
-        const response = await fetch("/api/admin/services");
-        const data = await response.json();
-
-        if (data.success) {
-          // Filter active services - no limit, auto-responsive UI will handle any number
-          const activeServices = data.data.filter(
-            (service: Service) => service.status === "active"
-          );
-          setServices(activeServices);
-        }
-      } catch (error) {
-        console.error("Error fetching services:", error);
-      }
-    };
-
-    const fetchContactInfo = async () => {
-      try {
-        const response = await fetch("/api/admin/contact");
-        const data = await response.json();
-
-        if (data.success) {
-          setContactInfo(data.data);
-        }
-      } catch (error) {
-        console.error("Error fetching contact info:", error);
-      }
-    };
-
-    fetchServices();
-    fetchContactInfo();
+    // Set static contact info for travel business
+    setContactInfo({
+      phone: "+91 90037 82966",
+      email: "info@vinushree.com",
+      address: "123 Travel Street",
+      city: "Chennai",
+      state: "Tamil Nadu",
+      pincode: "600001",
+      country: "India",
+      whatsapp: "+91 90037 82966",
+      facebook: "https://facebook.com/vinushree",
+      instagram: "https://instagram.com/vinushree",
+      twitter: "https://twitter.com/vinushree"
+    });
   }, []);
 
-  // Helper function to get social media links with icons
-  const getSocialMediaLinks = () => {
-    if (!contactInfo) return [];
+  const travelServices = [
+    { name: 'One-way Trip', href: '/tariff' },
+    { name: 'Round Trip', href: '/tariff' },
+    { name: 'Airport Taxi', href: '/tariff' },
+    { name: 'Day Rental', href: '/tariff' },
+    { name: 'Hourly Package', href: '/tariff' },
+    { name: 'Tour Package', href: '/packages' }
+  ];
 
-    const socialLinks = [
-      {
-        name: "Facebook",
-        url: contactInfo.facebook,
-        icon: Facebook,
-        hoverColor: "hover:text-blue-500",
-        bgColor: "hover:bg-blue-600/20",
-        borderColor: "hover:border-blue-500/50"
-      },
-      {
-        name: "Twitter",
-        url: contactInfo.twitter,
-        icon: Twitter,
-        hoverColor: "hover:text-blue-400",
-        bgColor: "hover:bg-blue-600/20",
-        borderColor: "hover:border-blue-500/50"
-      },
-      {
-        name: "LinkedIn",
-        url: contactInfo.linkedin,
-        icon: Linkedin,
-        hoverColor: "hover:text-blue-600",
-        bgColor: "hover:bg-blue-600/20",
-        borderColor: "hover:border-blue-500/50"
-      },
-      {
-        name: "Instagram",
-        url: contactInfo.instagram,
-        icon: Instagram,
-        hoverColor: "hover:text-pink-500",
-        bgColor: "hover:bg-pink-600/20",
-        borderColor: "hover:border-pink-500/50"
-      },
-      {
-        name: "YouTube",
-        url: contactInfo.youtube,
-        icon: Youtube,
-        hoverColor: "hover:text-red-500",
-        bgColor: "hover:bg-red-600/20",
-        borderColor: "hover:border-red-500/50"
-      },
-      {
-        name: "WhatsApp",
-        url: contactInfo.whatsapp,
-        icon: MessageCircle,
-        hoverColor: "hover:text-green-500",
-        bgColor: "hover:bg-green-600/20",
-        borderColor: "hover:border-green-500/50"
-      },
-      {
-        name: "Telegram",
-        url: contactInfo.telegram,
-        icon: Send,
-        hoverColor: "hover:text-blue-500",
-        bgColor: "hover:bg-blue-600/20",
-        borderColor: "hover:border-blue-500/50"
-      },
-      {
-        name: "GitHub",
-        url: contactInfo.github,
-        icon: Github,
-        hoverColor: "hover:text-gray-300",
-        bgColor: "hover:bg-gray-600/20",
-        borderColor: "hover:border-gray-500/50"
-      },
-      {
-        name: "Behance",
-        url: contactInfo.behance,
-        icon: Palette,
-        hoverColor: "hover:text-blue-500",
-        bgColor: "hover:bg-blue-600/20",
-        borderColor: "hover:border-blue-500/50"
-      },
-      {
-        name: "Dribbble",
-        url: contactInfo.dribbble,
-        icon: Dribbble,
-        hoverColor: "hover:text-pink-500",
-        bgColor: "hover:bg-pink-600/20",
-        borderColor: "hover:border-pink-500/50"
-      }
-    ];
+  const quickLinks = [
+    { name: 'Home', href: '/' },
+    { name: 'About Us', href: '/about' },
+    { name: 'Tariff', href: '/tariff' },
+    { name: 'Packages', href: '/packages' },
+    { name: 'Contact', href: '/contact' }
+  ];
 
-    // Filter out social links that don't have URLs
-    return socialLinks.filter(link => link.url && link.url.trim() !== "");
+  const destinations = [
+    'Chennai', 'Madurai', 'Coimbatore', 'Trichy', 'Salem', 'Tirunelveli'
+  ];
+
+  const handleWhatsAppClick = () => {
+    const message = "Hi! I'm interested in your travel services. Please provide more details.";
+    const whatsappUrl = `https://wa.me/${contactInfo?.whatsapp?.replace(/[^0-9]/g, '') || '919003782966'}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  };
+
+  const handleCallClick = () => {
+    window.open(`tel:${contactInfo?.phone || '+919003782966'}`, '_self');
   };
 
   return (
-    <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-600/10 to-purple-600/10"></div>
-        <div className="absolute top-10 left-10 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-10 right-10 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl"></div>
-      </div>
-
-      <div className="container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-12 sm:py-16 md:py-20 relative z-10">
-        {/* Main Footer Content */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 sm:gap-10 lg:gap-12">
-          
-          {/* Company Info - Enhanced */}
-          <div className="space-y-6 sm:col-span-2 lg:col-span-2">
-            {/* Logo Section */}
-            <Link href="/" className="flex items-center space-x-3 group">
+    <footer className="bg-gray-900 text-white">
+      {/* Main Footer Content */}
+      <div className="container mx-auto px-4 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {/* Company Info */}
+          <div className="lg:col-span-1">
+            <div className="flex items-center space-x-3 mb-6">
               {themeData?.logo ? (
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl overflow-hidden flex items-center justify-center bg-white/10 backdrop-blur-sm border border-white/20">
-                  <Image 
-                    src={themeData.logo} 
-                    alt="Filigree Solutions Logo" 
-                    width={56} 
-                    height={56} 
+                <div className="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center">
+                  <Image
+                    src={themeData.logo}
+                    alt="Vinushree Tours & Travels"
+                    width={48}
+                    height={48}
                     className="w-full h-full object-contain"
                   />
                 </div>
               ) : (
-                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-admin-gradient rounded-2xl flex items-center justify-center shadow-lg">
-                  <span className="text-white font-bold text-xl sm:text-2xl">F</span>
+                <div className="w-12 h-12 rounded-xl bg-admin-gradient overflow-hidden flex items-center justify-center">
+                  <span className="text-white font-bold text-2xl">V</span>
                 </div>
               )}
               <div>
-                <div className="font-bold text-xl sm:text-2xl bg-admin-gradient bg-clip-text text-transparent">
-                  Filigree
+                <div className="font-bold text-xl bg-admin-gradient bg-clip-text text-transparent">
+                  Vinushree
                 </div>
-                <div className="text-sm sm:text-base font-medium">Solutions</div>
+                <div className="text-sm text-gray-400 font-medium">
+                  Tours & Travels
+                </div>
               </div>
-            </Link>
-
-            {/* Company Description */}
-            <p className="text-gray-300 text-sm sm:text-base leading-relaxed max-w-md">
-              Leading provider of advanced CAD & CAE solutions, delivering precision engineering services across India with cutting-edge technology and expertise.
+            </div>
+            <p className="text-gray-300 mb-6 leading-relaxed">
+              Your trusted travel partner across Tamil Nadu. We provide safe, comfortable, and reliable travel services for all your journey needs.
             </p>
-
-           
-            {/* Dynamic Social Media */}
-            {getSocialMediaLinks().length > 0 && (
-              <div className="space-y-3">
-                <h4 className="text-white font-semibold text-sm">Follow Us</h4>
-                <div className="flex flex-wrap gap-3">
-                  {getSocialMediaLinks().map((social) => {
-                    const IconComponent = social.icon;
-                    return (
-                      <a
-                        key={social.name}
-                        href={social.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={`group p-2 bg-white/10 ${social.bgColor} rounded-lg transition-all duration-300 border border-white/20 ${social.borderColor}`}
-                        title={`Follow us on ${social.name}`}
-                      >
-                        <IconComponent className={`h-4 w-4 text-gray-400 ${social.hoverColor} transition-colors`} />
-                      </a>
-                    );
-                  })}
+            
+            {/* Contact Info */}
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3">
+                <Phone className="h-4 w-4 text-admin-primary" />
+                <a 
+                  href={`tel:${contactInfo?.phone || '+919876543210'}`}
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
+                  {contactInfo?.phone || '+91 90037 82966'}
+                </a>
+              </div>
+              <div className="flex items-center space-x-3">
+                <Mail className="h-4 w-4 text-admin-primary" />
+                <a 
+                  href={`mailto:${contactInfo?.email || 'info@vinushree.com'}`}
+                  className="text-gray-300 hover:text-white transition-colors"
+                >
+                  {contactInfo?.email || 'info@vinushree.com'}
+                </a>
+              </div>
+              <div className="flex items-start space-x-3">
+                <MapPin className="h-4 w-4 text-admin-primary mt-1" />
+                <div className="text-gray-300">
+                  <div>{contactInfo?.address || '123 Travel Street'}</div>
+                  <div>{contactInfo?.city || 'Chennai'}, {contactInfo?.state || 'Tamil Nadu'} - {contactInfo?.pincode || '600001'}</div>
                 </div>
               </div>
-            )}
+            </div>
           </div>
 
-          {/* Quick Links */}
-          <div className="space-y-5">
-            <h3 className="font-semibold text-lg text-white flex items-center">
-              <Globe className="h-5 w-5 mr-2 text-admin-primary" />
-              Quick Links
-            </h3>
+          {/* Services */}
+          <div>
+            <h3 className="text-lg font-bold mb-6 text-white">Our Services</h3>
             <ul className="space-y-3">
-              {[
-                { name: "Home", href: "/" },
-                { name: "About Us", href: "/about" },
-                { name: "Services", href: "/services" },
-                { name: "Portfolio", href: "/portfolio" },
-                { name: "Contact", href: "/contact" },
-              ].map((link) => (
-                <li key={link.name}>
+              {travelServices.map((service, index) => (
+                <li key={index}>
                   <Link
-                    href={link.href}
-                    className="group flex items-center space-x-2 text-gray-300 hover:text-white transition-all duration-200 py-1"
+                    href={service.href}
+                    className="text-gray-300 hover:text-white transition-colors flex items-center group"
                   >
-                    <ArrowRight className="h-3 w-3 text-admin-primary group-hover:translate-x-1 transition-transform" />
-                    <span className="text-sm font-medium">{link.name}</span>
+                    <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {service.name}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Services */}
-          <div className="space-y-4 sm:space-y-5">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-base sm:text-lg text-white">
-                Our Services
-              </h3>
-             
-            </div>
-
-            {/* Mobile: Clean card-style layout */}
-            <div className="block sm:hidden">
-              <div className="space-y-3">
-                {services.length > 0 ? (
-                  <>
-                    {services.slice(0, 6).map((service) => (
-                      <Link
-                        key={service._id}
-                        href={`/services/${service.title
-                          .toLowerCase()
-                          .replace(/[^a-z0-9]+/g, "-")
-                          .replace(/(^-|-$)/g, "")}`}
-                        className="block p-3"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <span className="text-gray-300 hover:text-white text-sm font-medium line-clamp-2">
-                            {service.title}
-                          </span>
-                        </div>
-                      </Link>
-                    ))}
-                    {services.length > 6 && (
-                      <Link
-                        href="/services"
-                        className="block p-3 bg-gradient-to-r from-blue-600/20 to-purple-600/20 hover:from-blue-600/30 hover:to-purple-600/30 rounded-lg transition-all duration-200 border border-blue-500/30"
-                      >
-                        <div className="flex items-center justify-center space-x-2">
-                         
-                          <svg
-                            className="w-4 h-4 text-admin-primary"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9 5l7 7-7 7"
-                            />
-                            
-                          </svg>
-                          All Services
-                        </div>
-                      </Link>
-                    )}
-                  </>
-                ) : (
-                  <div className="p-4 bg-gray-800/30 rounded-lg border border-gray-700/50 text-center">
-                    <span className="text-gray-400 text-sm">
-                      No services available
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Tablet and Desktop: Enhanced grid layout */}
-            <div className="hidden sm:block">
-              {services.length > 0 ? (
-                <div className="space-y-4">
-                  <div className="grid grid-cols-1 gap-2">
-                    {services.slice(0, 8).map((service) => (
-                      <Link
-                        key={service._id}
-                        href={`/services/${service.title
-                          .toLowerCase()
-                          .replace(/[^a-z0-9]+/g, "-")
-                          .replace(/(^-|-$)/g, "")}`}
-                        className="group flex items-center space-x-3 p-2 hover:bg-gray-800/50 rounded-md transition-all duration-200"
-                        title={service.title}
-                      >
-                        <div className="w-1.5 h-1.5 bg-admin-primary rounded-full flex-shrink-0 group-hover:bg-blue-300 transition-colors"></div>
-                        <span className="text-gray-300 group-hover:text-white text-sm leading-tight line-clamp-4">
-                          {service.title}
-                        </span>
-                      </Link>
-                    ))}
-                  </div>
-
-                  {services.length > 8 && (
-                    <div className="pt-2 border-t border-gray-700/50">
-                      <Link
-                        href="/services"
-                        className="group flex items-center justify-between p-3 bg-admin-gradient text-white rounded-lg transition-all duration-200 border border-blue-500/20 hover:border-blue-500/40"
-                      >
-                        <div className="flex items-center space-x-2">
-                          <div className="w-2 h-2 bg-white rounded-full"></div>
-                          <span className="text-admin-primaty  text-sm ">
-                            Explore All Services
-                          </span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <span className="text-white text-xs">
-                            +{services.length - 8} more
-                          </span>
-                          
-                        </div>
-                      </Link>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="p-4 bg-gray-800/30 rounded-lg border border-gray-700/50 text-center">
-                  <span className="text-gray-400 text-sm">
-                    No services available
-                  </span>
-                </div>
-              )}
-            </div>
+          {/* Quick Links */}
+          <div>
+            <h3 className="text-lg font-bold mb-6 text-white">Quick Links</h3>
+            <ul className="space-y-3">
+              {quickLinks.map((link, index) => (
+                <li key={index}>
+                  <Link
+                    href={link.href}
+                    className="text-gray-300 hover:text-white transition-colors flex items-center group"
+                  >
+                    <ArrowRight className="h-3 w-3 mr-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
           </div>
 
-          {/* Dynamic Contact Info */}
-          <div className="space-y-3 sm:space-y-4 sm:col-span-2 lg:col-span-1">
-            <h3 className="font-semibold text-base sm:text-lg mb-3 sm:mb-4">
-              Contact Info
-            </h3>
-            <div className="space-y-2 sm:space-y-3">
-              <div className="flex items-start space-x-2 sm:space-x-3">
-                <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-admin-primary mt-0.5 flex-shrink-0" />
-                <span className="text-gray-300 text-xs sm:text-sm leading-relaxed">
-                  {contactInfo ? (
-                    `${contactInfo.address}, ${contactInfo.city}, ${contactInfo.state}-${contactInfo.pincode}, ${contactInfo.country}`
-                  ) : (
-                    "88/153, East Street, Pandiyan Nagar, South Madurai, Madurai-625006, Tamil Nadu"
-                  )}
-                </span>
-              </div>
-              <div className="flex items-center space-x-2 sm:space-x-3">
-                <Phone className="h-4 w-4 sm:h-5 sm:w-5 text-admin-primary flex-shrink-0" />
-                <a
-                  href={`tel:${contactInfo?.phone || "9158549166"}`}
-                  className="text-gray-300 hover:text-white transition-colors text-xs sm:text-sm"
-                >
-                  {contactInfo?.phone || "9158549166"}
-                </a>
-              </div>
-              <div className="flex items-center space-x-2 sm:space-x-3">
-                <Mail className="h-4 w-4 sm:h-5 sm:w-5 text-admin-primary flex-shrink-0" />
-                <a
-                  href={`mailto:${contactInfo?.email || "info@filigreesolutions.com"}`}
-                  className="text-gray-300 hover:text-white transition-colors text-xs sm:text-sm break-all"
-                >
-                  {contactInfo?.email || "info@filigreesolutions.com"}
-                </a>
-              </div>
+          {/* Popular Destinations */}
+          <div>
+            <h3 className="text-lg font-bold mb-6 text-white">Popular Destinations</h3>
+            <ul className="space-y-3">
+              {destinations.map((destination, index) => (
+                <li key={index} className="text-gray-300 flex items-center">
+                  <MapPin className="h-3 w-3 mr-2 text-admin-primary" />
+                  {destination}
+                </li>
+              ))}
+            </ul>
+            
+
+          </div>
+        </div>
+      </div>
+
+      {/* Features Section */}
+      <div className="border-t border-gray-800">
+        <div className="container mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-center">
+            <div className="flex flex-col items-center">
+              <Shield className="h-8 w-8 text-admin-primary mb-2" />
+              <h4 className="font-semibold text-white mb-1">Safe & Secure</h4>
+              <p className="text-gray-400 text-sm">Licensed & insured vehicles</p>
+            </div>
+            <div className="flex flex-col items-center">
+              <Clock className="h-8 w-8 text-admin-primary mb-2" />
+              <h4 className="font-semibold text-white mb-1">24/7 Service</h4>
+              <p className="text-gray-400 text-sm">Round the clock availability</p>
+            </div>
+            <div className="flex flex-col items-center">
+              <Award className="h-8 w-8 text-admin-primary mb-2" />
+              <h4 className="font-semibold text-white mb-1">Best Rates</h4>
+              <p className="text-gray-400 text-sm">Competitive pricing</p>
+            </div>
+            <div className="flex flex-col items-center">
+              <Users className="h-8 w-8 text-admin-primary mb-2" />
+              <h4 className="font-semibold text-white mb-1">Expert Drivers</h4>
+              <p className="text-gray-400 text-sm">Experienced professionals</p>
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="border-t border-gray-800 mt-6 sm:mt-8 pt-6 sm:pt-8 text-center">
-          <p className="text-gray-400 text-xs sm:text-sm leading-relaxed px-2">
-            © 2025 Filigree Solutions. All rights reserved. ❤️ 
-            <span className="block sm:inline sm:ml-1 hover:text-white transition-colors">
-              <a href="https://mntfuture.com/" target="_blank" rel="noopener noreferrer " > Developed by  MnT </a>
-            </span>
-          </p>
+      {/* Social Media & Copyright */}
+      <div className="border-t border-gray-800">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="text-gray-400 text-sm mb-4 md:mb-0">
+              © {new Date().getFullYear()} Vinushree Tours & Travels. All rights reserved.
+            </div>
+            
+            {/* Social Media Links */}
+            <div className="flex space-x-4">
+              {contactInfo?.facebook && (
+                <a
+                  href={contactInfo.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-blue-500 transition-colors"
+                >
+                  <Facebook className="h-5 w-5" />
+                </a>
+              )}
+              {contactInfo?.twitter && (
+                <a
+                  href={contactInfo.twitter}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-blue-400 transition-colors"
+                >
+                  <Twitter className="h-5 w-5" />
+                </a>
+              )}
+              {contactInfo?.instagram && (
+                <a
+                  href={contactInfo.instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gray-400 hover:text-pink-500 transition-colors"
+                >
+                  <Instagram className="h-5 w-5" />
+                </a>
+              )}
+              {contactInfo?.whatsapp && (
+                <button
+                  onClick={handleWhatsAppClick}
+                  className="text-gray-400 hover:text-green-500 transition-colors"
+                >
+                  <MessageCircle className="h-5 w-5" />
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </footer>

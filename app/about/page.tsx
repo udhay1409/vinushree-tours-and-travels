@@ -8,16 +8,19 @@ import {
   Award,
   Users,
   CheckCircle,
-  Lightbulb,
   Shield,
   Clock,
-  Globe,
   Sparkles,
   Star,
   Building,
+  MapPin,
+  Car,
+  Heart,
+  Compass,
 } from "lucide-react"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
+import FloatingContactButtons from "@/components/FloatingContactButtons"
 import { useSEOMeta } from "@/hooks/use-seo-meta"
 
 const fadeInUp = {
@@ -45,86 +48,86 @@ export default function AboutPage() {
   useSEOMeta({
     pageId: 'about',
     fallback: {
-      title: 'About Filigree Solutions - Expert CAD & Engineering Team',
-      description: 'Learn about our experienced team of engineers specializing in CAD, CAE, and structural analysis. Discover our mission, vision, and commitment to engineering excellence.',
-      keywords: 'about filigree solutions, engineering team, CAD experts, structural analysis specialists, company profile'
+      title: 'About Vinushree Tours & Travels - Your Trusted Travel Partner',
+      description: 'Discover Vinushree Tours & Travels - your trusted partner for exploring Tamil Nadu. Learn about our mission, vision, and commitment to exceptional travel experiences.',
+      keywords: 'about vinushree tours, travel company, Tamil Nadu tourism, travel services, tour operator'
     }
   })
 
-  const whyFiligree = [
+  const whyVinushree = [
     {
       icon: <Award className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8" />,
-      title: "Proven Expertise",
+      title: "Trusted Experience",
       description:
-        "5+ years of experience delivering high-quality engineering solutions across diverse industries with exceptional results.",
+        "Years of experience providing reliable travel services across Tamil Nadu with thousands of satisfied customers.",
       gradient: "from-blue-500 to-purple-600",
     },
     {
-      icon: <Lightbulb className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8" />,
-      title: "Innovation Focus",
+      icon: <Heart className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8" />,
+      title: "Customer First",
       description:
-        "Cutting-edge technology and innovative approaches to solve complex engineering challenges with precision.",
+        "Your comfort and satisfaction are our top priorities. We go the extra mile to ensure memorable travel experiences.",
       gradient: "from-purple-500 to-pink-600",
     },
     {
       icon: <Shield className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8" />,
-      title: "Quality Assurance",
-      description: "Rigorous quality control processes ensuring accuracy and reliability in every project deliverable.",
+      title: "Safe & Secure",
+      description: "Well-maintained vehicles, experienced drivers, and comprehensive insurance for your peace of mind.",
       gradient: "from-green-500 to-teal-600",
     },
     {
       icon: <Clock className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8" />,
-      title: "Timely Delivery",
-      description: "Committed to meeting deadlines without compromising on quality or precision in our work.",
+      title: "Punctual Service",
+      description: "Always on time, every time. We value your schedule and ensure timely pickups and drop-offs.",
       gradient: "from-orange-500 to-red-600",
     },
     {
-      icon: <Users className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8" />,
-      title: "Expert Team",
+      icon: <Car className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8" />,
+      title: "Modern Fleet",
       description:
-        "Skilled engineers with deep domain knowledge and industry certifications across multiple disciplines.",
+        "Clean, comfortable, and well-maintained vehicles equipped with modern amenities for your journey.",
       gradient: "from-indigo-500 to-blue-600",
     },
     {
-      icon: <Globe className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8" />,
-      title: "Pan-India Service",
-      description: "Serving clients across India with consistent quality and dedicated support for all projects.",
+      icon: <MapPin className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8" />,
+      title: "Local Expertise",
+      description: "Deep knowledge of Tamil Nadu's destinations, routes, and hidden gems for the best travel experience.",
       gradient: "from-teal-500 to-green-600",
     },
   ]
 
   const values = [
     {
-      title: "Quality Excellence",
+      title: "Customer Satisfaction",
       description:
-        "We never compromise on quality, ensuring every deliverable meets the highest industry standards and client expectations.",
-      icon: <Shield className="h-5 w-5 sm:h-6 sm:w-6" />,
+        "We prioritize your comfort and happiness, ensuring every journey exceeds your expectations and creates lasting memories.",
+      icon: <Heart className="h-5 w-5 sm:h-6 sm:w-6" />,
     },
     {
-      title: "Integrity & Trust",
+      title: "Trust & Reliability",
       description:
-        "Honest, transparent communication and ethical business practices form the foundation of all our client relationships.",
+        "Honest pricing, transparent communication, and dependable service form the foundation of our customer relationships.",
       icon: <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6" />,
     },
     {
-      title: "Innovation Drive",
+      title: "Safety First",
       description:
-        "Continuously exploring new technologies and methodologies to deliver cutting-edge engineering solutions.",
-      icon: <Lightbulb className="h-5 w-5 sm:h-6 sm:w-6" />,
+        "Your safety is our top priority with well-maintained vehicles, experienced drivers, and comprehensive safety measures.",
+      icon: <Shield className="h-5 w-5 sm:h-6 sm:w-6" />,
     },
     {
-      title: "Client Success",
+      title: "Travel Excellence",
       description:
-        "Your success is our priority. We work closely with clients to exceed expectations and deliver outstanding results.",
-      icon: <Target className="h-5 w-5 sm:h-6 sm:w-6" />,
+        "We strive to provide exceptional travel experiences that showcase the beauty and culture of Tamil Nadu.",
+      icon: <Compass className="h-5 w-5 sm:h-6 sm:w-6" />,
     },
   ]
 
   const stats = [
-    { number: "500+", label: "Projects Completed", icon: <Award className="h-4 w-4 sm:h-5 sm:w-5" /> },
-    { number: "50+", label: "Happy Clients", icon: <Users className="h-4 w-4 sm:h-5 sm:w-5" /> },
-    { number: "5+", label: "Years Experience", icon: <Clock className="h-4 w-4 sm:h-5 sm:w-5" /> },
-    { number: "99%", label: "Client Satisfaction", icon: <Target className="h-4 w-4 sm:h-5 sm:w-5" /> },
+    { number: "1000+", label: "Happy Travelers", icon: <Users className="h-4 w-4 sm:h-5 sm:w-5" /> },
+    { number: "500+", label: "Trips Completed", icon: <Car className="h-4 w-4 sm:h-5 sm:w-5" /> },
+    { number: "50+", label: "Destinations Covered", icon: <MapPin className="h-4 w-4 sm:h-5 sm:w-5" /> },
+    { number: "99%", label: "Customer Satisfaction", icon: <Heart className="h-4 w-4 sm:h-5 sm:w-5" /> },
   ]
 
   return (
@@ -133,7 +136,14 @@ export default function AboutPage() {
 
       {/* Hero Section */}
       <section className="relative py-12 sm:py-16 md:py-20 lg:py-24 flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 bg-admin-gradient"></div>
+        <div className="absolute inset-0">
+          <img
+            src="/bryant-park-kodaikanal.png"
+            alt="Tamil Nadu Tourism"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-admin-gradient/80"></div>
+        </div>
 
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
@@ -163,7 +173,7 @@ export default function AboutPage() {
           />
         </div>
 
-        <div className="container mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 relative z-10">
+        <div className="container mx-auto px-3 sm:px-4 md:px-6 relative z-10">
           <motion.div
             className="max-w-4xl mx-auto text-center text-white"
             initial={{ opacity: 0, y: 30 }}
@@ -172,15 +182,15 @@ export default function AboutPage() {
           >
             <Badge className="mb-3 sm:mb-4 bg-white/20 text-white border-white/30 backdrop-blur-sm px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm">
               <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
-              About Filigree Solutions
+              About Vinushree Tours & Travels
             </Badge>
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
-              Engineering Excellence
-              <span className="block text-lg sm:text-xl md:text-2xl lg:text-3xl mt-1 sm:mt-2 font-normal">Since 2019</span>
+              Your Travel Partner
+              <span className="block text-lg sm:text-xl md:text-2xl lg:text-3xl mt-1 sm:mt-2 font-normal">Across Tamil Nadu</span>
             </h1>
             <p className="text-xs sm:text-sm md:text-base lg:text-lg mb-6 sm:mb-8 text-white/90 max-w-3xl mx-auto leading-relaxed px-2 sm:px-0">
-              Discover the story behind our commitment to delivering world-class CAD and CAE solutions that drive
-              innovation and success across industries throughout India.
+              Discover the story behind our commitment to providing exceptional travel experiences across Tamil Nadu's 
+              beautiful destinations with comfort, safety, and personalized service.
             </p>
           </motion.div>
         </div>
@@ -188,7 +198,7 @@ export default function AboutPage() {
 
       {/* Stats Section */}
       <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gradient-to-br from-gray-50 to-white">
-        <div className="container mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
+        <div className="container mx-auto px-3 sm:px-4 md:px-6">
           <motion.div
             className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8 max-w-5xl mx-auto"
             variants={staggerContainer}
@@ -218,7 +228,7 @@ export default function AboutPage() {
       {/* Company Story */}
       <section id="story" className="py-16 sm:py-20 md:py-24 bg-white relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/50"></div>
-        <div className="container mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 relative">
+        <div className="container mx-auto px-3 sm:px-4 md:px-6 relative">
           <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 items-center max-w-7xl mx-auto">
             <motion.div variants={fadeInUp} initial="initial" whileInView="animate" viewport={{ once: true }}>
               <Badge className="mb-4 sm:mb-6 bg-admin-gradient text-white px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm">
@@ -226,36 +236,35 @@ export default function AboutPage() {
                 Our Story
               </Badge>
               <h2 className="text-3xl sm:text-3xl md:text-4xl xl:text-5xl font-bold text-gray-900 mb-6 sm:mb-8 leading-tight">
-                Engineering Excellence
+                Travel Excellence
                 <span className="block text-transparent bg-clip-text bg-admin-gradient text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
-                  Since 2019
+                  Across Tamil Nadu
                 </span>
               </h2>
               <div className="space-y-4 sm:space-y-6">
                 <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed">
-                  Founded in 2019, Filigree Solutions emerged from a vision to bridge the gap between complex
-                  engineering challenges and innovative solutions. Our journey began with a small team of passionate
-                  engineers who believed that precision, quality, and innovation could transform how industries approach
-                  their engineering needs.
+                  Vinushree Tours & Travels was founded with a vision to make travel across Tamil Nadu comfortable, 
+                  safe, and memorable. Our journey began with a commitment to providing reliable transportation services 
+                  that connect people to the rich cultural heritage and natural beauty of Tamil Nadu.
                 </p>
                 <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed">
-                  Today, we stand as a leading provider of CAD and CAE services, having successfully completed over 500
-                  projects across diverse industries including automotive, telecommunications, manufacturing, and
-                  electric vehicles. Our commitment to excellence has earned us the trust of clients across India.
+                  Today, we are a trusted travel partner offering comprehensive services including one-way trips, round trips, 
+                  airport taxi, day rentals, hourly packages, and customized tour packages. Our commitment to excellence has 
+                  earned us the trust of thousands of satisfied customers across Tamil Nadu.
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-4 sm:gap-6 mt-6 sm:mt-8">
                 <div className="text-center p-3 sm:p-4 md:p-6 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl sm:rounded-2xl">
                   <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-admin-gradient mb-1 sm:mb-2">
-                    500+
+                    1000+
                   </div>
-                  <div className="text-gray-600 font-medium text-xs sm:text-sm">Projects Completed</div>
+                  <div className="text-gray-600 font-medium text-xs sm:text-sm">Happy Travelers</div>
                 </div>
                 <div className="text-center p-3 sm:p-4 md:p-6 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl sm:rounded-2xl">
                   <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-1 sm:mb-2">
                     50+
                   </div>
-                  <div className="text-gray-600 font-medium text-xs sm:text-sm">Happy Clients</div>
+                  <div className="text-gray-600 font-medium text-xs sm:text-sm">Destinations</div>
                 </div>
               </div>
             </motion.div>
@@ -272,8 +281,8 @@ export default function AboutPage() {
                   <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-admin-gradient rounded-2xl sm:rounded-3xl flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-lg">
                     <Building className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-white" />
                   </div>
-                  <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2 sm:mb-4">Filigree Solutions</h3>
-                  <p className="text-gray-600 text-sm sm:text-base md:text-lg mb-4 sm:mb-6">Engineering Excellence Since 2019</p>
+                  <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2 sm:mb-4">Vinushree Tours & Travels</h3>
+                  <p className="text-gray-600 text-sm sm:text-base md:text-lg mb-4 sm:mb-6">Your Trusted Travel Partner</p>
                   <div className="flex items-center justify-center space-x-2 sm:space-x-4">
                     <div className="flex">
                       {[...Array(5)].map((_, i) => (
@@ -291,7 +300,7 @@ export default function AboutPage() {
 
       {/* Mission, Vision, Values */}
       <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-br from-gray-50 to-white">
-        <div className="container mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
+        <div className="container mx-auto px-3 sm:px-4 md:px-6">
           <motion.div
             className="text-center mb-12 sm:mb-16 md:mb-20"
             variants={fadeInUp}
@@ -326,21 +335,21 @@ export default function AboutPage() {
                 icon: <Target className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10" />,
                 title: "Our Mission",
                 description:
-                  "To empower industries with innovative engineering solutions that enhance efficiency, reduce costs, and accelerate time-to-market through precision CAD and CAE services.",
+                  "To provide safe, comfortable, and reliable travel services that connect people to Tamil Nadu's rich heritage, natural beauty, and cultural treasures with exceptional customer care.",
                 gradient: "from-blue-500 to-purple-600",
               },
               {
                 icon: <Award className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10" />,
                 title: "Our Vision",
                 description:
-                  "To be the most trusted partner for engineering services across India, recognized for our technical excellence, innovation, and unwavering commitment to client success.",
+                  "To be Tamil Nadu's most trusted travel partner, recognized for our commitment to safety, customer satisfaction, and creating unforgettable travel experiences.",
                 gradient: "from-purple-500 to-pink-600",
               },
               {
-                icon: <Users className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10" />,
+                icon: <Heart className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10" />,
                 title: "Our Values",
                 description:
-                  "Quality, integrity, innovation, and customer satisfaction are the core values that guide everything we do, ensuring exceptional results in every project.",
+                  "Safety, reliability, customer satisfaction, and integrity are the core values that guide everything we do, ensuring memorable travel experiences for every customer.",
                 gradient: "from-green-500 to-teal-600",
               },
             ].map((item, index) => (
@@ -385,10 +394,10 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Why Filigree Section */}
+      {/* Why Vinushree Section */}
       <section className="py-16 sm:py-20 md:py-24 bg-white relative">
         <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-pink-50/50"></div>
-        <div className="container mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 relative">
+        <div className="container mx-auto px-3 sm:px-4 md:px-6 relative">
           <motion.div
             className="text-center mb-12 sm:mb-16 md:mb-20"
             variants={fadeInUp}
@@ -403,11 +412,11 @@ export default function AboutPage() {
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 sm:mb-8 leading-tight">
               Why Choose
               <span className="block text-transparent bg-clip-text bg-admin-gradient">
-                Filigree Solutions?
+                Vinushree Tours?
               </span>
             </h2>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto px-2 sm:px-0">
-              Discover what sets us apart and makes us the preferred choice for engineering solutions
+              Discover what sets us apart and makes us the preferred choice for travel services in Tamil Nadu
             </p>
           </motion.div>
 
@@ -418,7 +427,7 @@ export default function AboutPage() {
             whileInView="animate"
             viewport={{ once: true }}
           >
-            {whyFiligree.map((item, index) => (
+            {whyVinushree.map((item, index) => (
               <motion.div key={index} variants={fadeInUp}>
                 <Card className="card-hover h-full border-0 shadow-xl overflow-hidden group">
                   <CardContent className="p-6 sm:p-8 relative">
@@ -441,7 +450,7 @@ export default function AboutPage() {
 
       {/* Team Section */}
       <section className="py-16 sm:py-20 md:py-24 bg-gradient-to-br from-gray-50 to-white">
-        <div className="container mx-auto px-3 sm:px-4 lg:px-6 xl:px-8">
+        <div className="container mx-auto px-3 sm:px-4 md:px-6">
           <motion.div
             className="text-center mb-12 sm:mb-16 md:mb-20"
             variants={fadeInUp}
@@ -454,13 +463,13 @@ export default function AboutPage() {
               Our Team
             </Badge>
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 sm:mb-8 leading-tight">
-              Expert Professionals
+              Experienced Team
               <span className="block text-transparent bg-clip-text bg-admin-gradient">
-                Behind Our Success
+                Behind Every Journey
               </span>
             </h2>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto px-2 sm:px-0">
-              Meet the skilled professionals who bring your engineering visions to life with expertise and dedication
+              Meet our dedicated team of travel professionals who ensure your journey is safe, comfortable, and memorable
             </p>
           </motion.div>
 
@@ -476,21 +485,21 @@ export default function AboutPage() {
                 <div className="grid md:grid-cols-2 gap-8 sm:gap-10 md:gap-12 items-center">
                   <div>
                     <h3 className="text-2xl sm:text-3xl font-semibold mb-4 sm:mb-6 text-transparent bg-clip-text bg-admin-gradient">
-                      Engineering Excellence Team
+                      Travel Excellence Team
                     </h3>
                     <p className="text-gray-600 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base md:text-lg">
-                      Our team consists of highly qualified engineers with extensive experience in CAD, CAE, and
-                      structural analysis. Each team member brings specialized expertise and a commitment to delivering
-                      exceptional results that exceed client expectations.
+                      Our team consists of experienced drivers, travel coordinators, and customer service professionals 
+                      dedicated to making your travel experience exceptional. Each team member brings local expertise and 
+                      a commitment to your safety and satisfaction.
                     </p>
                     <div className="grid gap-3 sm:gap-4">
                       {[
-                        "Certified CAD/CAE Professionals",
-                        "Industry-Specific Expertise",
-                        "Continuous Learning & Development",
-                        "Quality-Focused Approach",
-                        "Client-Centric Mindset",
-                        "Innovation-Driven Solutions",
+                        "Licensed & Experienced Drivers",
+                        "Local Area Expertise",
+                        "24/7 Customer Support",
+                        "Safety-Focused Approach",
+                        "Customer-Centric Service",
+                        "Reliable & Punctual Service",
                       ].map((item, index) => (
                         <div key={index} className="flex items-center">
                           <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 mr-2 sm:mr-3 flex-shrink-0" />
@@ -503,20 +512,20 @@ export default function AboutPage() {
                     <div className="w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 bg-admin-gradient rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-lg">
                       <Users className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 text-white" />
                     </div>
-                    <h4 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-3 sm:mb-4">Dedicated Professionals</h4>
-                    <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">Working together to deliver engineering excellence</p>
+                    <h4 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-3 sm:mb-4">Travel Professionals</h4>
+                    <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">Working together to deliver exceptional travel experiences</p>
                     <div className="grid grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm">
                       <div className="p-3 sm:p-4 bg-white rounded-lg sm:rounded-xl shadow-sm">
                         <div className="text-xl sm:text-2xl font-bold text-transparent bg-clip-text bg-admin-gradient">
-                          15+
+                          10+
                         </div>
-                        <div className="text-gray-600">Engineers</div>
+                        <div className="text-gray-600">Drivers</div>
                       </div>
                       <div className="p-3 sm:p-4 bg-white rounded-lg sm:rounded-xl shadow-sm">
                         <div className="text-xl sm:text-2xl font-bold text-transparent bg-clip-text bg-admin-gradient">
-                          8+
+                          5+
                         </div>
-                        <div className="text-gray-600">Specialists</div>
+                        <div className="text-gray-600">Support Staff</div>
                       </div>
                     </div>
                   </div>
@@ -528,6 +537,7 @@ export default function AboutPage() {
       </section>
 
       <Footer />
+      <FloatingContactButtons />
     </div>
   )
 }
