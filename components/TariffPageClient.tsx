@@ -33,7 +33,7 @@ export default function TariffPageClient({ tariffData }: TariffPageClientProps) 
 
   return (
     <>
-      {/* Hero Section */}
+      {/* Hero Section with Animated Background */}
       <section className="relative bg-admin-gradient text-white py-20 sm:py-24 lg:py-32 overflow-hidden">
         <div className="absolute inset-0">
           <img
@@ -42,8 +42,62 @@ export default function TariffPageClient({ tariffData }: TariffPageClientProps) 
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-admin-gradient/80"></div>
+          
+          {/* Animated overlay gradients */}
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-tr from-yellow-600/30 via-transparent to-orange-600/30"
+            animate={{
+              opacity: [0.3, 0.7, 0.3],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }}
+          />
+
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-bl from-orange-500/20 via-transparent to-yellow-500/20"
+            animate={{
+              opacity: [0.7, 0.3, 0.7],
+            }}
+            transition={{
+              duration: 6,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }}
+          />
         </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <motion.div
+            className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl"
+            animate={{
+              scale: [1, 1.3, 1],
+              opacity: [0.3, 0.7, 0.3],
+            }}
+            transition={{
+              duration: 5,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }}
+          />
+          <motion.div
+            className="absolute bottom-10 right-10 w-24 h-24 bg-white/10 rounded-full blur-xl"
+            animate={{
+              scale: [1.2, 1, 1.2],
+              opacity: [0.4, 0.8, 0.4],
+            }}
+            transition={{
+              duration: 4,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }}
+          />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -68,8 +122,8 @@ export default function TariffPageClient({ tariffData }: TariffPageClientProps) 
       </section>
 
       {/* Tariff Grid */}
-      <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gray-50">
-        <div className="container mx-auto px-3 sm:px-4 md:px-6">
+      <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gradient-to-br from-yellow-50/30 to-orange-50/30">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
           <div className="text-center mb-12 sm:mb-16 md:mb-20">
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 md:mb-8 px-2">
               Our Service
@@ -90,56 +144,65 @@ export default function TariffPageClient({ tariffData }: TariffPageClientProps) 
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                <Card className="h-full hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg">
-                  <CardContent className="p-4 sm:p-6 md:p-8">
-                    <div className="text-center mb-4 sm:mb-6 md:mb-8">
-                      <div className="w-16 h-16 bg-gray-100 rounded-full overflow-hidden flex items-center justify-center mx-auto mb-4">
-                        <img
-                          src={
-                            tariff.service.includes('One-way') ? '/toyota-etios-sedan-taxi.png' :
-                            tariff.service.includes('Round') ? '/toyota-innova-taxi.png' :
-                            tariff.service.includes('Airport') ? '/airport-taxi.png' :
-                            tariff.service.includes('Day') ? '/maruti-brezza-suv-taxi.png' :
-                            tariff.service.includes('Hourly') ? '/wagon-r-taxi.png' :
-                            tariff.service.includes('Local') ? '/modern-taxi-fleet-in-tamil-nadu.png' :
-                            '/toyota-innova-crysta-luxury-taxi.png'
-                          }
-                          alt={tariff.service}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">
-                        {tariff.service}
-                      </h3>
-                      <p className="text-gray-600 text-sm leading-relaxed">
-                        {tariff.description}
-                      </p>
-                    </div>
-
-                    <div className="text-center mb-6">
-                      <div className="text-3xl font-bold text-transparent bg-clip-text bg-admin-gradient mb-2">
-                        {tariff.price}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        Minimum: {tariff.minCharge}
+                <Card className="h-full hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg overflow-hidden">
+                  <CardContent className="p-0">
+                    <div className="relative h-48 overflow-hidden">
+                      <img
+                        src={
+                          tariff.service.includes('One-way') ? '/toyota-etios-sedan-taxi.png' :
+                          tariff.service.includes('Round') ? '/toyota-innova-taxi.png' :
+                          tariff.service.includes('Airport') ? '/airport-taxi.png' :
+                          tariff.service.includes('Day') ? '/maruti-brezza-suv-taxi.png' :
+                          tariff.service.includes('Hourly') ? '/wagon-r-taxi.png' :
+                          tariff.service.includes('Local') ? '/modern-taxi-fleet-in-tamil-nadu.png' :
+                          '/toyota-innova-crysta-luxury-taxi.png'
+                        }
+                        alt={tariff.service}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-black/20"></div>
+                      <div className="absolute top-4 right-4">
+                        <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm">
+                          {tariff.price}
+                        </Badge>
                       </div>
                     </div>
+                    
+                    <div className="p-4 sm:p-6 md:p-8">
+                      <div className="text-center mb-4 sm:mb-6 md:mb-8">
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">
+                          {tariff.service}
+                        </h3>
+                        <p className="text-gray-600 text-sm leading-relaxed">
+                          {tariff.description}
+                        </p>
+                      </div>
 
-                    <div className="space-y-3 mb-6">
-                      {tariff.features.map((feature, idx) => (
-                        <div key={idx} className="flex items-center space-x-2">
-                          <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
-                          <span className="text-sm text-gray-600">{feature}</span>
+                      <div className="text-center mb-6">
+                        <div className="text-3xl font-bold text-transparent bg-clip-text bg-admin-gradient mb-2">
+                          {tariff.price}
                         </div>
-                      ))}
-                    </div>
+                        <div className="text-sm text-gray-500">
+                          Minimum: {tariff.minCharge}
+                        </div>
+                      </div>
 
-                    <Button
-                      onClick={() => handleBookNow(tariff.service)}
-                      className="w-full bg-admin-gradient text-white hover:opacity-90 transition-all duration-300"
-                    >
-                      Book Now
-                    </Button>
+                      <div className="space-y-3 mb-6">
+                        {tariff.features.map((feature, idx) => (
+                          <div key={idx} className="flex items-center space-x-2">
+                            <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                            <span className="text-sm text-gray-600">{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+
+                      <Button
+                        onClick={() => handleBookNow(tariff.service)}
+                        className="w-full bg-admin-gradient text-white hover:opacity-90 transition-all duration-300"
+                      >
+                        Book Now
+                      </Button>
+                    </div>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -150,7 +213,7 @@ export default function TariffPageClient({ tariffData }: TariffPageClientProps) 
 
       {/* Contact Section */}
       <section className="py-12 sm:py-16 md:py-20 bg-white">
-        <div className="container mx-auto px-3 sm:px-4 md:px-6 text-center">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 text-center max-w-7xl">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
             Need a Custom Quote?
           </h2>

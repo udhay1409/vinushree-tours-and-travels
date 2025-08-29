@@ -173,7 +173,7 @@ export default function AboutPage() {
           />
         </div>
 
-        <div className="container mx-auto px-3 sm:px-4 md:px-6 relative z-10">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 relative z-10 max-w-7xl">
           <motion.div
             className="max-w-4xl mx-auto text-center text-white"
             initial={{ opacity: 0, y: 30 }}
@@ -198,7 +198,7 @@ export default function AboutPage() {
 
       {/* Stats Section */}
       <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gradient-to-br from-gray-50 to-white">
-        <div className="container mx-auto px-3 sm:px-4 md:px-6">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
           <motion.div
             className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8 max-w-5xl mx-auto"
             variants={staggerContainer}
@@ -227,8 +227,8 @@ export default function AboutPage() {
 
       {/* Company Story */}
       <section id="story" className="py-16 sm:py-20 md:py-24 bg-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/50"></div>
-        <div className="container mx-auto px-3 sm:px-4 md:px-6 relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-yellow-50/50 to-orange-50/50"></div>
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 relative max-w-7xl">
           <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 items-center max-w-7xl mx-auto">
             <motion.div variants={fadeInUp} initial="initial" whileInView="animate" viewport={{ once: true }}>
               <Badge className="mb-4 sm:mb-6 bg-admin-gradient text-white px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm">
@@ -254,13 +254,13 @@ export default function AboutPage() {
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-4 sm:gap-6 mt-6 sm:mt-8">
-                <div className="text-center p-3 sm:p-4 md:p-6 bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl sm:rounded-2xl">
+                <div className="text-center p-3 sm:p-4 md:p-6 bg-gradient-to-br from-yellow-50 to-orange-50 rounded-xl sm:rounded-2xl">
                   <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-admin-gradient mb-1 sm:mb-2">
                     1000+
                   </div>
                   <div className="text-gray-600 font-medium text-xs sm:text-sm">Happy Travelers</div>
                 </div>
-                <div className="text-center p-3 sm:p-4 md:p-6 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl sm:rounded-2xl">
+                <div className="text-center p-3 sm:p-4 md:p-6 bg-gradient-to-br from-orange-50 to-yellow-50 rounded-xl sm:rounded-2xl">
                   <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-1 sm:mb-2">
                     50+
                   </div>
@@ -300,7 +300,7 @@ export default function AboutPage() {
 
       {/* Mission, Vision, Values */}
       <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-br from-gray-50 to-white">
-        <div className="container mx-auto px-3 sm:px-4 md:px-6">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
           <motion.div
             className="text-center mb-12 sm:mb-16 md:mb-20"
             variants={fadeInUp}
@@ -396,8 +396,8 @@ export default function AboutPage() {
 
       {/* Why Vinushree Section */}
       <section className="py-16 sm:py-20 md:py-24 bg-white relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-pink-50/50"></div>
-        <div className="container mx-auto px-3 sm:px-4 md:px-6 relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-50/50 to-yellow-50/50"></div>
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 relative max-w-7xl">
           <motion.div
             className="text-center mb-12 sm:mb-16 md:mb-20"
             variants={fadeInUp}
@@ -450,7 +450,7 @@ export default function AboutPage() {
 
       {/* Team Section */}
       <section className="py-16 sm:py-20 md:py-24 bg-gradient-to-br from-gray-50 to-white">
-        <div className="container mx-auto px-3 sm:px-4 md:px-6">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
           <motion.div
             className="text-center mb-12 sm:mb-16 md:mb-20"
             variants={fadeInUp}
@@ -508,7 +508,7 @@ export default function AboutPage() {
                       ))}
                     </div>
                   </div>
-                  <div className="bg-gradient-to-br from-green-50 to-teal-50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 text-center">
+                  <div className="bg-gradient-to-br from-yellow-50 to-orange-50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 text-center">
                     <div className="w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 bg-admin-gradient rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-lg">
                       <Users className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 text-white" />
                     </div>

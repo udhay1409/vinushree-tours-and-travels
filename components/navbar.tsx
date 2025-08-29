@@ -51,10 +51,10 @@ function NavbarContent() {
     setContactInfo({
       phone: "+91 90037 82966",
       email: "info@vinushree.com",
-      address: "123 Travel Street",
-      city: "Chennai",
+      address: "mani road, Uthangudi, Othakadai",
+      city: "Madurai",
       state: "Tamil Nadu",
-      pincode: "600001",
+      pincode: "625007",
       country: "India"
     });
   }, []);
@@ -68,9 +68,17 @@ function NavbarContent() {
   ];
 
   const handleBookNow = () => {
-    const message = "Hi, I'm interested in your travel services. Please provide more details.";
-    const whatsappUrl = `https://wa.me/919003782966?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    // Navigate to the booking form on homepage
+    if (pathname === '/') {
+      // If on homepage, scroll to the form
+      const formElement = document.getElementById('quick-book-form');
+      if (formElement) {
+        formElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    } else {
+      // If on other pages, navigate to homepage with form section
+      window.location.href = '/#quick-book-form';
+    }
     setIsOpen(false);
   };
 
@@ -115,7 +123,7 @@ function NavbarContent() {
             <span className="font-medium text-sm">
               {contactInfo
                 ? `${contactInfo.address}, ${contactInfo.city}, ${contactInfo.state}-${contactInfo.pincode}`
-                : "123 Travel Street, Chennai, Tamil Nadu-600001"}
+                : "mani road, Uthangudi, Othakadai, Madurai, Tamil Nadu-625007"}
             </span>
           </div>
         </div>

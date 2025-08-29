@@ -44,10 +44,10 @@ export default function Footer() {
     setContactInfo({
       phone: "+91 90037 82966",
       email: "info@vinushree.com",
-      address: "123 Travel Street",
-      city: "Chennai",
+      address: "mani road, Uthangudi, Othakadai",
+      city: "Madurai",
       state: "Tamil Nadu",
-      pincode: "600001",
+      pincode: "625007",
       country: "India",
       whatsapp: "+91 90037 82966",
       facebook: "https://facebook.com/vinushree",
@@ -88,67 +88,116 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-yellow-600/10 to-orange-600/10"></div>
+        <div className="absolute top-10 left-10 w-32 h-32 bg-yellow-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 right-10 w-40 h-40 bg-orange-500/10 rounded-full blur-3xl"></div>
+      </div>
+
       {/* Main Footer Content */}
-      <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Company Info */}
-          <div className="lg:col-span-1">
-            <div className="flex items-center space-x-3 mb-6">
+      <div className="container mx-auto px-4 sm:px-6 md:px-8 py-12 sm:py-16 md:py-20 relative z-10 max-w-7xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 sm:gap-10 lg:gap-12">
+          {/* Company Info - Enhanced */}
+          <div className="space-y-6 sm:col-span-2 lg:col-span-2">
+            {/* Logo Section */}
+            <Link href="/" className="flex items-center space-x-3 group">
               {themeData?.logo ? (
-                <div className="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center">
-                  <Image
-                    src={themeData.logo}
-                    alt="Vinushree Tours & Travels"
-                    width={48}
-                    height={48}
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl overflow-hidden flex items-center justify-center bg-white/10 backdrop-blur-sm border border-white/20">
+                  <Image 
+                    src={themeData.logo} 
+                    alt="Vinushree Tours & Travels Logo" 
+                    width={56} 
+                    height={56} 
                     className="w-full h-full object-contain"
                   />
                 </div>
               ) : (
-                <div className="w-12 h-12 rounded-xl bg-admin-gradient overflow-hidden flex items-center justify-center">
-                  <span className="text-white font-bold text-2xl">V</span>
+                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-admin-gradient rounded-2xl flex items-center justify-center shadow-lg">
+                  <span className="text-white font-bold text-xl sm:text-2xl">V</span>
                 </div>
               )}
               <div>
-                <div className="font-bold text-xl bg-admin-gradient bg-clip-text text-transparent">
+                <div className="font-bold text-xl sm:text-2xl bg-admin-gradient bg-clip-text text-transparent">
                   Vinushree
                 </div>
-                <div className="text-sm text-gray-400 font-medium">
-                  Tours & Travels
-                </div>
+                <div className="text-sm sm:text-base font-medium">Tours & Travels</div>
               </div>
-            </div>
-            <p className="text-gray-300 mb-6 leading-relaxed">
-              Your trusted travel partner across Tamil Nadu. We provide safe, comfortable, and reliable travel services for all your journey needs.
+            </Link>
+
+            {/* Company Description */}
+            <p className="text-gray-300 text-sm sm:text-base leading-relaxed max-w-md">
+              Leading provider of professional travel services across Tamil Nadu, delivering safe, comfortable, and memorable journeys with cutting-edge vehicles and expert drivers.
             </p>
-            
-            {/* Contact Info */}
+
+            {/* Dynamic Contact Info */}
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
-                <Phone className="h-4 w-4 text-admin-primary" />
-                <a 
-                  href={`tel:${contactInfo?.phone || '+919876543210'}`}
-                  className="text-gray-300 hover:text-white transition-colors"
+                <Phone className="h-4 w-4 text-admin-primary flex-shrink-0" />
+                <a
+                  href={`tel:${contactInfo?.phone || "+919003782966"}`}
+                  className="text-gray-300 hover:text-white transition-colors text-sm font-medium"
                 >
-                  {contactInfo?.phone || '+91 90037 82966'}
+                  {contactInfo?.phone || "+91 90037 82966"}
                 </a>
               </div>
               <div className="flex items-center space-x-3">
-                <Mail className="h-4 w-4 text-admin-primary" />
-                <a 
-                  href={`mailto:${contactInfo?.email || 'info@vinushree.com'}`}
-                  className="text-gray-300 hover:text-white transition-colors"
+                <Mail className="h-4 w-4 text-admin-primary flex-shrink-0" />
+                <a
+                  href={`mailto:${contactInfo?.email || "info@vinushree.com"}`}
+                  className="text-gray-300 hover:text-white transition-colors text-sm font-medium break-all"
                 >
-                  {contactInfo?.email || 'info@vinushree.com'}
+                  {contactInfo?.email || "info@vinushree.com"}
                 </a>
               </div>
               <div className="flex items-start space-x-3">
-                <MapPin className="h-4 w-4 text-admin-primary mt-1" />
-                <div className="text-gray-300">
-                  <div>{contactInfo?.address || '123 Travel Street'}</div>
-                  <div>{contactInfo?.city || 'Chennai'}, {contactInfo?.state || 'Tamil Nadu'} - {contactInfo?.pincode || '600001'}</div>
-                </div>
+                <MapPin className="h-4 w-4 text-admin-primary mt-0.5 flex-shrink-0" />
+                <span className="text-gray-300 text-sm leading-relaxed">
+                  {contactInfo ? (
+                    `${contactInfo.address}, ${contactInfo.city}, ${contactInfo.state}-${contactInfo.pincode}, ${contactInfo.country}`
+                  ) : (
+                    "mani road, Uthangudi, Othakadai, Madurai, Tamil Nadu-625007, India"
+                  )}
+                </span>
+              </div>
+            </div>
+
+            {/* Social Media */}
+            <div className="space-y-3">
+              <h4 className="text-white font-semibold text-sm">Follow Us</h4>
+              <div className="flex flex-wrap gap-3">
+                {contactInfo?.facebook && (
+                  <a
+                    href={contactInfo.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group p-2 bg-white/10 hover:bg-blue-600/20 rounded-lg transition-all duration-300 border border-white/20 hover:border-blue-500/50"
+                    title="Follow us on Facebook"
+                  >
+                    <Facebook className="h-4 w-4 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                  </a>
+                )}
+                {contactInfo?.instagram && (
+                  <a
+                    href={contactInfo.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group p-2 bg-white/10 hover:bg-pink-600/20 rounded-lg transition-all duration-300 border border-white/20 hover:border-pink-500/50"
+                    title="Follow us on Instagram"
+                  >
+                    <Instagram className="h-4 w-4 text-gray-400 group-hover:text-pink-500 transition-colors" />
+                  </a>
+                )}
+                {contactInfo?.whatsapp && (
+                  <button
+                    onClick={handleWhatsAppClick}
+                    className="group p-2 bg-white/10 hover:bg-green-600/20 rounded-lg transition-all duration-300 border border-white/20 hover:border-green-500/50"
+                    title="Contact us on WhatsApp"
+                  >
+                    <MessageCircle className="h-4 w-4 text-gray-400 group-hover:text-green-500 transition-colors" />
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -206,86 +255,14 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Features Section */}
-      <div className="border-t border-gray-800">
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-center">
-            <div className="flex flex-col items-center">
-              <Shield className="h-8 w-8 text-admin-primary mb-2" />
-              <h4 className="font-semibold text-white mb-1">Safe & Secure</h4>
-              <p className="text-gray-400 text-sm">Licensed & insured vehicles</p>
-            </div>
-            <div className="flex flex-col items-center">
-              <Clock className="h-8 w-8 text-admin-primary mb-2" />
-              <h4 className="font-semibold text-white mb-1">24/7 Service</h4>
-              <p className="text-gray-400 text-sm">Round the clock availability</p>
-            </div>
-            <div className="flex flex-col items-center">
-              <Award className="h-8 w-8 text-admin-primary mb-2" />
-              <h4 className="font-semibold text-white mb-1">Best Rates</h4>
-              <p className="text-gray-400 text-sm">Competitive pricing</p>
-            </div>
-            <div className="flex flex-col items-center">
-              <Users className="h-8 w-8 text-admin-primary mb-2" />
-              <h4 className="font-semibold text-white mb-1">Expert Drivers</h4>
-              <p className="text-gray-400 text-sm">Experienced professionals</p>
-            </div>
-          </div>
+        <div className="border-t border-gray-800 mt-6 sm:mt-8 pt-6 sm:pt-8 pb-6 sm:pb-8 text-center">
+          <p className="text-gray-400 text-xs sm:text-sm leading-relaxed px-2">
+            © 2025 Vinushree Tours & Travels. All rights reserved. ❤️ 
+            <span className="block sm:inline sm:ml-1 hover:text-white transition-colors">
+              <a href="https://mntfuture.com/" target="_blank" rel="noopener noreferrer">Developed by MnT</a>
+            </span>
+          </p>
         </div>
-      </div>
-
-      {/* Social Media & Copyright */}
-      <div className="border-t border-gray-800">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="text-gray-400 text-sm mb-4 md:mb-0">
-              © {new Date().getFullYear()} Vinushree Tours & Travels. All rights reserved.
-            </div>
-            
-            {/* Social Media Links */}
-            <div className="flex space-x-4">
-              {contactInfo?.facebook && (
-                <a
-                  href={contactInfo.facebook}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-blue-500 transition-colors"
-                >
-                  <Facebook className="h-5 w-5" />
-                </a>
-              )}
-              {contactInfo?.twitter && (
-                <a
-                  href={contactInfo.twitter}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-blue-400 transition-colors"
-                >
-                  <Twitter className="h-5 w-5" />
-                </a>
-              )}
-              {contactInfo?.instagram && (
-                <a
-                  href={contactInfo.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-pink-500 transition-colors"
-                >
-                  <Instagram className="h-5 w-5" />
-                </a>
-              )}
-              {contactInfo?.whatsapp && (
-                <button
-                  onClick={handleWhatsAppClick}
-                  className="text-gray-400 hover:text-green-500 transition-colors"
-                >
-                  <MessageCircle className="h-5 w-5" />
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
     </footer>
   );
 }

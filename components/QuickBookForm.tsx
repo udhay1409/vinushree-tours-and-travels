@@ -28,13 +28,15 @@ export default function QuickBookForm() {
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
-    email: "",
     service: "",
     pickupLocation: "",
     dropLocation: "",
     travelDate: "",
-    travelTime: ""
+    travelTime: "",
+    returnDate: ""
   });
+
+
 
   const services = [
     "One-way Trip",
@@ -124,12 +126,11 @@ export default function QuickBookForm() {
       
 *Name:* ${formData.name}
 *Phone:* ${formData.phone}
-*Email:* ${formData.email}
 *Service:* ${formData.service}
 *Pickup:* ${formData.pickupLocation}
 *Drop:* ${formData.dropLocation}
-*Travel Date:* ${formData.travelDate}
-*Travel Time:* ${formData.travelTime}
+*Pickup Date:* ${formData.travelDate}
+*Pickup Time:* ${formData.travelTime}${formData.returnDate ? `\n*Return Date:* ${formData.returnDate}` : ''}
 
 Please provide availability and pricing details.`;
 
@@ -145,12 +146,12 @@ Please provide availability and pricing details.`;
       setFormData({
         name: "",
         phone: "",
-        email: "",
         service: "",
         pickupLocation: "",
         dropLocation: "",
         travelDate: "",
-        travelTime: ""
+        travelTime: "",
+        returnDate: ""
       });
     } catch (error) {
       toast({
@@ -212,19 +213,7 @@ Please provide availability and pricing details.`;
               </div>
             </div>
 
-            <div>
-              <Label htmlFor="email" className="text-gray-700 font-medium">
-                Email Address
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => handleInputChange("email", e.target.value)}
-                placeholder="Enter email address"
-                className="mt-1"
-              />
-            </div>
+
 
             {/* Service Selection */}
             <div>
@@ -233,7 +222,13 @@ Please provide availability and pricing details.`;
               </Label>
               <Select
                 value={formData.service}
-                onValueChange={(value) => handleInputChange("service", value)}
+                onValueChange={(value) => {
+                  handleInputChange("service", value);
+                  // Clear return date if not Round Trip
+                  if (value !== "Round Trip") {
+                    setFormData(prev => ({ ...prev, returnDate: "" }));
+                  }
+                }}
                 required
               >
                 <SelectTrigger className="mt-1">
@@ -289,7 +284,7 @@ Please provide availability and pricing details.`;
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="travelDate" className="text-gray-700 font-medium">
-                  Travel Date *
+                  Pickup Date *
                 </Label>
                 <Input
                   id="travelDate"
@@ -303,7 +298,7 @@ Please provide availability and pricing details.`;
               </div>
               <div>
                 <Label htmlFor="travelTime" className="text-gray-700 font-medium">
-                  Travel Time
+                  Pickup Time
                 </Label>
                 <Input
                   id="travelTime"
@@ -314,6 +309,24 @@ Please provide availability and pricing details.`;
                 />
               </div>
             </div>
+
+            {/* Return Date for Round Trip */}
+            {formData.service === "Round Trip" && (
+              <div>
+                <Label htmlFor="returnDate" className="text-gray-700 font-medium">
+                  Return Date *
+                </Label>
+                <Input
+                  id="returnDate"
+                  type="date"
+                  required={formData.service === "Round Trip"}
+                  value={formData.returnDate}
+                  onChange={(e) => handleInputChange("returnDate", e.target.value)}
+                  className="mt-1"
+                  min={formData.travelDate || new Date().toISOString().split('T')[0]}
+                />
+              </div>
+            )}
 
             <Button
               type="submit"
@@ -328,7 +341,7 @@ Please provide availability and pricing details.`;
               ) : (
                 <>
                   <MessageCircle className="h-5 w-5 mr-2" />
-                  Submit & Continue to WhatsApp
+                  Submit Now
                 </>
               )}
             </Button>

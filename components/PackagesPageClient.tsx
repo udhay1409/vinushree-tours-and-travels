@@ -33,7 +33,7 @@ export default function PackagesPageClient({ packagesData }: PackagesPageClientP
 
   return (
     <>
-      {/* Hero Section */}
+      {/* Hero Section with Animated Background */}
       <section className="relative bg-admin-gradient text-white py-20 sm:py-24 lg:py-32 overflow-hidden">
         <div className="absolute inset-0">
           <img
@@ -42,8 +42,62 @@ export default function PackagesPageClient({ packagesData }: PackagesPageClientP
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-admin-gradient/80"></div>
+          
+          {/* Animated overlay gradients */}
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-tr from-yellow-600/30 via-transparent to-orange-600/30"
+            animate={{
+              opacity: [0.3, 0.7, 0.3],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }}
+          />
+
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-bl from-orange-500/20 via-transparent to-yellow-500/20"
+            animate={{
+              opacity: [0.7, 0.3, 0.7],
+            }}
+            transition={{
+              duration: 6,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }}
+          />
         </div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <motion.div
+            className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl"
+            animate={{
+              scale: [1, 1.3, 1],
+              opacity: [0.3, 0.7, 0.3],
+            }}
+            transition={{
+              duration: 5,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }}
+          />
+          <motion.div
+            className="absolute bottom-10 right-10 w-24 h-24 bg-white/10 rounded-full blur-xl"
+            animate={{
+              scale: [1.2, 1, 1.2],
+              opacity: [0.4, 0.8, 0.4],
+            }}
+            transition={{
+              duration: 4,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }}
+          />
+        </div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -68,8 +122,8 @@ export default function PackagesPageClient({ packagesData }: PackagesPageClientP
       </section>
 
       {/* Packages Grid */}
-      <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gray-50">
-        <div className="container mx-auto px-3 sm:px-4 md:px-6">
+      <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gradient-to-br from-yellow-50/30 to-orange-50/30">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
           <div className="text-center mb-12 sm:mb-16 md:mb-20">
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 md:mb-8 px-2">
               Popular
@@ -189,7 +243,7 @@ export default function PackagesPageClient({ packagesData }: PackagesPageClientP
 
       {/* Custom Package Section */}
       <section className="py-12 sm:py-16 md:py-20 bg-white">
-        <div className="container mx-auto px-3 sm:px-4 md:px-6 text-center">
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 text-center max-w-7xl">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
             Need a Custom Package?
           </h2>
