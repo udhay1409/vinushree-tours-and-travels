@@ -7,6 +7,7 @@ import { Car, Phone, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import BookingModal from "@/components/BookingModal";
+import PopularRoutes from "@/components/PopularRoutes";
 
 interface TariffItem {
   id: number;
@@ -69,33 +70,7 @@ export default function TariffPageClient({ tariffData }: TariffPageClientProps) 
           />
         </div>
 
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <motion.div
-            className="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full blur-xl"
-            animate={{
-              scale: [1, 1.3, 1],
-              opacity: [0.3, 0.7, 0.3],
-            }}
-            transition={{
-              duration: 5,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            }}
-          />
-          <motion.div
-            className="absolute bottom-10 right-10 w-24 h-24 bg-white/10 rounded-full blur-xl"
-            animate={{
-              scale: [1.2, 1, 1.2],
-              opacity: [0.4, 0.8, 0.4],
-            }}
-            transition={{
-              duration: 4,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            }}
-          />
-        </div>
+
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
           <motion.div
@@ -210,6 +185,9 @@ export default function TariffPageClient({ tariffData }: TariffPageClientProps) 
           </div>
         </div>
       </section>
+
+      {/* Popular Routes Section */}
+      <PopularRoutes showAll={true} />
 
       {/* Contact Section */}
       <section className="py-12 sm:py-16 md:py-20 bg-white">

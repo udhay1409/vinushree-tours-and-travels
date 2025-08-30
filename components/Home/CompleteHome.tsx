@@ -24,6 +24,7 @@ import {
   CheckCircle
 } from "lucide-react";
 import QuickBookForm from "@/components/QuickBookForm";
+import PopularRoutes from "@/components/PopularRoutes";
 
 // Static data for travel business
 const staticBanners = [
@@ -247,12 +248,9 @@ export default function CompleteHome() {
         {/* Banner Images Background */}
         <div className="absolute inset-0">
           {staticBanners.map((banner, index) => (
-            <motion.div
+            <div
               key={banner._id}
-              className="absolute inset-0"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: index === currentBanner ? 1 : 0 }}
-              transition={{ duration: 1 }}
+              className={`absolute inset-0 ${index === currentBanner ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000`}
             >
               <Image
                 src={banner.image}
@@ -263,195 +261,55 @@ export default function CompleteHome() {
               />
               <div className="absolute inset-0 bg-black/50" />
               <div className="absolute inset-0 bg-admin-gradient/20" />
-            </motion.div>
+            </div>
           ))}
 
-          {/* Animated overlay gradients */}
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-tr from-yellow-600/30 via-transparent to-orange-600/30"
-            animate={{
-              opacity: [0.3, 0.7, 0.3],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            }}
-          />
 
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-bl from-orange-500/20 via-transparent to-yellow-500/20"
-            animate={{
-              opacity: [0.7, 0.3, 0.7],
-            }}
-            transition={{
-              duration: 6,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            }}
-          />
         </div>
 
-        <div className="absolute inset-0 overflow-hidden">
-          {/* Large floating orbs - responsive sizing */}
-          <motion.div
-            className="absolute top-10 left-4 sm:top-20 sm:left-20 w-20 h-20 sm:w-32 sm:h-32 md:w-40 md:h-40 bg-gradient-to-r from-white/10 to-blue-300/20 rounded-full blur-xl"
-            animate={{
-              scale: [1, 1.05, 1],
-              opacity: [0.7, 1, 0.7],
-            }}
-            transition={{
-              duration: 3,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            }}
-          />
-          <motion.div
-            className="absolute bottom-10 right-4 sm:bottom-20 sm:right-20 w-28 h-28 sm:w-40 sm:h-40 md:w-56 md:h-56 bg-gradient-to-r from-purple-300/20 to-white/10 rounded-full blur-xl"
-            animate={{
-              scale: [1, 1.05, 1],
-              opacity: [0.7, 1, 0.7],
-            }}
-            transition={{
-              duration: 3,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-              delay: 1,
-            }}
-          />
-          <motion.div
-            className="absolute top-1/2 left-1/2 w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-gradient-to-r from-yellow-300/20 to-pink-300/20 rounded-full blur-xl"
-            animate={{
-              y: [-20, 20, -20],
-              rotate: [0, 5, -5, 0],
-            }}
-            transition={{
-              duration: 6,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            }}
-          />
 
-          {[...Array(6)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-2 h-2 sm:w-3 sm:h-3 md:w-4 md:h-4 bg-white/20 rounded-full"
-              style={{
-                top: `${20 + i * 15}%`,
-                left: `${10 + i * 12}%`,
-              }}
-              animate={{
-                y: [-10, 10, -10],
-                opacity: [0.3, 0.8, 0.3],
-                scale: [0.8, 1.2, 0.8],
-              }}
-              transition={{
-                duration: 4 + i * 0.5,
-                repeat: Number.POSITIVE_INFINITY,
-                ease: "easeInOut",
-                delay: i * 0.3,
-              }}
-            />
-          ))}
-        </div>
 
         <div className="container mx-auto px-4 py-8 sm:px-6 sm:py-12 md:py-16 lg:py-20 xl:px-8 relative z-10 max-w-7xl">
-          <motion.div
-            className="max-w-5xl mx-auto text-center text-white"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: "easeOut" }}
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8, y: 30 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
-            >
+          <div className="max-w-5xl mx-auto text-center text-white">
+            <div>
               <Badge className="mb-4 sm:mb-6 md:mb-8 hover:bg-admin-secondary bg-white/20 text-white border-white/30 backdrop-blur-sm px-3 py-1.5 sm:px-6 sm:py-2 md:px-8 md:py-3 text-xs sm:text-sm md:text-base rounded-full shadow-lg">
-                <motion.div
-                  animate={{ rotate: [0, 360] }}
-                  transition={{
-                    duration: 20,
-                    repeat: Number.POSITIVE_INFINITY,
-                    ease: "linear",
-                  }}
-                >
-                  <Car className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 mr-2 sm:mr-3" />
-                </motion.div>
+                <Car className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 mr-2 sm:mr-3" />
                 Welcome to Vinushree Tours & Travels
               </Badge>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
-            >
+            <div>
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold mb-4 sm:mb-6 leading-tight">
-                <motion.span
-                  className="block"
-                  initial={{ opacity: 0, x: -50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, delay: 0.6 }}
-                >
+                <span className="block">
                   Travel Tamil Nadu
-                </motion.span>
-                <motion.span
-                  className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-400 to-orange-400"
-                  initial={{ opacity: 0, x: 50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, delay: 0.8 }}
-                >
+                </span>
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-400 to-orange-400">
                   With Comfort
-                </motion.span>
+                </span>
               </h1>
-            </motion.div>
+            </div>
 
-            <motion.p
-              className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl mb-4 sm:mb-6 text-white/90 font-light"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1 }}
-            >
+            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl mb-4 sm:mb-6 text-white/90 font-light">
               Since 2020
-            </motion.p>
+            </p>
 
-            <motion.p
-              className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl mb-8 sm:mb-10 md:mb-12 text-white/80 max-w-4xl mx-auto leading-relaxed px-2 sm:px-4"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.2 }}
-            >
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl mb-8 sm:mb-10 md:mb-12 text-white/80 max-w-4xl mx-auto leading-relaxed px-2 sm:px-4">
               Experience the beauty of Tamil Nadu with our professional travel services. From airport transfers to complete tour packages, we ensure safe, comfortable, and memorable journeys across the state.
-            </motion.p>
+            </p>
 
-            <motion.div
-              className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 1.4 }}
-            >
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
+              <div className="w-full sm:w-auto">
                 <Button
                   onClick={() => handleBookNow()}
                   size="lg"
                   className="w-full sm:w-auto bg-admin-gradient text-white border-0 px-6 sm:px-8 md:px-10 py-3 sm:py-4 md:py-5 text-base sm:text-lg font-semibold transition-all duration-300 shadow-2xl hover:shadow-blue-500/25"
                 >
                   Book Now
-                  <motion.div
-                    className="ml-2"
-                    animate={{ x: [0, 5, 0] }}
-                    transition={{
-                      duration: 1.5,
-                      repeat: Number.POSITIVE_INFINITY,
-                    }}
-                  >
-                    <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
-                  </motion.div>
+                  <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 ml-2" />
                 </Button>
-              </motion.div>
+              </div>
 
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
+              <div className="w-full sm:w-auto">
                 <Button
                   onClick={handleCallNow}
                   size="lg"
@@ -461,9 +319,9 @@ export default function CompleteHome() {
                   <Phone className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                   Call Now
                 </Button>
-              </motion.div>
-            </motion.div>
-          </motion.div>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Banner Indicators */}
@@ -486,6 +344,7 @@ export default function CompleteHome() {
 
       {/* Stats Section */}
       <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-br from-gray-50 to-white relative">
+
         <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
           <motion.div
             className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8"
@@ -527,8 +386,8 @@ export default function CompleteHome() {
                 variants={{
                   initial: { opacity: 0, scale: 0.8 },
                   animate: { opacity: 1, scale: 1 },
-                  transition: { duration: 0.6 },
                 }}
+                transition={{ duration: 0.6 }}
               >
                 <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-0 shadow-lg bg-gradient-to-br from-white to-gray-50 h-full">
                   <CardContent className="p-3 sm:p-4 md:p-6 lg:p-8 text-center">
@@ -568,16 +427,135 @@ export default function CompleteHome() {
       </section>
 
       {/* About Section */}
-      <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-purple-50/50"></div>
-        <div className="container mx-auto px-4 sm:px-6 md:px-8 relative max-w-7xl">
+      <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-admin-gradient relative overflow-hidden">
+        {/* Animated overlay gradients */}
+        <div className="absolute inset-0 overflow-hidden">
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-tr from-yellow-600/30 via-transparent to-orange-600/30"
+            animate={{
+              opacity: [0.3, 0.7, 0.3],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }}
+          />
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-bl from-orange-500/20 via-transparent to-yellow-500/20"
+            animate={{
+              opacity: [0.7, 0.3, 0.7],
+            }}
+            transition={{
+              duration: 6,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }}
+          />
+          
+          {/* Straight line animations */}
+          {[...Array(8)].map((_, i) => (
+            <motion.div
+              key={`line-${i}`}
+              className="absolute w-px h-20 bg-gradient-to-b from-transparent via-white/20 to-transparent"
+              style={{
+                left: `${10 + i * 12}%`,
+                top: `${20 + (i % 3) * 20}%`,
+              }}
+              animate={{
+                scaleY: [0, 1, 0],
+                opacity: [0, 0.6, 0],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "easeInOut",
+                delay: i * 0.4,
+              }}
+            />
+          ))}
+          
+          {/* Horizontal lines */}
+          {[...Array(4)].map((_, i) => (
+            <motion.div
+              key={`hline-${i}`}
+              className="absolute h-px w-16 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+              style={{
+                left: `${15 + i * 20}%`,
+                top: `${30 + i * 15}%`,
+              }}
+              animate={{
+                scaleX: [0, 1, 0],
+                opacity: [0, 0.5, 0],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "easeInOut",
+                delay: i * 0.6,
+              }}
+            />
+          ))}
+
+          {/* Floating bubbles */}
+          {[...Array(12)].map((_, i) => (
+            <motion.div
+              key={`bubble-${i}`}
+              className="absolute w-1 h-1 sm:w-2 sm:h-2 bg-white/30 rounded-full"
+              style={{
+                left: `${5 + i * 8}%`,
+                top: `${10 + (i % 4) * 20}%`,
+              }}
+              animate={{
+                y: [-15, 15, -15],
+                x: [-10, 10, -10],
+                opacity: [0.2, 0.8, 0.2],
+                scale: [0.5, 1.2, 0.5],
+              }}
+              transition={{
+                duration: 5 + i * 0.3,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "easeInOut",
+                delay: i * 0.2,
+              }}
+            />
+          ))}
+          
+          {/* Larger floating orbs */}
+          <motion.div
+            className="absolute top-20 left-20 w-32 h-32 bg-gradient-to-r from-white/10 to-yellow-300/20 rounded-full blur-xl"
+            animate={{
+              scale: [1, 1.05, 1],
+              opacity: [0.4, 0.7, 0.4],
+            }}
+            transition={{
+              duration: 6,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }}
+          />
+          <motion.div
+            className="absolute bottom-20 right-20 w-40 h-40 bg-gradient-to-r from-orange-300/20 to-white/10 rounded-full blur-xl"
+            animate={{
+              scale: [1, 1.05, 1],
+              opacity: [0.4, 0.7, 0.4],
+            }}
+            transition={{
+              duration: 7,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+              delay: 1,
+            }}
+          />
+        </div>
+        <div className="container mx-auto px-4 sm:px-6 md:px-8 relative max-w-7xl z-10">
           <motion.div
             className="max-w-4xl mx-auto text-center mb-8 sm:mb-12 md:mb-16 lg:mb-20"
             variants={{
               initial: { opacity: 0, y: 60 },
               animate: { opacity: 1, y: 0 },
-              transition: { duration: 0.6 },
             }}
+            transition={{ duration: 0.6 }}
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
@@ -586,11 +564,11 @@ export default function CompleteHome() {
               <Award className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
               Since 2020
             </Badge>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 md:mb-8">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4 sm:mb-6 md:mb-8">
               Travel Excellence
-              <span className="block bg-admin-gradient bg-clip-text text-transparent">Since 2020</span>
+              <span className="block text-yellow-200">Since 2020</span>
             </h2>
-            <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed px-2 sm:px-4">
+            <p className="text-base sm:text-lg md:text-xl text-white/90 leading-relaxed px-2 sm:px-4">
               Vinushree Tours & Travels is your trusted travel partner across Tamil Nadu, specializing in comfortable and reliable travel services that make every journey memorable with professional drivers and well-maintained vehicles.
             </p>
           </motion.div>
@@ -636,8 +614,8 @@ export default function CompleteHome() {
                 variants={{
                   initial: { opacity: 0, y: 60 },
                   animate: { opacity: 1, y: 0 },
-                  transition: { duration: 0.6 },
                 }}
+                transition={{ duration: 0.6 }}
                 className="md:col-span-2 lg:col-span-1 md:last:col-start-1 md:last:col-end-3 lg:last:col-start-auto lg:last:col-end-auto"
               >
                 <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-2 h-full border-0 shadow-lg overflow-hidden">
@@ -662,7 +640,34 @@ export default function CompleteHome() {
       </section>
 
       {/* Services Overview Section */}
-      <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gradient-to-br from-yellow-50/30 to-orange-50/30">
+      <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gradient-to-br from-gray-50 to-white">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <motion.div
+            className="absolute top-1/4 right-1/4 w-48 h-48 bg-gradient-to-r from-yellow-200/25 to-orange-200/25 rounded-full blur-3xl"
+            animate={{
+              rotate: [0, 360],
+              scale: [1, 1.05, 1],
+            }}
+            transition={{
+              duration: 20,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "linear",
+            }}
+          />
+          <motion.div
+            className="absolute bottom-1/4 left-1/4 w-32 h-32 bg-gradient-to-r from-orange-200/20 to-yellow-200/20 rounded-full blur-2xl"
+            animate={{
+              y: [-10, 10, -10],
+              opacity: [0.3, 0.7, 0.3],
+            }}
+            transition={{
+              duration: 6,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }}
+          />
+        </div>
         <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
           <motion.div
             className="text-center mb-12 sm:mb-16 md:mb-20"
@@ -751,7 +756,7 @@ export default function CompleteHome() {
       </section>
 
       {/* Featured Packages Section */}
-      <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white">
+      <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gradient-to-br from-gray-50 to-white">
         <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
           <motion.div
             className="text-center mb-12 sm:mb-16 md:mb-20"
@@ -849,9 +854,39 @@ export default function CompleteHome() {
         </div>
       </section>
 
+      {/* Popular Routes Section */}
+      <PopularRoutes showAll={true} />
+
       {/* Testimonials Section */}
-      <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white relative overflow-hidden">
+      <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-white"></div>
+        {/* Subtle animated elements for white background */}
+        <div className="absolute inset-0 overflow-hidden">
+          <motion.div
+            className="absolute top-1/4 right-1/4 w-32 h-32 bg-gradient-to-r from-yellow-100/30 to-orange-100/30 rounded-full blur-2xl"
+            animate={{
+              scale: [1, 1.1, 1],
+              opacity: [0.2, 0.4, 0.2],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }}
+          />
+          <motion.div
+            className="absolute bottom-1/4 left-1/4 w-24 h-24 bg-gradient-to-r from-orange-100/20 to-yellow-100/20 rounded-full blur-xl"
+            animate={{
+              y: [-10, 10, -10],
+              opacity: [0.3, 0.5, 0.3],
+            }}
+            transition={{
+              duration: 6,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }}
+          />
+        </div>
         <div className="container mx-auto px-4 sm:px-6 md:px-8 relative z-10 max-w-7xl">
           <motion.div
             className="text-center mb-12 sm:mb-16 md:mb-20"
@@ -912,18 +947,58 @@ export default function CompleteHome() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-admin-gradient to-blue-600 relative overflow-hidden">
-        <div className="absolute inset-0">
+      <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-admin-gradient relative overflow-hidden">
+        {/* Animated overlay gradients */}
+        <div className="absolute inset-0 overflow-hidden">
           <motion.div
-            className="absolute top-6 left-6 sm:top-10 sm:left-10 w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-white/10 rounded-full blur-xl"
-            animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.6, 0.3] }}
-            transition={{ duration: 4, repeat: Number.POSITIVE_INFINITY }}
+            className="absolute inset-0 bg-gradient-to-tr from-yellow-600/30 via-transparent to-orange-600/30"
+            animate={{
+              opacity: [0.3, 0.7, 0.3],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }}
           />
           <motion.div
-            className="absolute bottom-6 right-6 sm:bottom-10 sm:right-10 w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 bg-white/10 rounded-full blur-xl"
-            animate={{ scale: [1.3, 1, 1.3], opacity: [0.4, 0.7, 0.4] }}
-            transition={{ duration: 5, repeat: Number.POSITIVE_INFINITY }}
+            className="absolute inset-0 bg-gradient-to-bl from-orange-500/20 via-transparent to-yellow-500/20"
+            animate={{
+              opacity: [0.7, 0.3, 0.7],
+            }}
+            transition={{
+              duration: 6,
+              repeat: Number.POSITIVE_INFINITY,
+              ease: "easeInOut",
+            }}
           />
+        </div>
+
+        {/* Small floating bubbles like About section */}
+        <div className="absolute inset-0 overflow-hidden">
+          {/* Floating bubbles */}
+          {[...Array(12)].map((_, i) => (
+            <motion.div
+              key={`bubble-${i}`}
+              className="absolute w-1 h-1 sm:w-2 sm:h-2 bg-white/30 rounded-full"
+              style={{
+                left: `${5 + i * 8}%`,
+                top: `${10 + (i % 4) * 20}%`,
+              }}
+              animate={{
+                y: [-15, 15, -15],
+                x: [-10, 10, -10],
+                opacity: [0.2, 0.8, 0.2],
+                scale: [0.5, 1.2, 0.5],
+              }}
+              transition={{
+                duration: 5 + i * 0.3,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "easeInOut",
+                delay: i * 0.2,
+              }}
+            />
+          ))}
         </div>
 
         <div className="container mx-auto px-4 sm:px-6 md:px-8 text-center relative z-10 max-w-7xl">
@@ -931,8 +1006,8 @@ export default function CompleteHome() {
             variants={{
               initial: { opacity: 0, y: 60 },
               animate: { opacity: 1, y: 0 },
-              transition: { duration: 0.6 },
-            }} 
+            }}
+            transition={{ duration: 0.6 }}
             initial="initial" 
             whileInView="animate" 
             viewport={{ once: true }}
