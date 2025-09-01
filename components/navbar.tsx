@@ -146,8 +146,8 @@ function NavbarContent() {
             >
               <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-xl sm:rounded-2xl overflow-hidden flex items-center justify-center bg-white shadow-md">
                 <Image
-                  src="/vinushree-tours-logo.png"
-                  alt="Vinushree Tours Logo"
+                  src={themeData?.logo || "/vinushree-tours-logo.png"}
+                  alt={`${themeData?.siteName || "Vinushree Tours"} Logo`}
                   width={48}
                   height={48}
                   className="w-full h-full object-contain"
@@ -155,10 +155,12 @@ function NavbarContent() {
               </div>
               <div>
                 <div className="font-bold text-sm sm:text-lg lg:text-xl xl:text-2xl bg-admin-gradient bg-clip-text text-transparent">
-                  Vinushree
+                  {themeData?.siteName?.split(' ')[0] || "Vinushree"}
                 </div>
                 <div className="text-xs sm:text-xs lg:text-sm text-gray-600 font-medium">
-                  Tours & Travels
+                  {themeData?.siteName?.includes('Tours') 
+                    ? 'Tours & Travels' 
+                    : themeData?.siteName?.split(' ').slice(1).join(' ') || 'Tours & Travels'}
                 </div>
               </div>
             </Link>

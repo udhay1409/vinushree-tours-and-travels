@@ -120,9 +120,13 @@ export default function Footer() {
               )}
               <div>
                 <div className="font-bold text-xl sm:text-2xl bg-admin-gradient bg-clip-text text-transparent">
-                  Vinushree
+                  {themeData?.siteName?.split(' ')[0] || "Vinushree"}
                 </div>
-                <div className="text-sm sm:text-base font-medium">Tours & Travels</div>
+                <div className="text-sm sm:text-base font-medium">
+                  {themeData?.siteName?.includes('Tours') 
+                    ? 'Tours & Travels' 
+                    : themeData?.siteName?.split(' ').slice(1).join(' ') || 'Tours & Travels'}
+                </div>
               </div>
             </Link>
 

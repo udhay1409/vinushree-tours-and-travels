@@ -2,12 +2,13 @@
 
 import type React from "react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { useTheme } from "@/components/providers/theme";
 import {
   Palette,
   Eye,
@@ -29,38 +30,107 @@ import {
 
 export default function ThemePage() {
   const { toast } = useToast();
+  const { themeData, loading: themeLoading, refreshTheme } = useTheme();
+  
+  const [siteName, setSiteName] = useState("Vinushree Tours & Travels");
   const [logo, setLogo] = useState<string | null>(null);
   const [favicon, setFavicon] = useState<string | null>(null);
-  const [primaryColor, setPrimaryColor] = useState("#FFC107"); // Perfect golden amber matching logo
-  const [secondaryColor, setSecondaryColor] = useState("#000000"); // Pure black
+  const [primaryColor, setPrimaryColor] = useState("#F59E0B"); // Gold for travel theme
+  const [secondaryColor, setSecondaryColor] = useState("#1F2937"); // Dark navy for travel theme
   const [previewDevice, setPreviewDevice] = useState("desktop");
   const [loading, setLoading] = useState(false);
 
+  // Load theme data when component mounts
+  useEffect(() => {
+    if (themeData) {
+      setSiteName(themeData.siteName);
+      setLogo(themeData.logo);
+      setFavicon(themeData.favicon);
+      setPrimaryColor(themeData.primaryColor);
+      setSecondaryColor(themeData.secondaryColor);
+    }
+  }, [themeData]);
+
   // Handle save theme settings
-  const saveThemeSettings = () => {
+  const saveThemeSettings = async () => {
     setLoading(true);
     
-    // Simulate saving (in real app, this would save to localStorage or state management)
-    setTimeout(() => {
-      toast({
-        title: "Success",
-        description: "Theme settings saved successfully",
+    try {
+      const response = await fetch('/api/admin/theme', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          siteName,
+          logo,
+          favicon,
+          primaryColor,
+          secondaryColor,
+          gradientDirection: '135deg'
+        }),
       });
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast({
+          title: "Success",
+          description: "Theme settings saved successfully",
+        });
+        await refreshTheme(); // Refresh theme data
+      } else {
+        throw new Error(result.message || 'Failed to save theme');
+      }
+    } catch (error) {
+      console.error('Error saving theme:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to save theme settings",
+        variant: "destructive",
+      });
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   // Handle reset theme settings
-  const resetThemeSettings = () => {
-    setPrimaryColor("#FFC107"); // Reset to perfect golden amber
-    setSecondaryColor("#000000"); // Reset to pure black
-    setLogo(null);
-    setFavicon(null);
+  const resetThemeSettings = async () => {
+    setLoading(true);
     
-    toast({
-      title: "Success",
-      description: "Theme settings reset to default",
-    });
+    try {
+      const response = await fetch('/api/admin/theme', {
+        method: 'POST',
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Update local state with default values
+        setSiteName("Vinushree Tours & Travels");
+        setPrimaryColor("#F59E0B");
+        setSecondaryColor("#1F2937");
+        setLogo("/vinushree-tours-logo.png");
+        setFavicon(null);
+        
+        toast({
+          title: "Success",
+          description: "Theme settings reset to default",
+        });
+        await refreshTheme(); // Refresh theme data
+      } else {
+        throw new Error(result.message || 'Failed to reset theme');
+      }
+    } catch (error) {
+      console.error('Error resetting theme:', error);
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to reset theme settings",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -138,6 +208,36 @@ export default function ThemePage() {
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Theme Settings */}
         <div className="lg:col-span-2 space-y-8">
+          {/* Site Name */}
+          <Card className="shadow-lg border-0">
+            <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
+              <CardTitle className="flex items-center gap-2">
+                <ImageIcon className="h-5 w-5" style={{ color: primaryColor }} />
+                Site Information
+                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full ml-2">
+                  Basic Settings
+                </span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6">
+              <div className="space-y-3">
+                <Label className="text-sm font-semibold text-gray-700">
+                  Site Name
+                </Label>
+                <Input
+                  type="text"
+                  value={siteName}
+                  onChange={(e) => setSiteName(e.target.value)}
+                  placeholder="Enter your site name"
+                  className="w-full"
+                />
+                <p className="text-xs text-gray-500">
+                  This will appear in the browser title and throughout the website
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Logo & Favicon */}
           <Card className="shadow-lg border-0">
             <CardHeader className="bg-gradient-to-r from-amber-50 to-orange-50">
@@ -314,8 +414,8 @@ export default function ThemePage() {
                     {[
                       {
                         name: "Vinushree Gold",
-                        primary: "#FFC107",
-                        secondary: "#000000",
+                        primary: "#F59E0B",
+                        secondary: "#1F2937",
                         description: "Brand Colors",
                         icon: "⭐",
                       },
@@ -647,9 +747,11 @@ export default function ThemePage() {
                             className="text-lg font-bold"
                             style={{ color: primaryColor }}
                           >
-                            Vinushree
+                            {siteName.split(' ')[0] || 'Vinushree'}
                           </div>
-                          <div className="text-sm text-gray-600">Tours & Travels</div>
+                          <div className="text-sm text-gray-600">
+                            {siteName.includes('Tours') ? 'Tours & Travels' : siteName.split(' ').slice(1).join(' ') || 'Tours & Travels'}
+                          </div>
                         </div>
                       </div>
                       <div
