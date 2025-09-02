@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -53,9 +54,9 @@ import {
   ImageIcon,
   Loader2,
   MapPin,
-  Calendar,
-  Users
+  Calendar
 } from "lucide-react";
+import axios from "axios";
 import "@/styles/quill.css";
 
 interface TourPackage {
@@ -76,10 +77,10 @@ interface TourPackage {
   seoTitle: string;
   seoDescription: string;
   seoKeywords: string;
-  itinerary: ItineraryDay[];
+  itinerary: DayPlan[];
 }
 
-interface ItineraryDay {
+interface DayPlan {
   day: string;
   title: string;
   description: string;
@@ -99,7 +100,7 @@ export default function PackagesPage() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [packages, setPackages] = useState<TourPackage[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -107,66 +108,10 @@ export default function PackagesPage() {
   const [deletingButtonId, setDeletingButtonId] = useState<string | null>(null);
   const scrollPositionRef = useRef<number>(0);
 
-  // Static sample data for packages
-  const samplePackages: TourPackage[] = [
-    {
-      _id: "1",
-      title: "Ooty Hill Station Tour",
-      destination: "Ooty, Tamil Nadu",
-      shortDescription: "Experience the beauty of the Queen of Hill Stations with scenic views, tea gardens, and pleasant weather.",
-      fullDescription: "<p>Discover the enchanting hill station of Ooty with our comprehensive tour package. Visit famous attractions like Botanical Gardens, Ooty Lake, and Doddabetta Peak.</p>",
-      duration: "3 Days 2 Nights",
-      price: "₹8,500 per person",
-      inclusions: ["Accommodation", "Breakfast", "Transportation", "Sightseeing"],
-      exclusions: ["Lunch & Dinner", "Personal Expenses", "Entry Fees"],
-      highlights: ["Botanical Gardens", "Ooty Lake", "Toy Train Ride", "Tea Factory Visit"],
-      image: "/images/packages/ooty-main.jpg",
-      gallery: ["/images/packages/ooty-1.jpg", "/images/packages/ooty-2.jpg"],
-      status: "active",
-      featured: true,
-      seoTitle: "Ooty Hill Station Tour Package - 3 Days",
-      seoDescription: "Book your Ooty tour package with Vinushree Tours & Travels. Experience the Queen of Hill Stations.",
-      seoKeywords: "ooty tour, hill station, tamil nadu tourism",
-      itinerary: [
-        { day: "1", title: "Arrival & Local Sightseeing", description: "Arrive in Ooty, check-in to hotel, visit Botanical Gardens and Ooty Lake" },
-        { day: "2", title: "Doddabetta & Tea Gardens", description: "Visit Doddabetta Peak, Tea Factory, and enjoy Toy Train ride" },
-        { day: "3", title: "Departure", description: "Check-out and departure with sweet memories" }
-      ]
-    },
-    {
-      _id: "2", 
-      title: "Kodaikanal Package",
-      destination: "Kodaikanal, Tamil Nadu",
-      shortDescription: "Explore the Princess of Hill Stations with lakes, valleys, and misty mountains.",
-      fullDescription: "<p>Experience the serene beauty of Kodaikanal with visits to Kodai Lake, Coaker's Walk, and Bryant Park.</p>",
-      duration: "2 Days 1 Night",
-      price: "₹6,500 per person",
-      inclusions: ["Accommodation", "Breakfast", "Transportation"],
-      exclusions: ["Meals", "Personal Expenses"],
-      highlights: ["Kodai Lake", "Coaker's Walk", "Bryant Park", "Silver Cascade Falls"],
-      image: "/images/packages/kodai-main.jpg",
-      gallery: [],
-      status: "active",
-      featured: false,
-      seoTitle: "Kodaikanal Tour Package - 2 Days",
-      seoDescription: "Discover Kodaikanal with our affordable tour packages from Vinushree Tours & Travels.",
-      seoKeywords: "kodaikanal tour, hill station package",
-      itinerary: [
-        { day: "1", title: "Arrival & Sightseeing", description: "Arrive, visit Kodai Lake and Coaker's Walk" },
-        { day: "2", title: "Departure", description: "Visit Bryant Park and departure" }
-      ]
-    }
-  ];
-
-  // Initialize with sample data
-  useState(() => {
-    setPackages(samplePackages);
-  });
-
   const [pagination, setPagination] = useState<PaginationData>({
     currentPage: 1,
     totalPages: 1,
-    totalPackages: 2,
+    totalPackages: 0,
     limit: 6,
     hasNextPage: false,
     hasPrevPage: false,
@@ -193,9 +138,9 @@ export default function PackagesPage() {
 
   // Check if maximum featured packages limit reached (3 featured packages max)
   const maxFeaturedReached =
-    packages.filter((pkg) => pkg.featured).length >= 3;
+    Array.isArray(packages) && packages.filter((pkg) => pkg.featured).length >= 3;
 
-  const [itineraryDays, setItineraryDays] = useState<ItineraryDay[]>([
+  const [dayPlans, setDayPlans] = useState<DayPlan[]>([
     { day: "1", title: "", description: "" },
   ]);
 
@@ -215,6 +160,54 @@ export default function PackagesPage() {
     return textContent === "";
   };
 
+  // Fetch packages from API
+  const fetchPackages = async (page = 1) => {
+    try {
+      setLoading(true);
+      
+      // Get JWT token from localStorage
+      const token = localStorage.getItem('admin_token');
+      if (!token) {
+        toast({
+          title: "Authentication Error",
+          description: "Please login again",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const response = await axios.get(`/api/admin/packages?page=${page}&limit=6`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      if (response.data.success) {
+        setPackages(response.data.data);
+        setPagination(response.data.pagination);
+        setCurrentPage(page);
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to fetch packages",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch packages",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchPackages(currentPage);
+  }, [currentPage]);
+
   const handleEdit = (pkg: TourPackage) => {
     scrollPositionRef.current = window.scrollY;
     
@@ -233,11 +226,11 @@ export default function PackagesPage() {
       gallery: pkg.gallery || [],
       status: pkg.status,
       featured: pkg.featured,
-      seoTitle: pkg.seoTitle,
-      seoDescription: pkg.seoDescription,
-      seoKeywords: pkg.seoKeywords,
+      seoTitle: pkg.seoTitle || "",
+      seoDescription: pkg.seoDescription || "",
+      seoKeywords: pkg.seoKeywords || "",
     });
-    setItineraryDays(pkg.itinerary || [{ day: "1", title: "", description: "" }]);
+    setDayPlans(pkg.itinerary || [{ day: "1", title: "", description: "" }]);
     setSelectedFiles({
       mainImage: null,
       galleryImages: [],
@@ -260,10 +253,7 @@ export default function PackagesPage() {
       !formData.inclusions ||
       !formData.highlights ||
       !formData.image ||
-      !formData.seoTitle ||
-      !formData.seoDescription ||
-      !formData.seoKeywords ||
-      itineraryDays.some((day) => !day.title || !day.description)
+      dayPlans.some((day) => !day.title || !day.description)
     ) {
       toast({
         title: "Validation Error",
@@ -275,39 +265,101 @@ export default function PackagesPage() {
     }
 
     try {
-      // Simulate API call - replace with actual API later
-      const packageData = {
-        ...formData,
-        inclusions: formData.inclusions
-          .split(",")
-          .map((f) => f.trim())
-          .filter((f) => f),
-        exclusions: formData.exclusions
-          .split(",")
-          .map((f) => f.trim())
-          .filter((f) => f),
-        highlights: formData.highlights
-          .split(",")
-          .map((f) => f.trim())
-          .filter((f) => f),
-        itinerary: itineraryDays
-          .filter((day) => day.title.trim() && day.description.trim())
-          .map((day) => ({
-            day: day.day,
-            title: day.title.trim(),
-            description: day.description.trim(),
-          })),
-      };
+      // Get JWT token from localStorage first
+      const token = localStorage.getItem('admin_token');
+      if (!token) {
+        toast({
+          title: "Authentication Error",
+          description: "Please login again to continue.",
+          variant: "destructive",
+        });
+        setIsSaving(false);
+        return;
+      }
 
-      // Simulate success
-      toast({
-        title: editingId ? "Package Updated" : "Package Added",
-        description: `Package has been successfully ${
-          editingId ? "updated" : "added"
-        }.`,
+      // Prepare form data for submission (including files)
+      const submitFormData = new FormData();
+      
+      // Add all text fields
+      submitFormData.append('title', formData.title.trim());
+      submitFormData.append('destination', formData.destination.trim());
+      submitFormData.append('shortDescription', formData.shortDescription.trim());
+      submitFormData.append('fullDescription', formData.fullDescription.trim());
+      submitFormData.append('duration', formData.duration.trim());
+      submitFormData.append('price', formData.price.trim());
+      submitFormData.append('featured', formData.featured.toString());
+      submitFormData.append('status', formData.status);
+      
+      // Add existing image URL if no new file selected
+      if (!selectedFiles.mainImage && formData.image) {
+        submitFormData.append('existingImage', formData.image);
+      }
+      
+      // Add new main image file if selected
+      if (selectedFiles.mainImage) {
+        submitFormData.append('mainImage', selectedFiles.mainImage);
+      }
+      
+      // Add existing gallery URLs
+      formData.gallery.forEach((url, index) => {
+        if (!url.startsWith('blob:')) {
+          submitFormData.append(`existingGallery[${index}]`, url);
+        }
       });
       
-      handleCancel();
+      // Add new gallery image files
+      selectedFiles.galleryImages.forEach((file, index) => {
+        submitFormData.append(`galleryImages`, file);
+      });
+      
+      // Add arrays as JSON strings
+      submitFormData.append('inclusions', JSON.stringify(
+        formData.inclusions.split(",").map((f) => f.trim()).filter((f) => f)
+      ));
+      submitFormData.append('exclusions', JSON.stringify(
+        formData.exclusions.split(",").map((f) => f.trim()).filter((f) => f)
+      ));
+      submitFormData.append('highlights', JSON.stringify(
+        formData.highlights.split(",").map((f) => f.trim()).filter((f) => f)
+      ));
+      submitFormData.append('itinerary', JSON.stringify(
+        dayPlans
+          .filter((day) => day.title.trim() && day.description.trim())
+          .map((day, index) => ({
+            day: String(index + 1),
+            title: day.title.trim(),
+            description: day.description.trim(),
+          }))
+      ));
+
+      const url = editingId
+        ? `/api/admin/packages/${editingId}`
+        : "/api/admin/packages";
+      const method = editingId ? "put" : "post";
+
+      const response = await axios[method](url, submitFormData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.data.success) {
+        toast({
+          title: editingId ? "Package Updated" : "Package Added",
+          description: `Package has been successfully ${
+            editingId ? "updated" : "added"
+          }.`,
+        });
+        fetchPackages(currentPage);
+        handleCancel();
+      } else {
+        toast({
+          title: "Error",
+          description: response.data.message || "Failed to save package",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -330,12 +382,44 @@ export default function PackagesPage() {
     setDeletingButtonId(id);
     
     try {
-      // Simulate API call
-      toast({
-        title: "Package Deleted",
-        description: "Package has been successfully deleted.",
+      // Get JWT token from localStorage
+      const token = localStorage.getItem('admin_token');
+      if (!token) {
+        toast({
+          title: "Authentication Error",
+          description: "Please login again to continue.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const response = await axios.delete(`/api/admin/packages/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
-      setDeletingPackageId(null);
+
+      if (response.data.success) {
+        toast({
+          title: "Package Deleted",
+          description: "Package has been successfully deleted.",
+        });
+        setDeletingPackageId(null);
+
+        // Check if we need to go back to previous page
+        const remainingPackages = Array.isArray(packages) ? packages.filter((p) => p._id !== id) : [];
+        if (remainingPackages.length === 0 && currentPage > 1) {
+          setCurrentPage(currentPage - 1);
+        } else {
+          fetchPackages(currentPage);
+        }
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to delete package",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -371,7 +455,7 @@ export default function PackagesPage() {
       seoDescription: "",
       seoKeywords: "",
     });
-    setItineraryDays([{ day: "1", title: "", description: "" }]);
+    setDayPlans([{ day: "1", title: "", description: "" }]);
     setSelectedFiles({
       mainImage: null,
       galleryImages: [],
@@ -385,25 +469,25 @@ export default function PackagesPage() {
     });
   };
 
-  const addItineraryDay = () => {
-    const nextDay = (itineraryDays.length + 1).toString();
-    setItineraryDays([...itineraryDays, { day: nextDay, title: "", description: "" }]);
+  const addDayPlan = () => {
+    const nextDay = (dayPlans.length + 1).toString();
+    setDayPlans([...dayPlans, { day: nextDay, title: "", description: "" }]);
   };
 
-  const removeItineraryDay = (index: number) => {
-    if (itineraryDays.length > 1) {
-      setItineraryDays(itineraryDays.filter((_, i) => i !== index));
+  const removeDayPlan = (index: number) => {
+    if (dayPlans.length > 1) {
+      setDayPlans(dayPlans.filter((_, i) => i !== index));
     }
   };
 
-  const updateItineraryDay = (
+  const updateDayPlan = (
     index: number,
     field: "title" | "description",
     value: string
   ) => {
-    const updatedDays = [...itineraryDays];
+    const updatedDays = [...dayPlans];
     updatedDays[index][field] = value;
-    setItineraryDays(updatedDays);
+    setDayPlans(updatedDays);
   };
 
   const [selectedFiles, setSelectedFiles] = useState<{
@@ -466,6 +550,142 @@ export default function PackagesPage() {
       ...prev,
       gallery: prev.gallery.filter((_, i) => i !== index),
     }));
+  };
+
+  // Pagination handlers
+  const handlePageChange = (page: number) => {
+    if (pagination && page >= 1 && page <= pagination.totalPages) {
+      setCurrentPage(page);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const renderPaginationItems = () => {
+    if (!pagination) return [];
+    
+    const items = [];
+    const { currentPage, totalPages } = pagination;
+
+    // Previous button
+    items.push(
+      <PaginationItem key="prev">
+        <PaginationPrevious
+          onClick={() => handlePageChange(currentPage - 1)}
+          className={
+            !pagination.hasPrevPage
+              ? "pointer-events-none opacity-50"
+              : "cursor-pointer"
+          }
+        />
+      </PaginationItem>
+    );
+
+    // Page numbers
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) {
+        items.push(
+          <PaginationItem key={i}>
+            <PaginationLink
+              onClick={() => handlePageChange(i)}
+              isActive={currentPage === i}
+              className={`cursor-pointer ${
+                currentPage === i
+                  ? "bg-admin-gradient text-white border-0 hover:bg-admin-gradient"
+                  : ""
+              }`}
+            >
+              {i}
+            </PaginationLink>
+          </PaginationItem>
+        );
+      }
+    } else {
+      // Show first page
+      items.push(
+        <PaginationItem key={1}>
+          <PaginationLink
+            onClick={() => handlePageChange(1)}
+            isActive={currentPage === 1}
+            className={`cursor-pointer ${
+              currentPage === 1
+                ? "bg-admin-gradient text-white border-0 hover:bg-admin-gradient"
+                : ""
+            }`}
+          >
+            1
+          </PaginationLink>
+        </PaginationItem>
+      );
+
+      if (currentPage > 3) {
+        items.push(
+          <PaginationItem key="ellipsis1">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      }
+
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+
+      for (let i = start; i <= end; i++) {
+        items.push(
+          <PaginationItem key={i}>
+            <PaginationLink
+              onClick={() => handlePageChange(i)}
+              isActive={currentPage === i}
+              className={`cursor-pointer ${
+                currentPage === i
+                  ? "bg-admin-gradient text-white border-0 hover:bg-admin-gradient"
+                  : ""
+              }`}
+            >
+              {i}
+            </PaginationLink>
+          </PaginationItem>
+        );
+      }
+
+      if (currentPage < totalPages - 2) {
+        items.push(
+          <PaginationItem key="ellipsis2">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      }
+
+      items.push(
+        <PaginationItem key={totalPages}>
+          <PaginationLink
+            onClick={() => handlePageChange(totalPages)}
+            isActive={currentPage === totalPages}
+            className={`cursor-pointer ${
+              currentPage === totalPages
+                ? "bg-admin-gradient text-white border-0 hover:bg-admin-gradient"
+                : ""
+            }`}
+          >
+            {totalPages}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    // Next button
+    items.push(
+      <PaginationItem key="next">
+        <PaginationNext
+          onClick={() => handlePageChange(currentPage + 1)}
+          className={
+            !pagination.hasNextPage
+              ? "pointer-events-none opacity-50"
+              : "cursor-pointer"
+          }
+        />
+      </PaginationItem>
+    );
+
+    return items;
   };
 
   if (loading) {
@@ -535,7 +755,7 @@ export default function PackagesPage() {
                   seoDescription: "",
                   seoKeywords: "",
                 });
-                setItineraryDays([{ day: "1", title: "", description: "" }]);
+                setDayPlans([{ day: "1", title: "", description: "" }]);
                 setSelectedFiles({
                   mainImage: null,
                   galleryImages: [],
@@ -784,15 +1004,15 @@ export default function PackagesPage() {
                 </div>
               </div>
 
-              {/* Itinerary */}
+              {/* Day-wise Travel Plan */}
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
                   <h3 className="text-lg font-semibold bg-admin-gradient bg-clip-text text-transparent">
-                    Itinerary
+                    Day-wise Travel Plan
                   </h3>
                   <Button
                     type="button"
-                    onClick={addItineraryDay}
+                    onClick={addDayPlan}
                     variant="outline"
                     size="sm"
                     className="border-blue-200 text-blue-600 hover:bg-blue-50"
@@ -801,14 +1021,14 @@ export default function PackagesPage() {
                     Add Day
                   </Button>
                 </div>
-                {itineraryDays.map((day, index) => (
+                {dayPlans.map((day, index) => (
                   <Card key={index} className="p-4">
                     <div className="flex justify-between items-center mb-4">
                       <h4 className="font-semibold text-gray-900">Day {day.day}</h4>
-                      {itineraryDays.length > 1 && (
+                      {dayPlans.length > 1 && (
                         <Button
                           type="button"
-                          onClick={() => removeItineraryDay(index)}
+                          onClick={() => removeDayPlan(index)}
                           variant="outline"
                           size="sm"
                           className="text-red-600 border-red-200 hover:bg-red-50"
@@ -825,7 +1045,7 @@ export default function PackagesPage() {
                         <Input
                           value={day.title}
                           onChange={(e) =>
-                            updateItineraryDay(index, "title", e.target.value)
+                            updateDayPlan(index, "title", e.target.value)
                           }
                           placeholder="e.g., Arrival & Local Sightseeing"
                           className={`mt-1 ${
@@ -842,7 +1062,7 @@ export default function PackagesPage() {
                         <Textarea
                           value={day.description}
                           onChange={(e) =>
-                            updateItineraryDay(index, "description", e.target.value)
+                            updateDayPlan(index, "description", e.target.value)
                           }
                           placeholder="Detailed description of activities for this day"
                           rows={2}
@@ -885,11 +1105,25 @@ export default function PackagesPage() {
                     </Button>
                     {formData.image && (
                       <div className="relative">
-                        <img
+                        <Image
                           src={formData.image}
                           alt="Main package image"
+                          width={400}
+                          height={192}
                           className="w-full h-48 object-cover rounded-lg"
                         />
+                        <Button
+                          type="button"
+                          onClick={() => {
+                            setFormData({ ...formData, image: "" });
+                            setSelectedFiles((prev) => ({ ...prev, mainImage: null }));
+                          }}
+                          variant="destructive"
+                          size="sm"
+                          className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0"
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
                       </div>
                     )}
                   </div>
@@ -923,9 +1157,11 @@ export default function PackagesPage() {
                       <div className="grid grid-cols-3 gap-4">
                         {formData.gallery.map((image, index) => (
                           <div key={index} className="relative">
-                            <img
+                            <Image
                               src={image}
                               alt={`Gallery image ${index + 1}`}
+                              width={120}
+                              height={96}
                               className="w-full h-24 object-cover rounded-lg"
                             />
                             <Button
@@ -1001,7 +1237,7 @@ export default function PackagesPage() {
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="seoTitle" className="text-base font-semibold">
-                      SEO Title <span className="text-red-500">*</span>
+                      SEO Title <span className="text-gray-500">(Optional)</span>
                     </Label>
                     <Input
                       id="seoTitle"
@@ -1009,22 +1245,13 @@ export default function PackagesPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, seoTitle: e.target.value })
                       }
-                      placeholder="SEO optimized title for search engines"
-                      className={`mt-2 ${
-                        isFormSubmitted && !formData.seoTitle
-                          ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
-                          : ""
-                      }`}
+                      placeholder="e.g., Ooty Hill Station Tour - 3 Days 2 Nights | Best Tours & Travels"
+                      className="mt-2"
                     />
-                    {isFormSubmitted && !formData.seoTitle && (
-                      <p className="text-sm text-red-500 mt-1">
-                        SEO title is required
-                      </p>
-                    )}
                   </div>
                   <div>
                     <Label htmlFor="seoDescription" className="text-base font-semibold">
-                      SEO Description <span className="text-red-500">*</span>
+                      SEO Description <span className="text-gray-500">(Optional)</span>
                     </Label>
                     <Textarea
                       id="seoDescription"
@@ -1032,23 +1259,14 @@ export default function PackagesPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, seoDescription: e.target.value })
                       }
-                      placeholder="Meta description for search engines (150-160 characters)"
+                      placeholder="e.g., Book your Ooty hill station tour with our premium travel packages. Experience scenic beauty, tea gardens, and comfortable accommodation."
                       rows={3}
-                      className={`mt-2 ${
-                        isFormSubmitted && !formData.seoDescription
-                          ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
-                          : ""
-                      }`}
+                      className="mt-2"
                     />
-                    {isFormSubmitted && !formData.seoDescription && (
-                      <p className="text-sm text-red-500 mt-1">
-                        SEO description is required
-                      </p>
-                    )}
                   </div>
                   <div>
                     <Label htmlFor="seoKeywords" className="text-base font-semibold">
-                      SEO Keywords <span className="text-red-500">*</span>
+                      SEO Keywords <span className="text-gray-500">(Optional)</span>
                     </Label>
                     <Input
                       id="seoKeywords"
@@ -1056,18 +1274,9 @@ export default function PackagesPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, seoKeywords: e.target.value })
                       }
-                      placeholder="Comma-separated keywords for SEO"
-                      className={`mt-2 ${
-                        isFormSubmitted && !formData.seoKeywords
-                          ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
-                          : ""
-                      }`}
+                      placeholder="e.g., ooty tour packages, hill station tours, tamil nadu tourism, toy train ooty"
+                      className="mt-2"
                     />
-                    {isFormSubmitted && !formData.seoKeywords && (
-                      <p className="text-sm text-red-500 mt-1">
-                        SEO keywords are required
-                      </p>
-                    )}
                   </div>
                 </div>
               </div>
@@ -1106,98 +1315,190 @@ export default function PackagesPage() {
         </Dialog>
       </div>
 
-      {/* Packages Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {packages.map((pkg) => (
-          <Card key={pkg._id} className="overflow-hidden hover:shadow-xl transition-all duration-300">
-            <div className="relative">
-              <img
-                src={pkg.image || "/images/placeholder-package.jpg"}
-                alt={pkg.title}
-                className="w-full h-48 object-cover"
-              />
-              <div className="absolute top-4 left-4">
-                <Badge
-                  variant={pkg.status === "active" ? "default" : "secondary"}
-                  className={
-                    pkg.status === "active"
-                      ? "bg-green-100 text-green-800 border-green-200"
-                      : "bg-gray-100 text-gray-800 border-gray-200"
-                  }
-                >
-                  {pkg.status}
-                </Badge>
-              </div>
-              {pkg.featured && (
-                <div className="absolute top-4 right-4">
-                  <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
-                    Featured
-                  </Badge>
-                </div>
-              )}
-            </div>
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
-                    {pkg.title}
-                  </h3>
-                  <div className="flex items-center text-gray-600 mb-2">
-                    <MapPin className="h-4 w-4 mr-1" />
-                    <span className="text-sm">{pkg.destination}</span>
+      {/* Packages List - Horizontal Cards with Image Left */}
+      <div className="grid gap-6">
+        {Array.isArray(packages) && packages.map((pkg) => (
+          <Card key={pkg._id} className="shadow-xl border-0">
+            <CardContent className="p-10">
+              <div className="flex gap-8">
+                {/* Left Side - Package Image */}
+                <div className="flex-shrink-0">
+                  <div className="w-96 h-72 rounded-lg overflow-hidden border">
+                    <Image
+                      src={pkg.image || "/images/placeholder-package.jpg"}
+                      alt={pkg.title}
+                      width={384}
+                      height={288}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                  <div className="flex items-center justify-between text-sm text-gray-600 mb-3">
-                    <div className="flex items-center">
-                      <Calendar className="h-4 w-4 mr-1" />
-                      <span>{pkg.duration}</span>
+                  {/* Gallery Preview */}
+                  {pkg.gallery && pkg.gallery.length > 0 && (
+                    <div className="mt-3">
+                      <div className="flex gap-2 overflow-x-auto">
+                        {pkg.gallery.slice(0, 4).map((image, index) => (
+                          <div key={index} className="flex-shrink-0">
+                            <Image
+                              src={image}
+                              alt={`Gallery ${index + 1}`}
+                              width={60}
+                              height={40}
+                              className="w-15 h-10 object-cover rounded border"
+                            />
+                          </div>
+                        ))}
+                        {pkg.gallery.length > 4 && (
+                          <div className="flex-shrink-0 w-15 h-10 bg-gray-100 rounded border flex items-center justify-center text-xs text-gray-600">
+                            +{pkg.gallery.length - 4}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className="font-semibold text-blue-600">
-                      {pkg.price}
-                    </div>
-                  </div>
-                  <p className="text-gray-600 text-sm line-clamp-3">
-                    {pkg.shortDescription}
-                  </p>
-                </div>
-                
-                <div className="flex flex-wrap gap-2">
-                  {pkg.highlights.slice(0, 3).map((highlight, index) => (
-                    <Badge key={index} variant="outline" className="text-xs">
-                      {highlight}
-                    </Badge>
-                  ))}
-                  {pkg.highlights.length > 3 && (
-                    <Badge variant="outline" className="text-xs">
-                      +{pkg.highlights.length - 3} more
-                    </Badge>
                   )}
                 </div>
 
-                <div className="flex justify-between items-center pt-4 border-t">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(pkg)}
-                    className="flex items-center gap-2"
-                  >
-                    <Edit className="h-4 w-4" />
-                    Edit
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDeleteClick(pkg._id!)}
-                    className="flex items-center gap-2 text-red-600 border-red-200 hover:bg-red-50"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    Delete
-                  </Button>
+                {/* Right Side - Package Content */}
+                <div className="flex-1 flex justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="text-2xl font-semibold text-gray-900">{pkg.title}</h3>
+                      <Badge
+                        variant={pkg.status === "active" ? "default" : "secondary"}
+                        className={pkg.status === "active" ? "bg-admin-gradient text-white" : ""}
+                      >
+                        {pkg.status}
+                      </Badge>
+                      {pkg.featured && (
+                        <Badge className="bg-yellow-500 text-yellow-900">
+                          ⭐ Featured
+                        </Badge>
+                      )}
+                    </div>
+                    
+                    <p className="text-gray-600 mb-4">
+                      <MapPin className="h-4 w-4 inline mr-2" />
+                      {pkg.destination}
+                    </p>
+                    
+                    <div className="grid md:grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <span className="font-semibold text-gray-900">Duration: </span>
+                        <span className="text-gray-600">{pkg.duration}</span>
+                      </div>
+                      <div>
+                        <span className="font-semibold text-gray-900">Price: </span>
+                        <span className="text-gray-600">{pkg.price}</span>
+                      </div>
+                      <div>
+                        <span className="font-semibold text-gray-900">Inclusions: </span>
+                        <span className="text-gray-600">{pkg.inclusions.length} items</span>
+                      </div>
+                      <div>
+                        <span className="font-semibold text-gray-900">Itinerary: </span>
+                        <span className="text-gray-600">{pkg.itinerary?.length || 0} days</span>
+                      </div>
+                    </div>
+                    
+                    <div className="mb-4">
+                      <h4 className="font-semibold text-gray-900 mb-2">Description:</h4>
+                      <p className="text-gray-600 text-sm line-clamp-3">{pkg.shortDescription}</p>
+                    </div>
+                    
+                    <div className="mb-4">
+                      <h4 className="font-semibold text-gray-900 mb-2">Highlights:</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {pkg.highlights.slice(0, 6).map((highlight, index) => (
+                          <Badge key={index} variant="outline" className="text-xs">
+                            {highlight}
+                          </Badge>
+                        ))}
+                        {pkg.highlights.length > 6 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{pkg.highlights.length - 6} more
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Action Buttons */}
+                  <div className="flex flex-col gap-2 ml-6">
+                    <Button size="sm" variant="outline" onClick={() => handleEdit(pkg)}>
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={() => handleDeleteClick(pkg._id!)}
+                      className="text-red-600 border-red-200 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete
+                    </Button>
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      {/* Pagination */}
+      {pagination && pagination.totalPages > 1 && (
+        <div className="flex justify-center mt-8">
+          <Pagination>
+            <PaginationContent>{renderPaginationItems()}</PaginationContent>
+          </Pagination>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!loading && (!Array.isArray(packages) || packages.length === 0) && (
+        <div className="text-center py-12">
+          <Package className="h-16 w-16 mx-auto text-gray-400 mb-4" />
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            No packages found
+          </h3>
+          <p className="text-gray-600 mb-6">
+            Get started by creating your first tour package.
+          </p>
+          <Button
+            onClick={() => {
+              scrollPositionRef.current = window.scrollY;
+              setEditingId(null);
+              setFormData({
+                title: "",
+                destination: "",
+                shortDescription: "",
+                fullDescription: "",
+                duration: "",
+                price: "",
+                inclusions: "",
+                exclusions: "",
+                highlights: "",
+                image: "",
+                gallery: [],
+                status: "active",
+                featured: false,
+                seoTitle: "",
+                seoDescription: "",
+                seoKeywords: "",
+              });
+              setDayPlans([{ day: "1", title: "", description: "" }]);
+              setSelectedFiles({
+                mainImage: null,
+                galleryImages: [],
+              });
+              setIsAddModalOpen(true);
+            }}
+            className="bg-admin-gradient text-white border-0"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Your First Package
+          </Button>
+        </div>
+      )}
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog

@@ -7,7 +7,9 @@
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
-    "seed-admin": "node scripts/seed-admin.js"
+    "seed-admin": "node scripts/seed-admin.js",
+    "seed-smtp": "node scripts/seed-smtp.js",
+    "seed-packages": "node scripts/seed-packages.js"
   },
   "dependencies": {
     "@alloc/quick-lru": "^5.2.0",

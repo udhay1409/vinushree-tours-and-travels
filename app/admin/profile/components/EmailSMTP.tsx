@@ -37,9 +37,9 @@ export default function EmailSMTP() {
   const [emailSettings, setEmailSettings] = useState<EmailSettings>({
     smtpHost: "smtp.gmail.com",
     smtpPort: "587",
-    smtpUser: "info@vinushree.com",
+    smtpUser: "",
     smtpPassword: "",
-    fromEmail: "info@vinushree.com",
+    fromEmail: "",
     fromName: "Vinushree Tours & Travels",
   });
 
@@ -60,15 +60,51 @@ export default function EmailSMTP() {
     lastTested: null,
   });
 
-  // Initialize connection status
+  // Load SMTP settings on component mount
   useEffect(() => {
-    setConnectionStatus({
-      status: "never",
-      lastTested: null,
-    });
+    fetchSMTPSettings();
   }, []);
 
-  const handleEmailSave = () => {
+  const fetchSMTPSettings = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch("/api/admin/EmailSmtp");
+      const data = await response.json();
+
+      if (data.success) {
+        const settings = data.data;
+        setEmailSettings({
+          smtpHost: settings.smtpHost,
+          smtpPort: settings.smtpPort,
+          smtpUser: settings.smtpUser,
+          smtpPassword: "", // Don't populate password for security
+          fromEmail: settings.fromEmail,
+          fromName: settings.fromName,
+        });
+
+        setConnectionStatus({
+          status: settings.testStatus || "never",
+          lastTested: settings.lastTested,
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: data.message || "Failed to fetch SMTP settings",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch SMTP settings",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEmailSave = async () => {
     // Validate required fields
     if (
       !emailSettings.smtpHost ||
@@ -86,16 +122,41 @@ export default function EmailSMTP() {
       return;
     }
 
-    setLoading(true);
-    
-    // Simulate saving (in real app, this would save to localStorage or state management)
-    setTimeout(() => {
-      toast({
-        title: "Email Settings Updated",
-        description: "Your travel booking email configuration has been successfully updated.",
+    try {
+      setLoading(true);
+      const response = await fetch("/api/admin/EmailSmtp", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(emailSettings),
       });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast({
+          title: "Email Settings Updated",
+          description: "Your travel booking email configuration has been successfully updated.",
+        });
+        // Refresh settings to get updated data
+        await fetchSMTPSettings();
+      } else {
+        toast({
+          title: "Error",
+          description: data.message || "Failed to update email settings",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update email settings",
+        variant: "destructive",
+      });
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   const testEmailConnection = async () => {
@@ -212,7 +273,7 @@ export default function EmailSMTP() {
         setTestEmailData({
           email: "",
           message:
-            "This is a test email to verify SMTP configuration is working correctly.",
+            "Greetings from Vinushree Tours & Travels! This is a test email to verify our SMTP configuration is working correctly for sending travel booking confirmations and updates.",
         });
       } else {
         toast({
@@ -237,10 +298,23 @@ export default function EmailSMTP() {
       {/* SMTP Configuration */}
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <h4 className="text-lg font-semibold bg-admin-primary bg-clip-text text-transparent">
+          <h4 className="text-lg font-semibold bg-admin-gradient bg-clip-text text-transparent">
             SMTP Email Configuration
           </h4>
-          
+          {connectionStatus.status !== "never" && (
+            <div className="flex items-center space-x-2">
+              {connectionStatus.status === "success" ? (
+                <CheckCircle className="h-5 w-5 text-green-500" />
+              ) : (
+                <XCircle className="h-5 w-5 text-red-500" />
+              )}
+              <span className={`text-sm ${
+                connectionStatus.status === "success" ? "text-green-600" : "text-red-600"
+              }`}>
+                {connectionStatus.status === "success" ? "Connected" : "Connection Failed"}
+              </span>
+            </div>
+          )}
         </div>
 
        
@@ -361,23 +435,58 @@ export default function EmailSMTP() {
 
        
 
-        <div>
-          {/* Save Button */}
-          <div className="flex justify-end pt-6 border-t">
+        {/* Connection Test */}
+        <div className="flex items-center justify-between pt-4 border-t">
+          <div className="flex items-center space-x-4">
             <Button
-              onClick={handleEmailSave}
-              className="bg-admin-gradient text-white border-0"
+              onClick={testEmailConnection}
+              disabled={isTestingConnection || loading}
+              variant="outline"
+              className="border-admin-primary text-admin-primary hover:bg-admin-primary hover:text-white"
             >
-              <Save className="h-4 w-4 mr-2" />
-              Save Email Settings
+              {isTestingConnection ? (
+                <>
+                  <Clock className="h-4 w-4 mr-2 animate-spin" />
+                  Testing...
+                </>
+              ) : (
+                <>
+                  <TestTube className="h-4 w-4 mr-2" />
+                  Test Connection
+                </>
+              )}
             </Button>
+            {connectionStatus.lastTested && (
+              <span className="text-sm text-gray-500">
+                Last tested: {new Date(connectionStatus.lastTested).toLocaleString()}
+              </span>
+            )}
           </div>
+          
+          {/* Save Button */}
+          <Button
+            onClick={handleEmailSave}
+            disabled={loading}
+            className="bg-admin-gradient text-white border-0"
+          >
+            {loading ? (
+              <>
+                <Clock className="h-4 w-4 mr-2 animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="h-4 w-4 mr-2" />
+                Save Email Settings
+              </>
+            )}
+          </Button>
         </div>
       </div>
 
       {/* Test Email Section */}
       <div className="space-y-6">
-        <h4 className="text-lg font-semibold bg-admin-primary bg-clip-text text-transparent">
+        <h4 className="text-lg font-semibold bg-admin-gradient bg-clip-text text-transparent">
           Send Test Email
         </h4>
 

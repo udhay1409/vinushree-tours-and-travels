@@ -59,10 +59,10 @@ import {
   Loader2,
   Eye,
   Download,
-  MessageCircle,
   Car,
   Package
 } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 
 interface TravelLead {
   _id?: string;
@@ -1107,7 +1107,7 @@ export default function LeadManager() {
                         </TableCell>
                         <TableCell>
                           <Badge className={getSourceColor(lead.source)}>
-                            {lead.source === "whatsapp" && <MessageCircle className="h-3 w-3 mr-1" />}
+                            {lead.source === "whatsapp" && <WhatsAppIcon className="h-3 w-3 mr-1" />}
                             {lead.source}
                           </Badge>
                         </TableCell>

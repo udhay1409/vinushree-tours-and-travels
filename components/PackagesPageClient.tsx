@@ -13,6 +13,7 @@ interface PackageItem {
   title: string;
   description: string;
   image?: string;
+  gallery?: string[];
   duration: string;
   price: string;
   featured?: boolean;
@@ -83,14 +84,14 @@ export default function PackagesPageClient({ packagesData }: PackagesPageClientP
               Tour Packages
             </Badge>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-              Explore Tamil Nadu
+              Discover Tamil Nadu
               <span className="block text-2xl sm:text-3xl lg:text-4xl mt-2 font-normal">
-                With Our Curated Packages
+                Amazing Travel Experiences
               </span>
             </h1>
             <p className="text-lg sm:text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
-              Discover the rich culture, stunning landscapes, and spiritual heritage of Tamil Nadu 
-              with our carefully crafted tour packages.
+              Experience the rich culture, stunning landscapes, and spiritual heritage of Tamil Nadu 
+              with our expertly designed travel packages.
             </p>
           </motion.div>
         </div>
@@ -101,38 +102,37 @@ export default function PackagesPageClient({ packagesData }: PackagesPageClientP
         <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
           <div className="text-center mb-12 sm:mb-16 md:mb-20">
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 md:mb-8 px-2">
-              Popular
+              Featured
               <span className="block text-transparent bg-clip-text bg-admin-gradient">
-                Tour Packages
+                Travel Packages
               </span>
             </h2>
             <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-xs sm:max-w-xl md:max-w-2xl mx-auto px-2">
-              Choose from our selection of popular destinations and experiences
+              Choose from our handpicked destinations and unforgettable experiences
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:gap-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
             {packagesData.map((pkg, index) => (
               <motion.div
                 key={pkg.id}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 60 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
               >
-                <Card className="h-full hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg overflow-hidden">
-                  {/* Package Image */}
-                  <div className="relative h-48 bg-gradient-to-br from-blue-500 to-purple-600 overflow-hidden">
+                <Card className="h-full hover:shadow-xl hover:text-admin-primary transition-all duration-300 group overflow-hidden border-0 shadow-lg flex flex-col">
+                  <div className="aspect-[3/2] overflow-hidden relative flex-shrink-0">
                     <img
                       src={pkg.image || `/kodaikanal-hill-station.png`}
                       alt={pkg.title}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-black/20"></div>
                     <div className="absolute top-4 left-4">
                       <Badge className={`${
                         pkg.featured 
                           ? 'bg-yellow-500 text-yellow-900' 
-                          : 'bg-white/20 text-white border-white/30'
+                          : 'bg-admin-gradient text-white'
                       } backdrop-blur-sm`}>
                         {pkg.featured ? '⭐ Featured' : pkg.category}
                       </Badge>
@@ -151,35 +151,35 @@ export default function PackagesPageClient({ packagesData }: PackagesPageClientP
                     </div>
                   </div>
 
-                  <CardContent className="p-4 sm:p-6 md:p-8">
-                    <div className="mb-3 sm:mb-4 md:mb-6">
-                      <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3 md:mb-4">
+                  <CardContent className="p-3 sm:p-4 md:p-6 flex flex-col flex-grow">
+                    <div className="mb-3 sm:mb-4">
+                      <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-2 sm:mb-3 text-gray-900 transition-colors line-clamp-2">
                         {pkg.title}
                       </h3>
-                      <p className="text-sm sm:text-base text-gray-600 leading-relaxed line-clamp-3">
+                      <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4 leading-relaxed line-clamp-3 flex-grow">
                         {pkg.description}
                       </p>
                     </div>
 
                     {/* Price */}
                     <div className="mb-4">
-                      <div className="text-2xl font-bold text-transparent bg-clip-text bg-admin-gradient">
+                      <div className="text-xl sm:text-2xl font-bold text-transparent bg-clip-text bg-admin-gradient">
                         {pkg.price}
                       </div>
-                      <div className="text-sm text-gray-500">per person</div>
+                      <div className="text-xs sm:text-sm text-gray-500">per person</div>
                     </div>
 
                     {/* Highlights */}
-                    <div className="mb-6">
-                      <h4 className="font-semibold text-gray-900 mb-2 text-sm">Highlights:</h4>
-                      <div className="flex flex-wrap gap-1">
+                    <div className="mb-4 sm:mb-6">
+                      <h4 className="font-semibold text-gray-900 mb-2 text-xs sm:text-sm">Top Highlights:</h4>
+                      <div className="flex flex-wrap gap-1 sm:gap-2">
                         {pkg.highlights.slice(0, 3).map((highlight, idx) => (
-                          <Badge key={idx} variant="secondary" className="text-xs">
+                          <Badge key={idx} variant="outline" className="text-xs">
                             {highlight}
                           </Badge>
                         ))}
                         {pkg.highlights.length > 3 && (
-                          <Badge variant="secondary" className="text-xs">
+                          <Badge variant="outline" className="text-xs">
                             +{pkg.highlights.length - 3} more
                           </Badge>
                         )}
@@ -187,25 +187,28 @@ export default function PackagesPageClient({ packagesData }: PackagesPageClientP
                     </div>
 
                     {/* Inclusions */}
-                    <div className="mb-6">
-                      <h4 className="font-semibold text-gray-900 mb-2 text-sm">Includes:</h4>
-                      <div className="text-xs text-gray-600">
+                    <div className="mb-4 sm:mb-6">
+                      <h4 className="font-semibold text-gray-900 mb-2 text-xs sm:text-sm">Package Includes:</h4>
+                      <div className="text-xs sm:text-sm text-gray-600 line-clamp-2">
                         {pkg.inclusions.join(' • ')}
                       </div>
                     </div>
 
-                    <div className="space-y-3">
+                    {/* Button Container - Fixed at bottom */}
+                    <div className="mt-auto space-y-2 sm:space-y-3">
                       <Button
                         onClick={() => handleBookPackage(pkg.title)}
-                        className="w-full bg-admin-gradient text-white hover:opacity-90 transition-all duration-300"
+                        className="w-full bg-admin-gradient text-white group-hover:shadow-lg text-xs sm:text-sm h-8 sm:h-10"
                       >
-                        Book This Package
+                        <span className="hidden sm:inline">Book This Package</span>
+                        <span className="sm:hidden">Book Now</span>
                       </Button>
                       <Link
                         href={`/packages/${pkg.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')}`}
-                        className="block text-center text-admin-primary hover:text-admin-secondary transition-colors font-medium text-sm py-2"
+                        className="block text-center text-admin-primary hover:text-admin-secondary transition-colors font-medium text-xs sm:text-sm py-1 sm:py-2"
                       >
-                        View Full Details →
+                        <span className="hidden sm:inline">View Full Details →</span>
+                        <span className="sm:hidden">Details →</span>
                       </Link>
                     </div>
                   </CardContent>
@@ -223,10 +226,10 @@ export default function PackagesPageClient({ packagesData }: PackagesPageClientP
       <section className="py-12 sm:py-16 md:py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 md:px-8 text-center max-w-7xl">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Need a Custom Package?
+            Want a Personalized Trip?
           </h2>
           <p className="text-lg text-gray-600 mb-8">
-            We can create personalized tour packages based on your preferences, budget, and schedule
+            Let us create a custom travel experience tailored to your interests, budget, and schedule
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
@@ -234,10 +237,10 @@ export default function PackagesPageClient({ packagesData }: PackagesPageClientP
               className="bg-admin-gradient text-white hover:opacity-90"
             >
               <Phone className="h-4 w-4 mr-2" />
-              Call for Custom Package
+              Call for Custom Trip
             </Button>
             <Button
-              onClick={() => window.open('https://wa.me/919003782966?text=Hi, I need a custom tour package. Please help me plan my trip.', '_blank')}
+              onClick={() => window.open('https://wa.me/919003782966?text=Hi, I would like to plan a personalized trip to Tamil Nadu. Please help me create a custom travel package.', '_blank')}
               variant="outline"
               className="border-admin-primary text-admin-primary hover:bg-admin-gradient hover:text-white"
             >

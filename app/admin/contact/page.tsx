@@ -18,9 +18,9 @@ import {
   Linkedin,
   Instagram,
   Youtube,
-  MessageCircle,
   Send,
 } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 
 export default function ContactPage() {
   const { toast } = useToast();
@@ -511,7 +511,7 @@ export default function ContactPage() {
                   htmlFor="whatsapp"
                   className="text-base font-semibold flex items-center gap-2"
                 >
-                  <MessageCircle className="h-4 w-4 text-green-600" />
+                  <WhatsAppIcon className="h-4 w-4 text-green-600" />
                   WhatsApp Business URL
                 </Label>
                 <Input

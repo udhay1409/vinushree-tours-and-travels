@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { MapPin, MessageCircle, Navigation } from "lucide-react";
+import { MapPin, Navigation } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 import { useToast } from "@/hooks/use-toast";
 
 interface BookingModalProps {
@@ -175,7 +176,7 @@ Please confirm availability and provide final pricing.`;
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-gray-900 flex items-center">
-            <MessageCircle className="h-6 w-6 mr-2 text-admin-primary" />
+            <WhatsAppIcon className="h-6 w-6 mr-2 text-admin-primary" />
             Book Your Travel
             {prefilledTitle && (
               <span className="text-lg font-normal text-gray-600 ml-2">
@@ -355,7 +356,7 @@ Please confirm availability and provide final pricing.`;
                 </>
               ) : (
                 <>
-                  <MessageCircle className="h-4 w-4 mr-2" />
+                  <WhatsAppIcon className="h-4 w-4 mr-2" />
                   Submit Now
                 </>
               )}

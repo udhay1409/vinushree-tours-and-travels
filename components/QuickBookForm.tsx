@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin, MessageCircle, Navigation } from "lucide-react";
+import { MapPin, Navigation } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 import { useToast } from "@/hooks/use-toast";
 
 // Declare Google Maps types
@@ -174,7 +175,7 @@ Please provide availability and pricing details.`;
       <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
         <CardHeader className="text-center pb-4">
           <CardTitle className="text-2xl font-bold text-gray-900 flex items-center justify-center">
-            <MessageCircle className="h-6 w-6 mr-2 text-admin-primary" />
+            <WhatsAppIcon className="h-6 w-6 mr-2 text-admin-primary" />
             Quick Book Now
           </CardTitle>
           <p className="text-gray-600">Get instant quote and availability</p>
@@ -340,7 +341,7 @@ Please provide availability and pricing details.`;
                 </>
               ) : (
                 <>
-                  <MessageCircle className="h-5 w-5 mr-2" />
+                  <WhatsAppIcon className="h-5 w-5 mr-2" />
                   Submit Now
                 </>
               )}

@@ -6,17 +6,27 @@ import { Badge } from "@/components/ui/badge";
 import { Car, Phone, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import Link from "next/link";
 import BookingModal from "@/components/BookingModal";
 import PopularRoutes from "@/components/PopularRoutes";
 
 interface TariffItem {
-  id: number;
-  service: string;
+  id: string;
+  vehicleType: string;
+  vehicleName: string;
   description: string;
-  price: string;
-  features: string[];
+  oneWayRate: string;
+  roundTripRate: string;
+  driverAllowance: string;
+  minimumKmOneWay: string;
+  minimumKmRoundTrip: string;
   image: string;
-  minCharge: string;
+  featured: boolean;
+  additionalCharges: string[];
+  slug: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string;
 }
 
 interface TariffPageClientProps {
@@ -27,9 +37,31 @@ export default function TariffPageClient({ tariffData }: TariffPageClientProps) 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<string>("");
 
-  const handleBookNow = (service: string) => {
-    setSelectedService(service);
+  const handleBookNow = (vehicleName: string) => {
+    setSelectedService(vehicleName);
     setIsModalOpen(true);
+  };
+
+  // Utility functions to clean display values
+  const formatCurrency = (value: string) => {
+    if (!value) return "0";
+    // Remove existing currency symbols and "per km" text
+    const cleaned = value.replace(/[₹$]/g, '').replace(/per\s*km/gi, '').replace(/\/km/gi, '').trim();
+    return cleaned;
+  };
+
+  const formatDistance = (value: string) => {
+    if (!value) return "0";
+    // Remove existing "km" text
+    const cleaned = value.replace(/km/gi, '').trim();
+    return cleaned;
+  };
+
+  const formatDriverAllowance = (value: string) => {
+    if (!value) return "0";
+    // Remove existing currency symbols
+    const cleaned = value.replace(/[₹$]/g, '').trim();
+    return cleaned;
   };
 
   return (
@@ -111,92 +143,129 @@ export default function TariffPageClient({ tariffData }: TariffPageClientProps) 
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:gap-10">
-            {tariffData.map((tariff, index) => (
-              <motion.div
-                key={tariff.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <Card className="h-full hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg overflow-hidden">
-                  <CardContent className="p-0">
-                    <div className="relative h-48 overflow-hidden">
+          {tariffData.length === 0 ? (
+            <div className="col-span-full text-center py-12">
+              <p className="text-gray-500 text-lg">No tariff services available at the moment.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
+              {tariffData.map((tariff, index) => (
+                <motion.div
+                  key={tariff.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <Card className="h-full hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border-0 shadow-lg overflow-hidden group flex flex-col">
+                    <div className="relative h-56 sm:h-64 overflow-hidden flex-shrink-0">
                       <img
-                        src={
-                          tariff.service.includes('One-way') ? '/toyota-etios-sedan-taxi.png' :
-                          tariff.service.includes('Round') ? '/toyota-innova-taxi.png' :
-                          tariff.service.includes('Airport') ? '/airport-taxi.png' :
-                          tariff.service.includes('Day') ? '/maruti-brezza-suv-taxi.png' :
-                          tariff.service.includes('Hourly') ? '/wagon-r-taxi.png' :
-                          tariff.service.includes('Local') ? '/modern-taxi-fleet-in-tamil-nadu.png' :
-                          '/toyota-innova-crysta-luxury-taxi.png'
-                        }
-                        alt={tariff.service}
-                        className="w-full h-full object-cover"
+                        src={tariff.image || '/toyota-innova-crysta-luxury-taxi.png'}
+                        alt={tariff.vehicleName}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
-                      <div className="absolute inset-0 bg-black/20"></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                      <div className="absolute top-4 left-4">
+                        <Badge className={`${
+                          tariff.featured 
+                            ? 'bg-yellow-500 text-yellow-900' 
+                            : 'bg-admin-gradient text-white'
+                        } backdrop-blur-sm`}>
+                          {tariff.featured ? '⭐ Featured' : tariff.vehicleType}
+                        </Badge>
+                      </div>
                       <div className="absolute top-4 right-4">
                         <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm">
-                          {tariff.price}
+                          ₹{formatCurrency(tariff.oneWayRate)}/km
                         </Badge>
                       </div>
                     </div>
                     
-                    <div className="p-4 sm:p-6 md:p-8">
+                    <CardContent className="p-4 sm:p-6 md:p-8 flex flex-col flex-grow">
                       <div className="text-center mb-4 sm:mb-6 md:mb-8">
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">
-                          {tariff.service}
-                        </h3>
-                        <p className="text-gray-600 text-sm leading-relaxed">
+                        <div className="flex items-center justify-center gap-2 mb-2 sm:mb-3">
+                          <Car className="h-4 w-4 text-admin-primary flex-shrink-0" />
+                          <h3 className="text-base sm:text-lg md:text-xl font-semibold text-gray-900 transition-colors line-clamp-2">
+                            {tariff.vehicleName}
+                          </h3>
+                        </div>
+                        <p className="text-sm sm:text-base text-gray-600 leading-relaxed line-clamp-3">
                           {tariff.description}
                         </p>
                       </div>
 
-                      <div className="text-center mb-6">
-                        <div className="text-3xl font-bold text-transparent bg-clip-text bg-admin-gradient mb-2">
-                          {tariff.price}
+                      <div className="grid grid-cols-2 gap-4 mb-6">
+                        <div className="text-center">
+                          <div className="text-lg font-bold text-transparent bg-clip-text bg-admin-gradient">
+                            ₹{formatCurrency(tariff.oneWayRate)}/km
+                          </div>
+                          <div className="text-xs text-gray-500">One Way</div>
+                          <div className="text-xs text-gray-400">Min: {formatDistance(tariff.minimumKmOneWay)} km</div>
                         </div>
-                        <div className="text-sm text-gray-500">
-                          Minimum: {tariff.minCharge}
+                        <div className="text-center">
+                          <div className="text-lg font-bold text-transparent bg-clip-text bg-admin-gradient">
+                            ₹{formatCurrency(tariff.roundTripRate)}/km
+                          </div>
+                          <div className="text-xs text-gray-500">Round Trip</div>
+                          <div className="text-xs text-gray-400">Min: {formatDistance(tariff.minimumKmRoundTrip)} km</div>
                         </div>
                       </div>
 
                       <div className="space-y-3 mb-6">
-                        {tariff.features.map((feature, idx) => (
-                          <div key={idx} className="flex items-center space-x-2">
+                        <div className="flex items-center space-x-2">
+                          <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                          <span className="text-sm text-gray-600">Driver Allowance: ₹{formatDriverAllowance(tariff.driverAllowance)}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                          <span className="text-sm text-gray-600">Professional Driver</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
+                          <span className="text-sm text-gray-600">Clean & Comfortable Vehicle</span>
+                        </div>
+                        {tariff.additionalCharges && tariff.additionalCharges.length > 0 && (
+                          <div className="flex items-center space-x-2">
                             <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
-                            <span className="text-sm text-gray-600">{feature}</span>
+                            <span className="text-sm text-gray-600">{tariff.additionalCharges[0]}</span>
                           </div>
-                        ))}
+                        )}
                       </div>
 
-                      <Button
-                        onClick={() => handleBookNow(tariff.service)}
-                        className="w-full bg-admin-gradient text-white hover:opacity-90 transition-all duration-300"
-                      >
-                        Book Now
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
+                      {/* Button Container - Fixed at bottom */}
+                      <div className="mt-auto space-y-3">
+                        <Button
+                          onClick={() => handleBookNow(tariff.vehicleName)}
+                          className="w-full bg-admin-gradient text-white hover:opacity-90 transition-all duration-300"
+                        >
+                          Book Now
+                        </Button>
+                        <Link
+                          href={`/tariff/${tariff.slug}`}
+                          className="block text-center text-admin-primary hover:text-admin-secondary transition-colors font-medium text-sm py-2"
+                        >
+                          View Details →
+                        </Link>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
       {/* Popular Routes Section */}
       <PopularRoutes showAll={true} />
 
-      {/* Contact Section */}
+      {/* Custom Tariff Section */}
       <section className="py-12 sm:py-16 md:py-20 bg-white">
         <div className="container mx-auto px-4 sm:px-6 md:px-8 text-center max-w-7xl">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">
             Need a Custom Quote?
           </h2>
           <p className="text-lg text-gray-600 mb-8">
-            Contact us for personalized pricing based on your specific travel requirements
+            Let us create personalized pricing based on your specific travel requirements and route
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
@@ -204,10 +273,10 @@ export default function TariffPageClient({ tariffData }: TariffPageClientProps) 
               className="bg-admin-gradient text-white hover:opacity-90"
             >
               <Phone className="h-4 w-4 mr-2" />
-              Call Now
+              Call for Custom Quote
             </Button>
             <Button
-              onClick={() => window.open('https://wa.me/919003782966?text=Hi, I need a custom quote for travel services', '_blank')}
+              onClick={() => window.open('https://wa.me/919003782966?text=Hi, I would like to get a custom quote for travel services. Please help me with personalized pricing for my route.', '_blank')}
               variant="outline"
               className="border-admin-primary text-admin-primary hover:bg-admin-gradient hover:text-white"
             >

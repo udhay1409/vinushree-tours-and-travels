@@ -10,7 +10,7 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("profile")
 
   const tabs = [
-    { id: "profile", name: "Company Information", icon: <User className="h-4 w-4" /> },
+    { id: "profile", name: "Profile Information", icon: <User className="h-4 w-4" /> },
     { id: "security", name: "Email & SMTP", icon: <Mail className="h-4 w-4" /> }
   ]
 
@@ -20,7 +20,7 @@ export default function ProfilePage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-4xl font-bold bg-admin-gradient bg-clip-text text-transparent">Profile Settings</h1>
-          <p className="text-gray-600 mt-2">Manage company information and email settings</p>
+          <p className="text-gray-600 mt-2">Manage your account information and email configuration</p>
         </div>
       </div>
 

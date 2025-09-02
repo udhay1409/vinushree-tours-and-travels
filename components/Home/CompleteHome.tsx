@@ -14,7 +14,7 @@ import {
   Users,
   Star,
   Phone,
-  MessageCircle,
+
   Car,
   Plane,
   Calendar,
@@ -23,6 +23,7 @@ import {
   Heart,
   CheckCircle
 } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 import QuickBookForm from "@/components/QuickBookForm";
 import PopularRoutes from "@/components/PopularRoutes";
 
@@ -1032,7 +1033,7 @@ export default function CompleteHome() {
                   size="lg"
                   className="w-full sm:w-auto bg-white text-admin-secondary hover:bg-gray-100 px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105"
                 >
-                  <MessageCircle className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
+                  <WhatsAppIcon className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                   Book via WhatsApp
                 </Button>
               </motion.div>

@@ -13,12 +13,12 @@ import {
   X, 
   Calendar,
   Phone,
-  MessageCircle,
   Star,
   Camera
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 
 interface PackageData {
   id: number;
@@ -26,6 +26,7 @@ interface PackageData {
   title: string;
   description: string;
   image: string;
+  gallery?: string[];
   duration: string;
   price: string;
   featured?: boolean;
@@ -119,14 +120,14 @@ Thank you!`;
                     size="lg"
                     className="bg-white text-admin-primary hover:bg-gray-100 px-8 py-3 text-lg font-semibold"
                   >
-                    <MessageCircle className="h-5 w-5 mr-2" />
+                    <WhatsAppIcon className="h-5 w-5 mr-2" />
                     Book via WhatsApp
                   </Button>
                   <Button
                     onClick={handleCallNow}
                     size="lg"
                     variant="outline"
-                    className="border-white/30 text-white hover:bg-white/10 px-8 py-3 text-lg font-semibold"
+                    className="border-white/50 text-white hover:bg-white hover:text-admin-primary hover:border-white px-8 py-3 text-lg font-semibold transition-all duration-300 bg-white/10 backdrop-blur-sm"
                   >
                     <Phone className="h-5 w-5 mr-2" />
                     Call Now
@@ -136,9 +137,13 @@ Thank you!`;
 
               <div className="relative">
                 <div className="relative h-96 rounded-2xl overflow-hidden shadow-2xl">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                    <Camera className="h-24 w-24 text-white/60" />
-                  </div>
+                  <Image
+                    src={packageData.image || "/kodaikanal-hill-station.png"}
+                    alt={packageData.title}
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/20"></div>
                   <div className="absolute top-4 right-4">
                     <Badge className="bg-green-500 text-white">
                       {packageData.price}
@@ -150,6 +155,54 @@ Thank you!`;
           </motion.div>
         </div>
       </section>
+
+      {/* Gallery Section */}
+      {packageData.gallery && packageData.gallery.length > 0 && (
+        <section className="py-16 bg-white">
+          <div className="container mx-auto px-4">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">
+                Package Gallery
+              </h2>
+              <p className="text-gray-600">
+                Explore the beautiful destinations and experiences included in this package
+              </p>
+            </motion.div>
+            
+            <div className={`grid gap-4 ${
+              packageData.gallery.length === 1 ? 'grid-cols-1 max-w-md mx-auto' :
+              packageData.gallery.length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-2xl mx-auto' :
+              packageData.gallery.length === 3 ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-w-4xl mx-auto' :
+              'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+            }`}>
+              {packageData.gallery.filter(image => image && image.trim() !== '').map((image, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="relative aspect-square rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 group cursor-pointer"
+                >
+                  <Image
+                    src={image}
+                    alt={`Gallery image ${index + 1}`}
+                    fill
+                    className="object-cover group-hover:scale-110 transition-transform duration-300"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300"></div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Package Details */}
       <section className="py-20 bg-gray-50">
@@ -193,7 +246,7 @@ Thank you!`;
                   <CardContent className="p-8">
                     <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
                       <Calendar className="h-6 w-6 mr-3 text-admin-primary" />
-                      Detailed Itinerary
+                      Day-wise Travel Plan
                     </h2>
                     <div className="space-y-4">
                       {packageData.itinerary.map((item, index) => (
@@ -301,7 +354,7 @@ Thank you!`;
                         onClick={handleBookPackage}
                         className="w-full bg-admin-gradient text-white hover:opacity-90 py-3 text-lg font-semibold"
                       >
-                        <MessageCircle className="h-5 w-5 mr-2" />
+                        <WhatsAppIcon className="h-5 w-5 mr-2" />
                         Book via WhatsApp
                       </Button>
                       <Button
@@ -325,7 +378,7 @@ Thank you!`;
                           <span>+91 98765 43210</span>
                         </div>
                         <div className="flex items-center">
-                          <MessageCircle className="h-4 w-4 mr-2 text-green-500" />
+                          <WhatsAppIcon className="h-4 w-4 mr-2 text-green-500" />
                           <span>WhatsApp Support</span>
                         </div>
                       </div>

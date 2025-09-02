@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import axios from "axios";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -106,77 +107,62 @@ export default function TariffPage() {
   const [vehicleTypeDropdownOpen, setVehicleTypeDropdownOpen] = useState(false);
   const [explicitlyClosing, setExplicitlyClosing] = useState(false);
 
-  // Static sample data for tariff services
-  const sampleServices: TariffService[] = [
-    {
-      _id: "1",
-      vehicleType: "Sedan",
-      vehicleName: "Sedan (Dzire/Etios)",
-      description: "Comfortable sedan cars perfect for small families and business trips. Air-conditioned with experienced drivers.",
-      oneWayRate: "₹14 per km",
-      roundTripRate: "₹13 per km",
-      driverAllowance: "₹400",
-      minimumKmOneWay: "130 km",
-      minimumKmRoundTrip: "250 km",
-      image: "/images/vehicles/dzire.jpg",
-      status: "active",
-      featured: true,
-      additionalCharges: ["Toll fees extra", "Inter-State Permit charges extra", "Waiting charges ₹100 per hour"],
-      seoTitle: "Sedan Taxi Service - Dzire & Etios | Vinushree Tours",
-      seoDescription: "Book comfortable sedan taxis (Dzire/Etios) for outstation trips. Starting from ₹14 per km one way.",
-      seoKeywords: "sedan taxi, dzire taxi, etios taxi, outstation taxi"
-    },
-    {
-      _id: "2",
-      vehicleType: "SUV",
-      vehicleName: "SUV (Xylo/Ertiga)",
-      description: "Spacious SUVs ideal for group travel and family trips. More luggage space and comfortable seating for 6-7 passengers.",
-      oneWayRate: "₹19 per km",
-      roundTripRate: "₹17 per km", 
-      driverAllowance: "₹500",
-      minimumKmOneWay: "130 km",
-      minimumKmRoundTrip: "250 km",
-      image: "/images/vehicles/ertiga.jpg",
-      status: "active",
-      featured: true,
-      additionalCharges: ["Toll fees extra", "Inter-State Permit charges extra", "Hill station charges ₹300"],
-      seoTitle: "SUV Taxi Service - Xylo & Ertiga | Vinushree Tours",
-      seoDescription: "Book spacious SUV taxis (Xylo/Ertiga) for group travel. Starting from ₹19 per km one way.",
-      seoKeywords: "suv taxi, ertiga taxi, xylo taxi, group travel"
-    },
-    {
-      _id: "3",
-      vehicleType: "Premium",
-      vehicleName: "Assured Innova",
-      description: "Premium Toyota Innova for luxury travel experience. Perfect for business trips and special occasions with maximum comfort.",
-      oneWayRate: "₹20 per km",
-      roundTripRate: "₹18 per km",
-      driverAllowance: "₹500",
-      minimumKmOneWay: "130 km", 
-      minimumKmRoundTrip: "250 km",
-      image: "/images/vehicles/innova.jpg",
-      status: "active",
-      featured: true,
-      additionalCharges: ["Toll fees extra", "Inter-State Permit charges extra", "Premium service guarantee"],
-      seoTitle: "Premium Innova Taxi Service | Vinushree Tours",
-      seoDescription: "Book premium Toyota Innova for luxury outstation travel. Starting from ₹20 per km one way.",
-      seoKeywords: "innova taxi, premium taxi, luxury taxi, toyota innova"
-    }
-  ];
+  // Fetch tariff services from API
+  const fetchServices = async (page = 1) => {
+    try {
+      setLoading(true);
+      
+      // Get JWT token from localStorage
+      const token = localStorage.getItem('admin_token');
+      if (!token) {
+        toast({
+          title: "Authentication Error",
+          description: "Please login again",
+          variant: "destructive",
+        });
+        return;
+      }
 
-  // Initialize with sample data
-  useState(() => {
-    setServices(sampleServices);
-  });
+      const response = await axios.get(`/api/admin/tariff?page=${page}&limit=6`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      
+      if (response.data.success) {
+        setServices(response.data.data);
+        setPagination(response.data.pagination);
+        setCurrentPage(page);
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to fetch tariff services",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch tariff services",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const [pagination, setPagination] = useState<PaginationData>({
     currentPage: 1,
     totalPages: 1,
-    totalServices: 3,
+    totalServices: 0,
     limit: 6,
     hasNextPage: false,
     hasPrevPage: false,
   });
+
+  useEffect(() => {
+    fetchServices(currentPage);
+  }, [currentPage]);
 
   const [formData, setFormData] = useState({
     vehicleType: "",
@@ -241,10 +227,7 @@ export default function TariffPage() {
       !formData.driverAllowance ||
       !formData.minimumKmOneWay ||
       !formData.minimumKmRoundTrip ||
-      !formData.image ||
-      !formData.seoTitle ||
-      !formData.seoDescription ||
-      !formData.seoKeywords
+      !formData.image
     ) {
       toast({
         title: "Validation Error",
@@ -256,24 +239,79 @@ export default function TariffPage() {
     }
 
     try {
-      // Simulate API call - replace with actual API later
-      const serviceData = {
-        ...formData,
-        additionalCharges: formData.additionalCharges
-          .split(",")
-          .map((f) => f.trim())
-          .filter((f) => f),
-      };
+      // Get JWT token from localStorage first
+      const token = localStorage.getItem('admin_token');
+      if (!token) {
+        toast({
+          title: "Authentication Error",
+          description: "Please login again to continue.",
+          variant: "destructive",
+        });
+        setIsSaving(false);
+        return;
+      }
 
-      // Simulate success
-      toast({
-        title: editingId ? "Service Updated" : "Service Added",
-        description: `Tariff service has been successfully ${
-          editingId ? "updated" : "added"
-        }.`,
-      });
+      // Prepare form data for submission (including files)
+      const submitFormData = new FormData();
       
-      handleCancel();
+      // Add all text fields
+      submitFormData.append('vehicleType', formData.vehicleType.trim());
+      submitFormData.append('vehicleName', formData.vehicleName.trim());
+      submitFormData.append('description', formData.description.trim());
+      submitFormData.append('oneWayRate', formData.oneWayRate.trim());
+      submitFormData.append('roundTripRate', formData.roundTripRate.trim());
+      submitFormData.append('driverAllowance', formData.driverAllowance.trim());
+      submitFormData.append('minimumKmOneWay', formData.minimumKmOneWay.trim());
+      submitFormData.append('minimumKmRoundTrip', formData.minimumKmRoundTrip.trim());
+      submitFormData.append('featured', formData.featured.toString());
+      submitFormData.append('status', formData.status);
+      submitFormData.append('seoTitle', formData.seoTitle.trim());
+      submitFormData.append('seoDescription', formData.seoDescription.trim());
+      submitFormData.append('seoKeywords', formData.seoKeywords.trim());
+      
+      // Add existing image URL if no new file selected
+      if (!selectedFiles.mainImage && formData.image) {
+        submitFormData.append('existingImage', formData.image);
+      }
+      
+      // Add new main image file if selected
+      if (selectedFiles.mainImage) {
+        submitFormData.append('mainImage', selectedFiles.mainImage);
+      }
+      
+      // Add arrays as JSON strings
+      submitFormData.append('additionalCharges', JSON.stringify(
+        formData.additionalCharges.split(",").map((f) => f.trim()).filter((f) => f)
+      ));
+
+      const url = editingId
+        ? `/api/admin/tariff/${editingId}`
+        : "/api/admin/tariff";
+      const method = editingId ? "put" : "post";
+
+      const response = await axios[method](url, submitFormData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.data.success) {
+        toast({
+          title: editingId ? "Service Updated" : "Service Added",
+          description: `Tariff service has been successfully ${
+            editingId ? "updated" : "added"
+          }.`,
+        });
+        fetchServices(currentPage);
+        handleCancel();
+      } else {
+        toast({
+          title: "Error",
+          description: response.data.message || "Failed to save tariff service",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -296,12 +334,44 @@ export default function TariffPage() {
     setDeletingButtonId(id);
     
     try {
-      // Simulate API call
-      toast({
-        title: "Service Deleted",
-        description: "Tariff service has been successfully deleted.",
+      // Get JWT token from localStorage
+      const token = localStorage.getItem('admin_token');
+      if (!token) {
+        toast({
+          title: "Authentication Error",
+          description: "Please login again to continue.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const response = await axios.delete(`/api/admin/tariff/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
-      setDeletingServiceId(null);
+
+      if (response.data.success) {
+        toast({
+          title: "Service Deleted",
+          description: "Tariff service has been successfully deleted.",
+        });
+        setDeletingServiceId(null);
+
+        // Check if we need to go back to previous page
+        const remainingServices = Array.isArray(services) ? services.filter((s) => s._id !== id) : [];
+        if (remainingServices.length === 0 && currentPage > 1) {
+          setCurrentPage(currentPage - 1);
+        } else {
+          fetchServices(currentPage);
+        }
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to delete tariff service",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -876,11 +946,12 @@ export default function TariffPage() {
                     </Label>
                     <Input
                       id="oneWayRate"
+                      type="number"
                       value={formData.oneWayRate}
                       onChange={(e) =>
                         setFormData({ ...formData, oneWayRate: e.target.value })
                       }
-                      placeholder="e.g., ₹14 per km"
+                      placeholder="14"
                       className={`mt-2 ${
                         isFormSubmitted && !formData.oneWayRate
                           ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
@@ -899,11 +970,12 @@ export default function TariffPage() {
                     </Label>
                     <Input
                       id="roundTripRate"
+                      type="number"
                       value={formData.roundTripRate}
                       onChange={(e) =>
                         setFormData({ ...formData, roundTripRate: e.target.value })
                       }
-                      placeholder="e.g., ₹13 per km"
+                      placeholder="13"
                       className={`mt-2 ${
                         isFormSubmitted && !formData.roundTripRate
                           ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
@@ -925,11 +997,12 @@ export default function TariffPage() {
                     </Label>
                     <Input
                       id="driverAllowance"
+                      type="number"
                       value={formData.driverAllowance}
                       onChange={(e) =>
                         setFormData({ ...formData, driverAllowance: e.target.value })
                       }
-                      placeholder="e.g., ₹400"
+                      placeholder="400"
                       className={`mt-2 ${
                         isFormSubmitted && !formData.driverAllowance
                           ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
@@ -948,11 +1021,12 @@ export default function TariffPage() {
                     </Label>
                     <Input
                       id="minimumKmOneWay"
+                      type="number"
                       value={formData.minimumKmOneWay}
                       onChange={(e) =>
                         setFormData({ ...formData, minimumKmOneWay: e.target.value })
                       }
-                      placeholder="e.g., 130 km"
+                      placeholder="130"
                       className={`mt-2 ${
                         isFormSubmitted && !formData.minimumKmOneWay
                           ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
@@ -971,11 +1045,12 @@ export default function TariffPage() {
                     </Label>
                     <Input
                       id="minimumKmRoundTrip"
+                      type="number"
                       value={formData.minimumKmRoundTrip}
                       onChange={(e) =>
                         setFormData({ ...formData, minimumKmRoundTrip: e.target.value })
                       }
-                      placeholder="e.g., 250 km"
+                      placeholder="250"
                       className={`mt-2 ${
                         isFormSubmitted && !formData.minimumKmRoundTrip
                           ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
@@ -1038,6 +1113,18 @@ export default function TariffPage() {
                           alt="Vehicle image"
                           className="w-full h-48 object-cover rounded-lg"
                         />
+                        <Button
+                          type="button"
+                          onClick={() => {
+                            setFormData({ ...formData, image: "" });
+                            setSelectedFiles({ mainImage: null });
+                          }}
+                          variant="destructive"
+                          size="sm"
+                          className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0"
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
                       </div>
                     )}
                   </div>
@@ -1105,7 +1192,7 @@ export default function TariffPage() {
                 <div className="space-y-4">
                   <div>
                     <Label htmlFor="seoTitle" className="text-base font-semibold">
-                      SEO Title <span className="text-red-500">*</span>
+                      SEO Title <span className="text-gray-500">(Optional)</span>
                     </Label>
                     <Input
                       id="seoTitle"
@@ -1113,22 +1200,13 @@ export default function TariffPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, seoTitle: e.target.value })
                       }
-                      placeholder="SEO optimized title for search engines"
-                      className={`mt-2 ${
-                        isFormSubmitted && !formData.seoTitle
-                          ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
-                          : ""
-                      }`}
+                      placeholder="e.g., Toyota Etios Sedan - Comfortable Travel | Vinushree Tours"
+                      className="mt-2"
                     />
-                    {isFormSubmitted && !formData.seoTitle && (
-                      <p className="text-sm text-red-500 mt-1">
-                        SEO title is required
-                      </p>
-                    )}
                   </div>
                   <div>
                     <Label htmlFor="seoDescription" className="text-base font-semibold">
-                      SEO Description <span className="text-red-500">*</span>
+                      SEO Description <span className="text-gray-500">(Optional)</span>
                     </Label>
                     <Textarea
                       id="seoDescription"
@@ -1136,23 +1214,14 @@ export default function TariffPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, seoDescription: e.target.value })
                       }
-                      placeholder="Meta description for search engines (150-160 characters)"
+                      placeholder="Brief description for search engines (150-160 characters)"
                       rows={3}
-                      className={`mt-2 ${
-                        isFormSubmitted && !formData.seoDescription
-                          ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
-                          : ""
-                      }`}
+                      className="mt-2"
                     />
-                    {isFormSubmitted && !formData.seoDescription && (
-                      <p className="text-sm text-red-500 mt-1">
-                        SEO description is required
-                      </p>
-                    )}
                   </div>
                   <div>
                     <Label htmlFor="seoKeywords" className="text-base font-semibold">
-                      SEO Keywords <span className="text-red-500">*</span>
+                      SEO Keywords <span className="text-gray-500">(Optional)</span>
                     </Label>
                     <Input
                       id="seoKeywords"
@@ -1160,12 +1229,8 @@ export default function TariffPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, seoKeywords: e.target.value })
                       }
-                      placeholder="Comma-separated keywords for SEO"
-                      className={`mt-2 ${
-                        isFormSubmitted && !formData.seoKeywords
-                          ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
-                          : ""
-                      }`}
+                      placeholder="e.g., sedan taxi, comfortable travel, airport transfer"
+                      className="mt-2"
                     />
                     {isFormSubmitted && !formData.seoKeywords && (
                       <p className="text-sm text-red-500 mt-1">
@@ -1210,102 +1275,147 @@ export default function TariffPage() {
         </Dialog>
       </div>
 
-      {/* Services Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {services.map((service) => (
-          <Card key={service._id} className="overflow-hidden hover:shadow-xl transition-all duration-300">
-            <div className="relative">
-              <img
-                src={service.image || "/images/placeholder-vehicle.jpg"}
-                alt={service.vehicleName}
-                className="w-full h-48 object-cover"
-              />
-              <div className="absolute top-4 left-4">
-                <Badge
-                  variant={service.status === "active" ? "default" : "secondary"}
-                  className={
-                    service.status === "active"
-                      ? "bg-green-100 text-green-800 border-green-200"
-                      : "bg-gray-100 text-gray-800 border-gray-200"
-                  }
-                >
-                  {service.status}
-                </Badge>
-              </div>
-              {service.featured && (
-                <div className="absolute top-4 right-4">
-                  <Badge className="bg-yellow-100 text-yellow-800 border-yellow-200">
-                    Featured
-                  </Badge>
-                </div>
-              )}
-            </div>
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">
-                    {service.vehicleName}
-                  </h3>
-                  <div className="flex items-center text-gray-600 mb-2">
-                    <Car className="h-4 w-4 mr-1" />
-                    <span className="text-sm">{service.vehicleType}</span>
+      {/* Services List - Horizontal Cards with Image Left */}
+      {Array.isArray(services) && services.length === 0 ? (
+        <div className="text-center py-12">
+          <Car className="h-24 w-24 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">No Tariff Services Found</h3>
+          <p className="text-gray-600 mb-6">
+            Get started by adding your first tariff service to showcase your vehicle pricing.
+          </p>
+          <Button
+            onClick={() => {
+              scrollPositionRef.current = window.scrollY;
+              setEditingId(null);
+              setFormData({
+                vehicleType: "",
+                vehicleName: "",
+                description: "",
+                oneWayRate: "",
+                roundTripRate: "",
+                driverAllowance: "",
+                minimumKmOneWay: "",
+                minimumKmRoundTrip: "",
+                image: "",
+                status: "active",
+                featured: false,
+                additionalCharges: "",
+                seoTitle: "",
+                seoDescription: "",
+                seoKeywords: "",
+              });
+              setSelectedFiles({
+                mainImage: null,
+              });
+              setIsAddModalOpen(true);
+            }}
+            className="bg-admin-gradient text-white border-0"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Add Your First Service
+          </Button>
+        </div>
+      ) : (
+        <div className="grid gap-6">
+          {Array.isArray(services) && services.map((service) => (
+            <Card key={service._id} className="shadow-xl border-0">
+              <CardContent className="p-10">
+                <div className="flex gap-8">
+                  {/* Left Side - Vehicle Image */}
+                  <div className="flex-shrink-0">
+                    <div className="w-96 h-72 rounded-lg overflow-hidden border">
+                      <img
+                        src={service.image || "/images/placeholder-vehicle.jpg"}
+                        alt={service.vehicleName}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
                   </div>
-                  <p className="text-gray-600 text-sm line-clamp-3 mb-3">
-                    {service.description}
-                  </p>
-                </div>
-                
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">One Way:</span>
-                    <span className="font-semibold text-blue-600">{service.oneWayRate}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Round Trip:</span>
-                    <span className="font-semibold text-green-600">{service.roundTripRate}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Driver Allowance:</span>
-                    <span className="font-semibold">{service.driverAllowance}</span>
-                  </div>
-                </div>
 
-                <div className="pt-2 border-t text-xs text-gray-500">
-                  <div className="flex items-center justify-between">
-                    <span>Min KM (One Way):</span>
-                    <span>{service.minimumKmOneWay}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Min KM (Round Trip):</span>
-                    <span>{service.minimumKmRoundTrip}</span>
-                  </div>
-                </div>
+                  {/* Right Side - Service Content */}
+                  <div className="flex-1 flex justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="text-2xl font-semibold text-gray-900">{service.vehicleName}</h3>
+                        <Badge
+                          variant={service.status === "active" ? "default" : "secondary"}
+                          className={service.status === "active" ? "bg-admin-gradient text-white" : ""}
+                        >
+                          {service.status}
+                        </Badge>
+                        {service.featured && (
+                          <Badge className="bg-yellow-500 text-yellow-900">
+                            ⭐ Featured
+                          </Badge>
+                        )}
+                      </div>
+                      
+                      <p className="text-gray-600 mb-4">
+                        <Car className="h-4 w-4 inline mr-2" />
+                        {service.vehicleType}
+                      </p>
+                      
+                      <p className="text-gray-600 mb-4 line-clamp-2">
+                        {service.description}
+                      </p>
+                      
+                      <div className="grid md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                          <span className="font-semibold text-gray-900">One Way Rate: </span>
+                          <span className="text-blue-600 font-semibold">₹{service.oneWayRate.replace(/[₹$]/g, '').replace(/per\s*km/gi, '').replace(/\/km/gi, '').trim()}/km</span>
+                        </div>
+                        <div>
+                          <span className="font-semibold text-gray-900">Round Trip Rate: </span>
+                          <span className="text-green-600 font-semibold">₹{service.roundTripRate.replace(/[₹$]/g, '').replace(/per\s*km/gi, '').replace(/\/km/gi, '').trim()}/km</span>
+                        </div>
+                        <div>
+                          <span className="font-semibold text-gray-900">Driver Allowance: </span>
+                          <span className="text-gray-600">₹{service.driverAllowance.replace(/[₹$]/g, '').trim()}</span>
+                        </div>
+                        <div>
+                          <span className="font-semibold text-gray-900">Min KM (One Way): </span>
+                          <span className="text-gray-600">{service.minimumKmOneWay.replace(/km/gi, '').trim()} km</span>
+                        </div>
+                      </div>
 
-                <div className="flex justify-between items-center pt-4 border-t">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(service)}
-                    className="flex items-center gap-2"
-                  >
-                    <Edit className="h-4 w-4" />
-                    Edit
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDeleteClick(service._id!)}
-                    className="flex items-center gap-2 text-red-600 border-red-200 hover:bg-red-50"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    Delete
-                  </Button>
+                      <div className="grid md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                          <span className="font-semibold text-gray-900">Min KM (Round Trip): </span>
+                          <span className="text-gray-600">{service.minimumKmRoundTrip.replace(/km/gi, '').trim()} km</span>
+                        </div>
+                        <div>
+                          <span className="font-semibold text-gray-900">Additional Charges: </span>
+                          <span className="text-gray-600">{service.additionalCharges?.length || 0} items</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex flex-col gap-3 ml-6">
+                      <Button
+                        variant="outline"
+                        onClick={() => handleEdit(service)}
+                        className="flex items-center gap-2 min-w-[120px]"
+                      >
+                        <Edit className="h-4 w-4" />
+                        Edit Service
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => handleDeleteClick(service._id!)}
+                        className="flex items-center gap-2 text-red-600 border-red-200 hover:bg-red-50 min-w-[120px]"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
       {/* Delete Service Confirmation Dialog */}
       <AlertDialog

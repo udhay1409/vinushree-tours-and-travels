@@ -11,12 +11,13 @@ import {
   Clock,
   Award,
   Users,
-  MessageCircle,
+
   Car,
   Plane,
   Calendar,
   Shield
 } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 import { useEffect, useState } from "react";
 import { useTheme } from "./providers/theme";
 import Image from "next/image";
@@ -199,7 +200,7 @@ export default function Footer() {
                     className="group p-2 bg-white/10 hover:bg-green-600/20 rounded-lg transition-all duration-300 border border-white/20 hover:border-green-500/50"
                     title="Contact us on WhatsApp"
                   >
-                    <MessageCircle className="h-4 w-4 text-gray-400 group-hover:text-green-500 transition-colors" />
+                    <WhatsAppIcon className="h-4 w-4 text-gray-400 group-hover:text-green-500 transition-colors" />
                   </button>
                 )}
               </div>

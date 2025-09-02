@@ -26,11 +26,11 @@
     --radius: 0.75rem;
 
     /* Admin Theme Variables */
-    --admin-primary: #2563eb;
-    --admin-secondary: #9333ea;
-    --admin-gradient: linear-gradient(135deg, #2563eb 0%, #9333ea 100%);
-    --admin-primary-hsl: 217 91% 60%;
-    --admin-secondary-hsl: 271 81% 56%;
+    --admin-primary: #F59E0B;
+    --admin-secondary: #1F2937;
+    --admin-gradient: linear-gradient(135deg, #F59E0B 0%, #1F2937 100%);
+    --admin-primary-hsl: 45 93% 47%;
+    --admin-secondary-hsl: 220 39% 17%;
   }
 }
 
@@ -267,4 +267,52 @@
 /* Disable transitions but keep positioning */
 [data-radix-select-content] * {
   transition: none !important;
+}
+/* React Quill Styles */
+.ql-editor {
+  min-height: 200px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.ql-toolbar {
+  border-top: 1px solid #e5e7eb;
+  border-left: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
+  border-radius: 0.5rem 0.5rem 0 0;
+  border-bottom: none;
+}
+
+.ql-container {
+  border-bottom: 1px solid #e5e7eb;
+  border-left: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
+  border-radius: 0 0 0.5rem 0.5rem;
+  border-top: none;
+}
+
+.ql-editor.ql-blank::before {
+  color: #9ca3af;
+  font-style: normal;
+}
+
+/* Error state styles */
+.quill-error .ql-toolbar {
+  border-color: #ef4444;
+}
+
+.quill-error .ql-container {
+  border-color: #ef4444;
+}
+
+/* Focus state */
+.ql-container.ql-snow:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #3b82f6;
+}
+
+/* Rich text editor wrapper */
+.rich-text-editor-wrapper {
+  border-radius: 0.5rem;
+  overflow: hidden;
 }
