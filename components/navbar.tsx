@@ -14,29 +14,19 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 
 import { useTheme } from "./providers/theme";
+import { useContact } from "@/hooks/use-contact";
 import Image from "next/image";
-
-interface ContactInfo {
-  phone: string;
-  email: string;
-  address: string;
-  city: string;
-  state: string;
-  pincode: string;
-  country: string;
-}
 
 
 
 // Separate client component for pathname functionality
 function NavbarContent() {
   const { themeData } = useTheme();
+  const { contactInfo } = useContact();
   const pathname = usePathname();
-
 
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -44,19 +34,6 @@ function NavbarContent() {
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Set static contact information for travel business
-  useEffect(() => {
-    setContactInfo({
-      phone: "+91 90037 82966",
-      email: "info@vinushree.com",
-      address: "mani road, Uthangudi, Othakadai",
-      city: "Madurai",
-      state: "Tamil Nadu",
-      pincode: "625007",
-      country: "India"
-    });
   }, []);
 
   const navItems = [
@@ -100,10 +77,10 @@ function NavbarContent() {
             <div className="flex items-center gap-1 sm:gap-2">
               <Phone className="h-3 w-3 sm:h-3 sm:w-3 lg:h-4 lg:w-4" />
               <a
-                href={`tel:${contactInfo?.phone || "+91 90037 82966"}`}
+                href={`tel:${contactInfo?.primaryPhone || "+91 90037 82966"}`}
                 className="font-medium text-xs sm:text-xs lg:text-sm hover:text-white/80 transition-colors"
               >
-                {contactInfo?.phone || "+91 90037 82966"}
+                {contactInfo?.primaryPhone || "+91 90037 82966"}
               </a>
             </div>
             <div className="flex items-center gap-1 sm:gap-2">
@@ -196,7 +173,10 @@ function NavbarContent() {
               </Button>
               {/* WhatsApp Button */}
               <Button
-                onClick={() => window.open(`https://wa.me/${contactInfo?.phone?.replace(/[^0-9]/g, '') || '919003782966'}?text=Hi, I'm interested in your travel services`, '_blank')}
+                onClick={() => {
+                  const whatsappNumber = contactInfo?.whatsappNumber || contactInfo?.primaryPhone || '919003782966';
+                  window.open(`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=Hi, I'm interested in your travel services`, '_blank');
+                }}
                 variant="outline"
                 className="border-admin-primary text-admin-primary hover:bg-admin-gradient hover:text-white px-4 xl:px-6 py-2 font-semibold text-sm xl:text-base transition-all duration-300 hover:shadow-lg hover:scale-105"
               >
@@ -273,7 +253,10 @@ function NavbarContent() {
                   className="pt-3 sm:pt-4 border-t border-gray-200"
                 >
                   <Button
-                    onClick={() => window.open(`https://wa.me/${contactInfo?.phone?.replace(/[^0-9]/g, '') || '919003782966'}?text=Hi, I'm interested in your travel services`, '_blank')}
+                    onClick={() => {
+                      const whatsappNumber = contactInfo?.whatsappNumber || contactInfo?.primaryPhone || '919003782966';
+                      window.open(`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=Hi, I'm interested in your travel services`, '_blank');
+                    }}
                     variant="outline"
                     className="w-full border-admin-primary text-admin-primary hover:bg-admin-gradient hover:text-white py-2.5 sm:py-3 font-semibold text-sm sm:text-base transition-all duration-300 hover:shadow-lg mb-3"
                   >

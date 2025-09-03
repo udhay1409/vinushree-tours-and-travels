@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { useLeads } from "@/hooks/use-leads";
 import {
   Dialog,
   DialogContent,
@@ -60,9 +61,12 @@ import {
   Eye,
   Download,
   Car,
-  Package
+  Package,
+  Settings,
+  User
 } from "lucide-react";
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
+import ViewLeads from "./components/ViewLeads";
 
 interface TravelLead {
   _id?: string;
@@ -72,6 +76,8 @@ interface TravelLead {
   phone: string;
   serviceType: string;
   travelDate: string;
+  travelTime?: string;
+  returnDate?: string;
   pickupLocation: string;
   dropLocation: string;
   passengers: number;
@@ -124,89 +130,42 @@ export default function LeadManager() {
     "Wedding Transportation"
   ];
 
-  // Sample travel leads for Vinushree Tours & Travels
-  const [leads, setLeads] = useState<TravelLead[]>([
-    {
-      id: 1,
-      _id: "1",
-      fullName: "Rajesh Kumar",
-      email: "rajesh@email.com",
-      phone: "+91 98765 43210",
-      serviceType: "Airport Taxi",
-      travelDate: "2024-02-15",
-      pickupLocation: "Chennai Airport",
-      dropLocation: "Anna Nagar, Chennai",
-      passengers: 2,
-      message: "Need airport pickup for early morning flight. Please confirm availability.",
-      status: "new",
-      priority: "high",
-      source: "website",
-      submittedAt: "2024-01-15T10:30:00Z",
-      lastUpdated: "2024-01-15T10:30:00Z",
-      estimatedCost: "₹800",
-      notes: ""
-    },
-    {
-      id: 2,
-      _id: "2", 
-      fullName: "Priya Sharma",
-      email: "priya@email.com",
-      phone: "+91 87654 32109",
-      serviceType: "Tour Package - Ooty",
-      travelDate: "2024-02-20",
-      pickupLocation: "Bangalore",
-      dropLocation: "Ooty",
-      passengers: 4,
-      message: "Family trip to Ooty for 3 days. Need complete package with accommodation.",
-      status: "contacted",
-      priority: "medium",
-      source: "whatsapp",
-      submittedAt: "2024-01-14T15:45:00Z",
-      lastUpdated: "2024-01-14T16:30:00Z",
-      estimatedCost: "₹25,000",
-      notes: "Interested in premium package. Follow up on 16th Jan."
-    },
-    {
-      id: 3,
-      _id: "3",
-      fullName: "Arun Vijay",
-      email: "arun@email.com",
-      phone: "+91 76543 21098",
-      serviceType: "One-way Trip",
-      travelDate: "2024-02-18",
-      pickupLocation: "Chennai",
-      dropLocation: "Bangalore",
-      passengers: 1,
-      message: "Business trip to Bangalore. Prefer sedan car with professional driver.",
-      status: "confirmed",
-      priority: "medium",
-      source: "phone",
-      submittedAt: "2024-01-13T09:20:00Z",
-      lastUpdated: "2024-01-13T14:15:00Z",
-      estimatedCost: "₹4,200",
-      notes: "Confirmed booking. Payment pending."
-    },
-    {
-      id: 4,
-      _id: "4",
-      fullName: "Meera Nair",
-      email: "meera@email.com", 
-      phone: "+91 65432 10987",
-      serviceType: "Day Rental",
-      travelDate: "2024-02-16",
-      pickupLocation: "Coimbatore",
-      dropLocation: "Local sightseeing",
-      passengers: 3,
-      message: "Need car for full day local sightseeing in Coimbatore. 8 hours package.",
-      status: "completed",
-      priority: "low",
-      source: "referral",
-      submittedAt: "2024-01-12T11:00:00Z",
-      lastUpdated: "2024-01-16T18:00:00Z",
-      estimatedCost: "₹2,400",
-      notes: "Trip completed successfully. Customer satisfied."
+  const { leads: leadsData, isLoading: leadsLoading, mutate } = useLeads();
+  const [leads, setLeads] = useState<TravelLead[]>([]);
+
+  // Transform leads data when it changes
+  useEffect(() => {
+    if (leadsData && leadsData.length > 0) {
+      const transformedLeads = leadsData.map((lead: any, index: number) => ({
+        id: index + 1,
+        _id: lead._id,
+        fullName: lead.fullName,
+        email: lead.email || "",
+        phone: lead.phone,
+        serviceType: lead.serviceType,
+        travelDate: lead.travelDate,
+        travelTime: lead.travelTime || "",
+        returnDate: lead.returnDate || "",
+        pickupLocation: lead.pickupLocation,
+        dropLocation: lead.dropLocation || "",
+        passengers: lead.passengers || 1,
+        message: lead.message,
+        status: lead.status,
+        priority: lead.priority,
+        source: lead.source,
+        submittedAt: lead.submittedAt,
+        lastUpdated: lead.lastUpdated,
+        estimatedCost: lead.estimatedCost || "",
+        notes: lead.notes || ""
+      }));
+      setLeads(transformedLeads);
     }
-  ]);
+  }, [leadsData]);
+
+  // Set loading state from hook
+  useEffect(() => {
+    setIsLoading(leadsLoading);
+  }, [leadsLoading]);
 
   const [newLead, setNewLead] = useState<{
     fullName: string;
@@ -214,6 +173,8 @@ export default function LeadManager() {
     phone: string;
     serviceType: string;
     travelDate: string;
+    travelTime: string;
+    returnDate: string;
     pickupLocation: string;
     dropLocation: string;
     passengers: number;
@@ -229,6 +190,8 @@ export default function LeadManager() {
     phone: "",
     serviceType: "",
     travelDate: "",
+    travelTime: "",
+    returnDate: "",
     pickupLocation: "",
     dropLocation: "",
     passengers: 1,
@@ -342,13 +305,27 @@ export default function LeadManager() {
     try {
       setIsLoading(true);
       
-      // Remove from local state
-      setLeads(leads.filter((lead) => lead.id !== leadToDelete.id));
-
-      toast({
-        title: "Lead Deleted",
-        description: `${leadToDelete.fullName}'s lead has been successfully deleted.`,
+      const response = await fetch(`/api/admin/leads?id=${leadToDelete._id}`, {
+        method: 'DELETE',
       });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Refresh leads data
+        mutate();
+
+        toast({
+          title: "Lead Deleted",
+          description: `${leadToDelete.fullName}'s lead has been successfully deleted.`,
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: result.error || "Failed to delete lead",
+          variant: "destructive",
+        });
+      }
 
       setIsDeleteModalOpen(false);
       setLeadToDelete(null);
@@ -368,22 +345,70 @@ export default function LeadManager() {
     try {
       setIsSaving(true);
 
-      // Update local state
-      setLeads(
-        leads.map((lead) =>
-          lead.id === updatedLead.id
-            ? { ...updatedLead, lastUpdated: new Date().toISOString() }
-            : lead
-        )
-      );
-
-      setIsEditModalOpen(false);
-      setSelectedLead(null);
-
-      toast({
-        title: "Lead Updated",
-        description: `${updatedLead.fullName}'s information has been updated successfully.`,
+      const response = await fetch('/api/admin/leads', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          _id: updatedLead._id,
+          fullName: updatedLead.fullName,
+          email: updatedLead.email,
+          phone: updatedLead.phone,
+          serviceType: updatedLead.serviceType,
+          travelDate: updatedLead.travelDate,
+          pickupLocation: updatedLead.pickupLocation,
+          dropLocation: updatedLead.dropLocation,
+          passengers: updatedLead.passengers,
+          message: updatedLead.message,
+          status: updatedLead.status,
+          priority: updatedLead.priority,
+          source: updatedLead.source,
+          estimatedCost: updatedLead.estimatedCost,
+          notes: updatedLead.notes,
+        }),
       });
+
+      const result = await response.json();
+      console.log('Update lead result:', result);
+
+      if (result.success) {
+        // Refresh leads data
+        mutate();
+
+        setIsEditModalOpen(false);
+        
+        // Update the selected lead with the new data (including review link if generated)
+        if (result.data) {
+          const updatedLeadData = {
+            ...updatedLead,
+            reviewLink: result.data.reviewLink,
+            reviewToken: result.data.reviewToken,
+            lastUpdated: result.data.lastUpdated
+          };
+          console.log('Updated lead data:', updatedLeadData);
+          setSelectedLead(updatedLeadData);
+        }
+
+        // Show special message if review link was generated
+        if (result.reviewLink) {
+          toast({
+            title: "Lead Updated & Review Link Generated",
+            description: `${updatedLead.fullName}'s status updated to completed. Review link is ready to share via WhatsApp.`,
+          });
+        } else {
+          toast({
+            title: "Lead Updated",
+            description: `${updatedLead.fullName}'s information has been updated successfully.`,
+          });
+        }
+      } else {
+        toast({
+          title: "Error",
+          description: result.error || "Failed to update lead",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error("Error updating lead:", error);
       toast({
@@ -430,40 +455,52 @@ export default function LeadManager() {
     setIsSaving(true);
 
     try {
-      // Add new lead to state
-      const leadData = {
-        id: leads.length + 1,
-        _id: Date.now().toString(),
-        ...newLead,
-        submittedAt: new Date().toISOString(),
-        lastUpdated: new Date().toISOString(),
-      };
-      
-      setLeads([leadData, ...leads]);
-
-      setNewLead({
-        fullName: "",
-        email: "",
-        phone: "",
-        serviceType: "",
-        travelDate: "",
-        pickupLocation: "",
-        dropLocation: "",
-        passengers: 1,
-        message: "",
-        status: "new",
-        priority: "medium",
-        source: "website",
-        estimatedCost: "",
-        notes: "",
+      const response = await fetch('/api/admin/leads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newLead),
       });
-      setIsAddModalOpen(false);
-      setIsFormSubmitted(false);
 
-      toast({
-        title: "Lead Added Successfully",
-        description: `${newLead.fullName} has been added to your leads.`,
-      });
+      const result = await response.json();
+
+      if (result.success) {
+        // Refresh leads data
+        mutate();
+
+        setNewLead({
+          fullName: "",
+          email: "",
+          phone: "",
+          serviceType: "",
+          travelDate: "",
+          travelTime: "",
+          returnDate: "",
+          pickupLocation: "",
+          dropLocation: "",
+          passengers: 1,
+          message: "",
+          status: "new",
+          priority: "medium",
+          source: "website",
+          estimatedCost: "",
+          notes: "",
+        });
+        setIsAddModalOpen(false);
+        setIsFormSubmitted(false);
+
+        toast({
+          title: "Lead Added Successfully",
+          description: `${newLead.fullName} has been added to your leads.`,
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: result.error || "Failed to add lead",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error("Error adding lead:", error);
       toast({
@@ -1173,245 +1210,174 @@ export default function LeadManager() {
 
         {/* Edit Lead Modal */}
         <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-          <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="text-2xl bg-admin-gradient bg-clip-text text-transparent font-bold flex items-center gap-2">
                 <Edit className="h-6 w-6" />
-                Edit Travel Lead
+                Update Lead Status & Details
               </DialogTitle>
+              <p className="text-gray-600 text-sm mt-2">
+                Customer information is read-only. You can only update administrative fields.
+              </p>
             </DialogHeader>
             {selectedLead && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-4">
-                <div className="space-y-2">
-                  <Label htmlFor="editFullName" className="text-sm font-medium">
-                    Customer Name <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="editFullName"
-                    value={selectedLead.fullName}
-                    onChange={(e) =>
-                      setSelectedLead({ ...selectedLead, fullName: e.target.value })
-                    }
-                    placeholder="Enter customer name"
-                  />
+              <div className="space-y-6 py-4">
+                {/* Read-only Customer Information */}
+                <div className="bg-gray-50 p-6 rounded-lg border">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <User className="h-5 w-5" />
+                    Customer Information (Read-only)
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600">Customer Name</Label>
+                      <p className="text-lg font-semibold text-gray-900">{selectedLead.fullName}</p>
+                    </div>
+                    {selectedLead.email && (
+                      <div>
+                        <Label className="text-sm font-medium text-gray-600">Email</Label>
+                        <p className="text-gray-900">{selectedLead.email}</p>
+                      </div>
+                    )}
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600">Phone</Label>
+                      <p className="text-gray-900">{selectedLead.phone}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600">Service Type</Label>
+                      <p className="text-gray-900">{selectedLead.serviceType}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600">Travel Date</Label>
+                      <p className="text-gray-900">{new Date(selectedLead.travelDate).toLocaleDateString()}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600">Passengers</Label>
+                      <p className="text-gray-900">{selectedLead.passengers}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600">Pickup Location</Label>
+                      <p className="text-gray-900">{selectedLead.pickupLocation}</p>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium text-gray-600">Drop Location</Label>
+                      <p className="text-gray-900">{selectedLead.dropLocation || "Not specified"}</p>
+                    </div>
+                  </div>
+                  <div className="mt-4">
+                    <Label className="text-sm font-medium text-gray-600">Customer Message</Label>
+                    <p className="mt-1 p-3 bg-white rounded border text-gray-900">{selectedLead.message}</p>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="editEmail" className="text-sm font-medium">
-                    Email <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="editEmail"
-                    type="email"
-                    value={selectedLead.email}
-                    onChange={(e) =>
-                      setSelectedLead({ ...selectedLead, email: e.target.value })
-                    }
-                    placeholder="Enter email address"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="editPhone" className="text-sm font-medium">
-                    Phone <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="editPhone"
-                    type="tel"
-                    value={selectedLead.phone}
-                    onChange={(e) =>
-                      setSelectedLead({ ...selectedLead, phone: e.target.value })
-                    }
-                    placeholder="+91 98765 43210"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="editServiceType" className="text-sm font-medium">
-                    Service Type <span className="text-red-500">*</span>
-                  </Label>
-                  <Select
-                    value={selectedLead.serviceType}
-                    onValueChange={(value) =>
-                      setSelectedLead({ ...selectedLead, serviceType: value })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select service type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {travelServices.map((service) => (
-                        <SelectItem key={service} value={service}>
-                          {service}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="editTravelDate" className="text-sm font-medium">
-                    Travel Date <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="editTravelDate"
-                    type="date"
-                    value={selectedLead.travelDate}
-                    onChange={(e) =>
-                      setSelectedLead({ ...selectedLead, travelDate: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="editPassengers" className="text-sm font-medium">
-                    Number of Passengers
-                  </Label>
-                  <Input
-                    id="editPassengers"
-                    type="number"
-                    min="1"
-                    max="20"
-                    value={selectedLead.passengers}
-                    onChange={(e) =>
-                      setSelectedLead({ ...selectedLead, passengers: Number(e.target.value) })
-                    }
-                    placeholder="1"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="editPickupLocation" className="text-sm font-medium">
-                    Pickup Location <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="editPickupLocation"
-                    value={selectedLead.pickupLocation}
-                    onChange={(e) =>
-                      setSelectedLead({ ...selectedLead, pickupLocation: e.target.value })
-                    }
-                    placeholder="Enter pickup location"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="editDropLocation" className="text-sm font-medium">
-                    Drop Location
-                  </Label>
-                  <Input
-                    id="editDropLocation"
-                    value={selectedLead.dropLocation}
-                    onChange={(e) =>
-                      setSelectedLead({ ...selectedLead, dropLocation: e.target.value })
-                    }
-                    placeholder="Enter drop location"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="editStatus" className="text-sm font-medium">
-                    Status
-                  </Label>
-                  <Select
-                    value={selectedLead.status}
-                    onValueChange={(value) =>
-                      setSelectedLead({
-                        ...selectedLead,
-                        status: value as "new" | "contacted" | "confirmed" | "completed" | "cancelled",
-                      })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="new">New</SelectItem>
-                      <SelectItem value="contacted">Contacted</SelectItem>
-                      <SelectItem value="confirmed">Confirmed</SelectItem>
-                      <SelectItem value="completed">Completed</SelectItem>
-                      <SelectItem value="cancelled">Cancelled</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="editPriority" className="text-sm font-medium">
-                    Priority
-                  </Label>
-                  <Select
-                    value={selectedLead.priority}
-                    onValueChange={(value) =>
-                      setSelectedLead({
-                        ...selectedLead,
-                        priority: value as "low" | "medium" | "high",
-                      })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="low">Low</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="high">High</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="editSource" className="text-sm font-medium">
-                    Lead Source
-                  </Label>
-                  <Select
-                    value={selectedLead.source}
-                    onValueChange={(value) =>
-                      setSelectedLead({
-                        ...selectedLead,
-                        source: value as "website" | "whatsapp" | "phone" | "referral",
-                      })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="website">Website</SelectItem>
-                      <SelectItem value="whatsapp">WhatsApp</SelectItem>
-                      <SelectItem value="phone">Phone</SelectItem>
-                      <SelectItem value="referral">Referral</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="editEstimatedCost" className="text-sm font-medium">
-                    Estimated Cost
-                  </Label>
-                  <Input
-                    id="editEstimatedCost"
-                    value={selectedLead.estimatedCost || ""}
-                    onChange={(e) =>
-                      setSelectedLead({ ...selectedLead, estimatedCost: e.target.value })
-                    }
-                    placeholder="₹5,000"
-                  />
-                </div>
-                <div className="md:col-span-2 space-y-2">
-                  <Label htmlFor="editMessage" className="text-sm font-medium">
-                    Customer Message <span className="text-red-500">*</span>
-                  </Label>
-                  <Textarea
-                    id="editMessage"
-                    value={selectedLead.message}
-                    onChange={(e) =>
-                      setSelectedLead({ ...selectedLead, message: e.target.value })
-                    }
-                    placeholder="Enter customer requirements and message"
-                    rows={3}
-                  />
-                </div>
-                <div className="md:col-span-2 space-y-2">
-                  <Label htmlFor="editNotes" className="text-sm font-medium">
-                    Internal Notes
-                  </Label>
-                  <Textarea
-                    id="editNotes"
-                    value={selectedLead.notes || ""}
-                    onChange={(e) =>
-                      setSelectedLead({ ...selectedLead, notes: e.target.value })
-                    }
-                    placeholder="Internal notes for follow-up"
-                    rows={2}
-                  />
+
+                {/* Editable Administrative Fields */}
+                <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <Settings className="h-5 w-5" />
+                    Administrative Details (Editable)
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="editStatus" className="text-sm font-medium">
+                        Lead Status
+                      </Label>
+                      <Select
+                        value={selectedLead.status}
+                        onValueChange={(value) =>
+                          setSelectedLead({
+                            ...selectedLead,
+                            status: value as "new" | "contacted" | "confirmed" | "completed" | "cancelled",
+                          })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="new">New</SelectItem>
+                          <SelectItem value="contacted">Contacted</SelectItem>
+                          <SelectItem value="confirmed">Confirmed</SelectItem>
+                          <SelectItem value="completed">Completed</SelectItem>
+                          <SelectItem value="cancelled">Cancelled</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="editPriority" className="text-sm font-medium">
+                        Priority Level
+                      </Label>
+                      <Select
+                        value={selectedLead.priority}
+                        onValueChange={(value) =>
+                          setSelectedLead({
+                            ...selectedLead,
+                            priority: value as "low" | "medium" | "high",
+                          })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="low">Low Priority</SelectItem>
+                          <SelectItem value="medium">Medium Priority</SelectItem>
+                          <SelectItem value="high">High Priority</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="editEstimatedCost" className="text-sm font-medium">
+                        Estimated Cost
+                      </Label>
+                      <Input
+                        id="editEstimatedCost"
+                        value={selectedLead.estimatedCost || ""}
+                        onChange={(e) =>
+                          setSelectedLead({ ...selectedLead, estimatedCost: e.target.value })
+                        }
+                        placeholder="₹5,000 or To be determined"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="editSource" className="text-sm font-medium">
+                        Lead Source
+                      </Label>
+                      <Select
+                        value={selectedLead.source}
+                        onValueChange={(value) =>
+                          setSelectedLead({
+                            ...selectedLead,
+                            source: value as "website" | "whatsapp" | "phone" | "referral",
+                          })
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="website">Website</SelectItem>
+                          <SelectItem value="whatsapp">WhatsApp</SelectItem>
+                          <SelectItem value="phone">Phone Call</SelectItem>
+                          <SelectItem value="referral">Referral</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="mt-6 space-y-2">
+                    <Label htmlFor="editNotes" className="text-sm font-medium">
+                      Internal Notes & Follow-up Details
+                    </Label>
+                    <Textarea
+                      id="editNotes"
+                      value={selectedLead.notes || ""}
+                      onChange={(e) =>
+                        setSelectedLead({ ...selectedLead, notes: e.target.value })
+                      }
+                      placeholder="Add internal notes, follow-up details, pricing discussions, etc."
+                      rows={4}
+                      className="resize-none"
+                    />
+                  </div>
                 </div>
               </div>
             )}
@@ -1445,89 +1411,11 @@ export default function LeadManager() {
         </Dialog>
 
         {/* View Lead Modal */}
-        <Dialog open={isViewModalOpen} onOpenChange={setIsViewModalOpen}>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle className="text-2xl bg-admin-gradient bg-clip-text text-transparent">
-                Lead Details
-              </DialogTitle>
-            </DialogHeader>
-            {selectedLead && (
-              <div className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label className="text-sm font-medium text-gray-600">Customer Name</Label>
-                    <p className="text-lg font-semibold">{selectedLead.fullName}</p>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-gray-600">Service Type</Label>
-                    <p className="text-lg font-semibold">{selectedLead.serviceType}</p>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-gray-600">Email</Label>
-                    <p>{selectedLead.email}</p>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-gray-600">Phone</Label>
-                    <p>{selectedLead.phone}</p>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-gray-600">Travel Date</Label>
-                    <p>{new Date(selectedLead.travelDate).toLocaleDateString()}</p>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-gray-600">Passengers</Label>
-                    <p>{selectedLead.passengers}</p>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-gray-600">Pickup Location</Label>
-                    <p>{selectedLead.pickupLocation}</p>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-gray-600">Drop Location</Label>
-                    <p>{selectedLead.dropLocation || "Not specified"}</p>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-gray-600">Status</Label>
-                    <Badge className={getStatusColor(selectedLead.status)}>
-                      {selectedLead.status}
-                    </Badge>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-gray-600">Priority</Label>
-                    <Badge className={getPriorityColor(selectedLead.priority)}>
-                      {selectedLead.priority}
-                    </Badge>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-gray-600">Source</Label>
-                    <Badge className={getSourceColor(selectedLead.source)}>
-                      {selectedLead.source}
-                    </Badge>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-gray-600">Estimated Cost</Label>
-                    <p className="font-semibold text-green-600">{selectedLead.estimatedCost || "TBD"}</p>
-                  </div>
-                </div>
-                <div>
-                  <Label className="text-sm font-medium text-gray-600">Customer Message</Label>
-                  <p className="mt-1 p-3 bg-gray-50 rounded-lg">{selectedLead.message}</p>
-                </div>
-                {selectedLead.notes && (
-                  <div>
-                    <Label className="text-sm font-medium text-gray-600">Internal Notes</Label>
-                    <p className="mt-1 p-3 bg-yellow-50 rounded-lg">{selectedLead.notes}</p>
-                  </div>
-                )}
-                <div className="text-sm text-gray-500">
-                  <p>Submitted: {formatDate(selectedLead.submittedAt)}</p>
-                  <p>Last Updated: {formatDate(selectedLead.lastUpdated)}</p>
-                </div>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
+        <ViewLeads
+          lead={selectedLead}
+          isOpen={isViewModalOpen}
+          onClose={() => setIsViewModalOpen(false)}
+        />
 
         {/* Delete Confirmation Dialog */}
         <AlertDialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>

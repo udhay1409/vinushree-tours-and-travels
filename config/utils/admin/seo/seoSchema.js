@@ -54,53 +54,53 @@ const defaultSEOData = [
     id: "home",
     pageName: "Home Page",
     title:
-      "Filigree Solutions - Advanced CAD & CAE Services | Engineering Excellence",
+      "Vinushree Tours & Travels - Best Taxi Services in Tamil Nadu",
     description:
-      "Leading provider of CAD, CAE, structural analysis, and engineering simulation services across India. Expert solutions for automotive, telecom, and industrial sectors.",
+      "Book reliable taxi services, tour packages, and travel solutions across Tamil Nadu. One-way trips, round trips, airport taxi, and tour packages available 24/7.",
     keywords:
-      "CAD services, CAE analysis, structural analysis, 3D modeling, engineering simulation, FEA, automotive engineering, telecom analysis",
+      "taxi service tamil nadu, tour packages, airport taxi, vinushree tours, chennai taxi, bangalore taxi, travel services, one way trip, round trip",
     lastUpdated: new Date("2024-01-15"),
   },
   {
     id: "about",
     pageName: "About Us",
-    title: "About Filigree Solutions - Expert CAD & Engineering Team",
+    title: "About Vinushree Tours & Travels - Your Trusted Travel Partner",
     description:
-      "Learn about our experienced team of engineers specializing in CAD, CAE, and structural analysis. Discover our mission, vision, and commitment to engineering excellence.",
+      "Learn about Vinushree Tours & Travels, your trusted travel partner in Tamil Nadu. We provide reliable taxi services, tour packages, and travel solutions since 2020.",
     keywords:
-      "about filigree solutions, engineering team, CAD experts, structural analysis specialists, company profile",
+      "about vinushree tours, travel company tamil nadu, trusted taxi service, travel partner, company history, reliable transport",
     lastUpdated: new Date("2024-01-14"),
   },
   {
-    id: "services",
-    pageName: "Services",
+    id: "tariff",
+    pageName: "Tariff Page",
     title:
-      "Engineering Services - CAD, CAE, Structural Analysis | Filigree Solutions",
+      "Taxi Tariff & Pricing - Vinushree Tours & Travels",
     description:
-      "Comprehensive engineering services including CAD drafting, 3D modeling, structural analysis, EV component simulation, and telecom tower analysis.",
+      "Check our competitive taxi tariff and pricing for one-way trips, round trips, airport taxi, and hourly packages. Transparent pricing with no hidden charges.",
     keywords:
-      "engineering services, CAD drafting, 3D modeling, structural analysis, EV simulation, telecom analysis, GD&T application",
+      "taxi tariff, taxi pricing, one way taxi rates, round trip rates, airport taxi charges, hourly package rates, transparent pricing",
     lastUpdated: new Date("2024-01-13"),
   },
   {
-    id: "portfolio",
-    pageName: "Portfolio",
+    id: "packages",
+    pageName: "Packages Page",
     title:
-      "Engineering Portfolio - Case Studies & Projects | Filigree Solutions",
+      "Tour Packages Tamil Nadu - Ooty, Kodaikanal, Chennai Tours",
     description:
-      "Explore our portfolio of successful engineering projects including telecom towers, EV components, industrial systems, and structural analysis case studies.",
+      "Explore our exciting tour packages for Ooty, Kodaikanal, Chennai, and other Tamil Nadu destinations. Complete packages with accommodation and sightseeing.",
     keywords:
-      "engineering portfolio, case studies, telecom projects, EV analysis, structural projects, engineering solutions",
+      "tour packages tamil nadu, ooty tour package, kodaikanal tour, chennai tour, hill station packages, south india tours, travel packages",
     lastUpdated: new Date("2024-01-12"),
   },
   {
     id: "contact",
     pageName: "Contact Us",
-    title: "Contact Filigree Solutions - Get Engineering Consultation",
+    title: "Contact Vinushree Tours & Travels - Book Your Taxi Now",
     description:
-      "Contact our engineering experts for CAD, CAE, and structural analysis services. Located in Madurai, Tamil Nadu. Get quotes and consultations.",
+      "Contact Vinushree Tours & Travels for taxi booking, tour packages, and travel inquiries. Available 24/7 for all your travel needs across Tamil Nadu.",
     keywords:
-      "contact filigree solutions, engineering consultation, CAD services quote, Madurai engineering, structural analysis contact",
+      "contact vinushree tours, taxi booking, travel inquiry, phone number, whatsapp booking, 24/7 service, customer support",
     lastUpdated: new Date("2024-01-11"),
   },
 ];

@@ -1,274 +1,318 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import Link from "next/link";
-import Image from "next/image";
-import {
-  ArrowRight,
-  MapPin,
-  Clock,
-  Users,
-  Star,
-  Phone,
-
-  Car,
-  Plane,
-  Calendar,
-  Shield,
-  Award,
-  Heart,
-  CheckCircle
-} from "lucide-react";
-import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
-import QuickBookForm from "@/components/QuickBookForm";
-import PopularRoutes from "@/components/PopularRoutes";
+import { Suspense, useState, useEffect } from "react"
+import { motion } from "framer-motion"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import Link from "next/link"
+import Image from "next/image"
+import { ArrowRight, MapPin, Clock, Users, Star, Phone, Car, Plane, Shield, Award, Heart } from "lucide-react"
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon"
+import QuickBookForm from "@/components/QuickBookForm"
+import PopularRoutes from "@/components/PopularRoutes"
+import { useBanner } from "@/hooks/use-banner"
+import { useTariff } from "@/hooks/use-tariff"
+import { usePackages } from "@/hooks/use-packages"
+import { useContact } from "@/hooks/use-contact"
+import { Testimonials } from "./Testimonial"
 
 // Static data for travel business
 const staticBanners = [
   {
-    _id: '1',
-    title: 'Explore Tamil Nadu',
-    subtitle: 'Professional travel services across Tamil Nadu. One-way trips, round trips, airport taxi, day rentals, and tour packages.',
-    image: '/kodaikanal-hill-station.png',
-    isActive: true
+    _id: "1",
+    title: "Explore Beautiful Destinations",
+    subtitle:
+      "Professional travel services for all your needs. One-way trips, round trips, airport taxi, day rentals, and tour packages.",
+    image: "/kodaikanal-hill-station.png",
+    isActive: true,
   },
   {
-    _id: '2',
-    title: 'Comfortable Journeys',
-    subtitle: 'Experience safe and comfortable travel with our well-maintained vehicles and experienced drivers.',
-    image: '/luxury-taxi-service-in-tamil-nadu.png',
-    isActive: true
-  }
-];
+    _id: "2",
+    title: "Comfortable Journeys",
+    subtitle: "Experience safe and comfortable travel with our well-maintained vehicles and experienced drivers.",
+    image: "/luxury-taxi-service-in-tamil-nadu.png",
+    isActive: true,
+  },
+]
 
 const staticTariffServices = [
   {
-    _id: '1',
-    title: 'One-way Trip',
-    description: 'Comfortable one-way travel to your destination with professional drivers',
-    image: '/toyota-innova-crysta-luxury-taxi.png',
-    pricing: { basePrice: 12, currency: 'INR' },
-    features: ['Professional Driver', 'Clean Vehicle', 'On-time Service'],
-    isActive: true
+    _id: "1",
+    title: "One-way Trip",
+    description: "Comfortable one-way travel to your destination with professional drivers",
+    image: "/toyota-innova-crysta-luxury-taxi.png",
+    pricing: { basePrice: 12, currency: "INR" },
+    features: ["Professional Driver", "Clean Vehicle", "On-time Service"],
+    isActive: true,
+    featured: true,
   },
   {
-    _id: '2',
-    title: 'Round Trip',
-    description: 'Complete round trip service with flexible timing and comfortable travel',
-    image: '/toyota-innova-taxi.png',
-    pricing: { basePrice: 20, currency: 'INR' },
-    features: ['Flexible Timing', 'Wait Time Included', 'Return Journey'],
-    isActive: true
+    _id: "2",
+    title: "Round Trip",
+    description: "Complete round trip service with flexible timing and comfortable travel",
+    image: "/toyota-innova-taxi.png",
+    pricing: { basePrice: 20, currency: "INR" },
+    features: ["Flexible Timing", "Wait Time Included", "Return Journey"],
+    isActive: true,
+    featured: true,
   },
   {
-    _id: '3',
-    title: 'Airport Taxi',
-    description: 'Reliable airport pickup and drop services available 24/7',
-    image: '/airport-taxi.png',
-    pricing: { basePrice: 15, currency: 'INR' },
-    features: ['24/7 Available', 'Flight Tracking', 'Meet & Greet'],
-    isActive: true
+    _id: "3",
+    title: "Airport Taxi",
+    description: "Reliable airport pickup and drop services available 24/7",
+    image: "/airport-taxi.png",
+    pricing: { basePrice: 15, currency: "INR" },
+    features: ["24/7 Available", "Flight Tracking", "Meet & Greet"],
+    isActive: true,
+    featured: true,
   },
   {
-    _id: '4',
-    title: 'Day Rental',
-    description: 'Full day vehicle rental for local sightseeing and business trips',
-    image: '/maruti-brezza-suv-taxi.png',
-    pricing: { basePrice: 2500, currency: 'INR' },
-    features: ['8 Hours Service', 'Local Sightseeing', 'Fuel Included'],
-    isActive: true
+    _id: "4",
+    title: "Day Rental",
+    description: "Full day vehicle rental for local sightseeing and business trips",
+    image: "/maruti-brezza-suv-taxi.png",
+    pricing: { basePrice: 2500, currency: "INR" },
+    features: ["8 Hours Service", "Local Sightseeing", "Fuel Included"],
+    isActive: true,
+    featured: false,
   },
   {
-    _id: '5',
-    title: 'Hourly Package',
-    description: 'Flexible hourly rental service for short trips and quick errands',
-    image: '/wagon-r-taxi.png',
-    pricing: { basePrice: 300, currency: 'INR' },
-    features: ['Minimum 2 Hours', 'Flexible Timing', 'City Limits'],
-    isActive: true
+    _id: "5",
+    title: "Hourly Package",
+    description: "Flexible hourly rental service for short trips and quick errands",
+    image: "/wagon-r-taxi.png",
+    pricing: { basePrice: 300, currency: "INR" },
+    features: ["Minimum 2 Hours", "Flexible Timing", "City Limits"],
+    isActive: true,
+    featured: false,
   },
   {
-    _id: '6',
-    title: 'Tour Package',
-    description: 'Complete tour packages to popular destinations in Tamil Nadu',
-    image: '/tempo-traveller-12-seater.png',
-    pricing: { basePrice: 5000, currency: 'INR' },
-    features: ['Multi-day Tours', 'Accommodation Help', 'Local Guide'],
-    isActive: true
-  }
-];
+    _id: "6",
+    title: "Tour Package",
+    description: "Complete tour packages to popular destinations in Tamil Nadu",
+    image: "/tempo-traveller-12-seater.png",
+    pricing: { basePrice: 5000, currency: "INR" },
+    features: ["Multi-day Tours", "Accommodation Help", "Local Guide"],
+    isActive: true,
+    featured: false,
+  },
+]
 
-// Static testimonials data for travel business
+// Static testimonials data for travel business (fallback)
 const staticTestimonials = [
   {
-    id: 1,
+    _id: "1",
     name: "Rajesh Kumar",
     location: "Chennai",
+    avatar: "",
+    content: "Excellent service! The driver was punctual and the vehicle was very clean and comfortable. Highly recommend Vinushree Tours for reliable travel.",
     rating: 5,
-    comment: "Excellent service! The driver was punctual and the vehicle was very clean and comfortable. Highly recommend Vinushree Tours for reliable travel."
+    servicesType: "Airport Taxi",
+    status: "published",
   },
   {
-    id: 2,
+    _id: "2",
     name: "Priya Sharma",
-    location: "Coimbatore", 
+    location: "Coimbatore",
+    avatar: "",
+    content: "Had a wonderful trip to Ooty with Vinushree Tours. The team was professional and the pricing was very reasonable. Will definitely book again!",
     rating: 5,
-    comment: "Had a wonderful trip to Ooty with Vinushree Tours. The team was professional and the pricing was very reasonable. Will definitely book again!"
+    servicesType: "Tour Package",
+    status: "published",
   },
   {
-    id: 3,
+    _id: "3",
     name: "Arun Krishnan",
     location: "Madurai",
+    avatar: "",
+    content: "Best travel service in Tamil Nadu. Highly recommend for family trips and business travel. Safe, comfortable, and reliable service every time.",
     rating: 5,
-    comment: "Best travel service in Tamil Nadu. Highly recommend for family trips and business travel. Safe, comfortable, and reliable service every time."
+    servicesType: "Round Trip",
+    status: "published",
   },
   {
-    id: 4,
+    _id: "4",
     name: "Meera Patel",
     location: "Trichy",
+    avatar: "",
+    content: "Amazing experience with their tour packages. The Kodaikanal trip was perfectly organized and the driver was very knowledgeable about local places.",
     rating: 5,
-    comment: "Amazing experience with their tour packages. The Kodaikanal trip was perfectly organized and the driver was very knowledgeable about local places."
+    servicesType: "Tour Package - Kodaikanal",
+    status: "published",
   },
   {
-    id: 5,
+    _id: "5",
     name: "Suresh Babu",
     location: "Salem",
+    avatar: "",
+    content: "Used their airport taxi service multiple times. Always on time, clean vehicles, and professional drivers. Excellent customer service!",
     rating: 5,
-    comment: "Used their airport taxi service multiple times. Always on time, clean vehicles, and professional drivers. Excellent customer service!"
+    servicesType: "Airport Taxi",
+    status: "published",
   },
   {
-    id: 6,
+    _id: "6",
     name: "Lakshmi Devi",
     location: "Tirunelveli",
+    avatar: "",
+    content: "Booked their day rental for local sightseeing. The driver was courteous and helped us visit all the places we wanted. Great value for money!",
     rating: 5,
-    comment: "Booked their day rental for local sightseeing. The driver was courteous and helped us visit all the places we wanted. Great value for money!"
-  }
-];
+    servicesType: "Day Rental",
+    status: "published",
+  },
+]
 
 const staticPackages = [
   {
-    _id: '1',
-    title: 'Kodaikanal Hill Station',
-    description: 'Experience the beauty of Kodaikanal with our 2-day tour package',
-    image: '/kodaikanal-lake-and-hills-scenic-view.png',
-    duration: '2 Days',
+    _id: "1",
+    title: "Kodaikanal Hill Station",
+    description: "Experience the beauty of Kodaikanal with our 2-day tour package",
+    image: "/kodaikanal-lake-and-hills-scenic-view.png",
+    duration: "2 Days",
     price: 7500,
-    destinations: ['Kodaikanal', 'Berijam Lake', 'Coaker\'s Walk'],
-    highlights: ['Hill Station', 'Lake Views', 'Pleasant Weather'],
-    isActive: true
+    destinations: ["Kodaikanal", "Berijam Lake", "Coaker's Walk"],
+    highlights: ["Hill Station", "Lake Views", "Pleasant Weather"],
+    isActive: true,
   },
   {
-    _id: '2',
-    title: 'Ooty Queen of Hills',
-    description: 'Discover the charm of Ooty with our comprehensive tour package',
-    image: '/ooty-hills-tea-gardens.png',
-    duration: '3 Days',
+    _id: "2",
+    title: "Ooty Queen of Hills",
+    description: "Discover the charm of Ooty with our comprehensive tour package",
+    image: "/ooty-hills-tea-gardens.png",
+    duration: "3 Days",
     price: 12000,
-    destinations: ['Ooty', 'Coonoor', 'Kotagiri'],
-    highlights: ['Tea Gardens', 'Toy Train', 'Botanical Garden'],
-    isActive: true
+    destinations: ["Ooty", "Coonoor", "Kotagiri"],
+    highlights: ["Tea Gardens", "Toy Train", "Botanical Garden"],
+    isActive: true,
   },
   {
-    _id: '3',
-    title: 'Rameswaram Pilgrimage',
-    description: 'Sacred pilgrimage tour to Rameswaram temple and surrounding areas',
-    image: '/rameswaram-temple.png',
-    duration: '2 Days',
+    _id: "3",
+    title: "Rameswaram Pilgrimage",
+    description: "Sacred pilgrimage tour to Rameswaram temple and surrounding areas",
+    image: "/rameswaram-temple.png",
+    duration: "2 Days",
     price: 6500,
-    destinations: ['Rameswaram', 'Dhanushkodi', 'Pamban Bridge'],
-    highlights: ['Temple Visit', 'Beach Views', 'Spiritual Journey'],
-    isActive: true
+    destinations: ["Rameswaram", "Dhanushkodi", "Pamban Bridge"],
+    highlights: ["Temple Visit", "Beach Views", "Spiritual Journey"],
+    isActive: true,
   },
   {
-    _id: '4',
-    title: 'Madurai Temple City',
-    description: 'Explore the historic temples and culture of Madurai',
-    image: '/madurai-meenakshi-temple.png',
-    duration: '1 Day',
+    _id: "4",
+    title: "Madurai Temple City",
+    description: "Explore the historic temples and culture of Madurai",
+    image: "/madurai-meenakshi-temple.png",
+    duration: "1 Day",
     price: 2500,
-    destinations: ['Meenakshi Temple', 'Thirumalai Nayakkar Palace', 'Gandhi Museum'],
-    highlights: ['Ancient Temples', 'Rich History', 'Cultural Heritage'],
-    isActive: true
+    destinations: ["Meenakshi Temple", "Thirumalai Nayakkar Palace", "Gandhi Museum"],
+    highlights: ["Ancient Temples", "Rich History", "Cultural Heritage"],
+    isActive: true,
   },
   {
-    _id: '5',
-    title: 'Kodaikanal Pillar Rocks',
-    description: 'Visit the famous Pillar Rocks and scenic viewpoints in Kodaikanal',
-    image: '/pillar-rocks-kodaikanal.png',
-    duration: '2 Days',
+    _id: "5",
+    title: "Kodaikanal Pillar Rocks",
+    description: "Visit the famous Pillar Rocks and scenic viewpoints in Kodaikanal",
+    image: "/pillar-rocks-kodaikanal.png",
+    duration: "2 Days",
     price: 5500,
-    destinations: ['Pillar Rocks', 'Bryant Park', 'Coaker\'s Walk'],
-    highlights: ['Rock Formations', 'Valley Views', 'Cool Climate'],
-    isActive: true
+    destinations: ["Pillar Rocks", "Bryant Park", "Coaker's Walk"],
+    highlights: ["Rock Formations", "Valley Views", "Cool Climate"],
+    isActive: true,
   },
   {
-    _id: '6',
-    title: 'Thirumalai Palace Tour',
-    description: 'Explore the magnificent Thirumalai Nayakkar Palace in Madurai',
-    image: '/thirumalai-nayakkar-palace.png',
-    duration: '1 Day',
+    _id: "6",
+    title: "Thirumalai Palace Tour",
+    description: "Explore the magnificent Thirumalai Nayakkar Palace in Madurai",
+    image: "/thirumalai-nayakkar-palace.png",
+    duration: "1 Day",
     price: 3500,
-    destinations: ['Thirumalai Palace', 'Gandhi Museum', 'Local Markets'],
-    highlights: ['Royal Architecture', 'Historical Sites', 'Cultural Experience'],
-    isActive: true
-  }
-];
+    destinations: ["Thirumalai Palace", "Gandhi Museum", "Local Markets"],
+    highlights: ["Royal Architecture", "Historical Sites", "Cultural Experience"],
+    isActive: true,
+  },
+]
 
 export default function CompleteHome() {
-  const [currentBanner, setCurrentBanner] = useState(0);
+  const [currentBanner, setCurrentBanner] = useState(0)
+  const { banner, isLoading } = useBanner("home") // dynamic hero banner for Home
+  const { tariffData } = useTariff() // dynamic tariff services
+  const { packagesData } = usePackages() // dynamic packages
+  const { contactInfo } = useContact() // dynamic contact information
+  const [testimonials, setTestimonials] = useState([])
+  const [testimonialsLoading, setTestimonialsLoading] = useState(true)
 
-  // Auto-rotate banners
+  // Auto-rotate banners (only if no dynamic banner; otherwise no rotation needed)
   useEffect(() => {
-    if (staticBanners.length > 1) {
+    if (!banner && staticBanners.length > 1) {
       const interval = setInterval(() => {
-        setCurrentBanner((prev) => (prev + 1) % staticBanners.length);
-      }, 5000);
-      return () => clearInterval(interval);
+        setCurrentBanner((prev) => (prev + 1) % staticBanners.length)
+      }, 5000)
+      return () => clearInterval(interval)
     }
-  }, []);
+  }, [banner])
+
+  // Fetch testimonials
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const response = await fetch('/api/admin/testimonial?status=published')
+        const result = await response.json()
+        
+        if (result.success) {
+          setTestimonials(result.data)
+        } else {
+          // Use static testimonials as fallback
+          setTestimonials(staticTestimonials)
+        }
+      } catch (error) {
+        console.error('Error fetching testimonials:', error)
+        // Use static testimonials as fallback
+        setTestimonials(staticTestimonials)
+      } finally {
+        setTestimonialsLoading(false)
+      }
+    }
+
+    fetchTestimonials()
+  }, [])
 
   const handleBookNow = (serviceTitle?: string) => {
     // For homepage, scroll to the quick book form
-    const formElement = document.getElementById('quick-book-form');
+    const formElement = document.getElementById("quick-book-form")
     if (formElement) {
-      formElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      formElement.scrollIntoView({ behavior: "smooth", block: "center" })
     }
-  };
+  }
+
+  const handleBookPackage = (packageTitle: string) => {
+    const message = `Hi, I'm interested in the ${packageTitle} package. Please provide more details and availability.`;
+    const whatsappNumber = contactInfo?.whatsappNumber || contactInfo?.primaryPhone || '919003782966';
+    const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  }
 
   const handleCallNow = () => {
-    window.open('tel:+919003782966', '_self');
-  };
+    const phoneNumber = contactInfo?.primaryPhone || '+919003782966';
+    window.open(`tel:${phoneNumber}`, "_self")
+  }
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section with Banner Images and Animated Background */}
+      {/* Hero Section with Banner Images */}
       <section className="relative flex items-center justify-center overflow-hidden">
-        {/* Banner Images Background */}
         <div className="absolute inset-0">
-          {staticBanners.map((banner, index) => (
-            <div
-              key={banner._id}
-              className={`absolute inset-0 ${index === currentBanner ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000`}
-            >
-              <Image
-                src={banner.image}
-                alt={banner.title}
-                fill
-                className="object-cover"
-                priority={index === 0}
-              />
-              <div className="absolute inset-0 bg-black/50" />
-              <div className="absolute inset-0 bg-admin-gradient/20" />
-            </div>
-          ))}
-
-
+          <div className="absolute inset-0 opacity-100 transition-opacity duration-700">
+            <Image
+              src={banner?.status === "active" && banner?.image ? banner.image : "/placeholder.svg"}
+              alt={banner?.title || "Home banner"}
+              fill
+              className={`object-cover ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+              priority
+            />
+            <div className="absolute inset-0 bg-black/50" />
+            <div className="absolute inset-0 bg-admin-gradient/20" />
+          </div>
         </div>
-
-
 
         <div className="container mx-auto px-4 py-8 sm:px-6 sm:py-12 md:py-16 lg:py-20 xl:px-8 relative z-10 max-w-7xl">
           <div className="max-w-5xl mx-auto text-center text-white">
@@ -279,11 +323,14 @@ export default function CompleteHome() {
               </Badge>
             </div>
 
+            {/* Optional dynamic banner title (keeps existing headline below) */}
+            {banner?.title && (
+              <p className="text-white/90 text-base sm:text-lg md:text-xl mb-2 sm:mb-3">{banner.title}</p>
+            )}
+
             <div>
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold mb-4 sm:mb-6 leading-tight">
-                <span className="block">
-                  Travel Tamil Nadu
-                </span>
+                <span className="block">Travel With Us</span>
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-400 to-orange-400">
                   With Comfort
                 </span>
@@ -295,7 +342,8 @@ export default function CompleteHome() {
             </p>
 
             <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl mb-8 sm:mb-10 md:mb-12 text-white/80 max-w-4xl mx-auto leading-relaxed px-2 sm:px-4">
-              Experience the beauty of Tamil Nadu with our professional travel services. From airport transfers to complete tour packages, we ensure safe, comfortable, and memorable journeys across the state.
+              Experience professional travel services with comfort and reliability. From airport transfers to
+              complete tour packages, we ensure safe, comfortable, and memorable journeys to your destinations.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
@@ -325,27 +373,24 @@ export default function CompleteHome() {
           </div>
         </div>
 
-        {/* Banner Indicators */}
-        {staticBanners.length > 1 && (
+        {/* Banner Indicators - show only when using static rotation */}
+        {!banner && staticBanners.length > 1 && (
           <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
             {staticBanners.map((_, index) => (
               <button
                 key={index}
                 onClick={() => setCurrentBanner(index)}
                 className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  index === currentBanner ? 'bg-white' : 'bg-white/50'
+                  index === currentBanner ? "bg-white" : "bg-white/50"
                 }`}
               />
             ))}
           </div>
         )}
-
-
       </section>
 
       {/* Stats Section */}
       <section className="py-12 sm:py-16 md:py-20 bg-gradient-to-br from-gray-50 to-white relative">
-
         <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
           <motion.div
             className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8"
@@ -382,15 +427,15 @@ export default function CompleteHome() {
                 icon: <Star className="h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6" />,
               },
             ].map((stat, index) => (
-              <motion.div 
-                key={index} 
+              <motion.div
+                key={index}
                 variants={{
                   initial: { opacity: 0, scale: 0.8 },
                   animate: { opacity: 1, scale: 1 },
                 }}
                 transition={{ duration: 0.6 }}
               >
-                <Card className="hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-0 shadow-lg bg-gradient-to-br from-white to-gray-50 h-full">
+                <Card className="hover:shadow-xl transition-all duration-300 border-0 shadow-lg bg-gradient-to-br from-white to-gray-50 h-full">
                   <CardContent className="p-3 sm:p-4 md:p-6 lg:p-8 text-center">
                     <motion.div
                       className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 mx-auto mb-3 sm:mb-4 md:mb-6 bg-admin-gradient rounded-full flex items-center justify-center shadow-lg"
@@ -453,7 +498,7 @@ export default function CompleteHome() {
               ease: "easeInOut",
             }}
           />
-          
+
           {/* Straight line animations */}
           {[...Array(8)].map((_, i) => (
             <motion.div
@@ -475,7 +520,7 @@ export default function CompleteHome() {
               }}
             />
           ))}
-          
+
           {/* Horizontal lines */}
           {[...Array(4)].map((_, i) => (
             <motion.div
@@ -521,7 +566,7 @@ export default function CompleteHome() {
               }}
             />
           ))}
-          
+
           {/* Larger floating orbs */}
           <motion.div
             className="absolute top-20 left-20 w-32 h-32 bg-gradient-to-r from-white/10 to-yellow-300/20 rounded-full blur-xl"
@@ -570,7 +615,9 @@ export default function CompleteHome() {
               <span className="block text-yellow-200">Since 2020</span>
             </h2>
             <p className="text-base sm:text-lg md:text-xl text-white/90 leading-relaxed px-2 sm:px-4">
-              Vinushree Tours & Travels is your trusted travel partner across Tamil Nadu, specializing in comfortable and reliable travel services that make every journey memorable with professional drivers and well-maintained vehicles.
+              Vinushree Tours & Travels is your trusted travel partner, specializing in comfortable
+              and reliable travel services that make every journey memorable with professional drivers and
+              well-maintained vehicles.
             </p>
           </motion.div>
 
@@ -682,9 +729,7 @@ export default function CompleteHome() {
             </Badge>
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 md:mb-8 px-2">
               Travel Services
-              <span className="block text-transparent bg-clip-text bg-admin-gradient">
-                Across Tamil Nadu
-              </span>
+              <span className="block text-transparent bg-clip-text bg-admin-gradient">For Every Destination</span>
             </h2>
             <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-xs sm:max-w-2xl md:max-w-3xl mx-auto px-2">
               From airport transfers to complete tour packages, we provide reliable and comfortable travel solutions
@@ -692,9 +737,9 @@ export default function CompleteHome() {
           </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:gap-10">
-            {staticTariffServices.map((service, index) => (
+            {(tariffData.length > 0 ? tariffData.slice(0, 6) : staticTariffServices).map((service, index) => (
               <motion.div
-                key={service._id}
+                key={service._id || service.id}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: index * 0.1 }}
@@ -704,28 +749,35 @@ export default function CompleteHome() {
                   <CardContent className="p-0">
                     <div className="relative h-48 overflow-hidden rounded-t-lg">
                       <Image
-                        src={service.image}
-                        alt={service.title}
+                        src={service.image || "/placeholder.svg"}
+                        alt={service.vehicleName || service.title}
                         fill
                         className="object-cover"
                       />
                       <div className="absolute inset-0 bg-black/20" />
                       <div className="absolute top-4 right-4">
                         <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm">
-                          ₹{service.pricing.basePrice}+
+                          ₹{service.oneWayRate ? service.oneWayRate.replace(/[₹$]/g, '').replace(/per\s*km/gi, '').replace(/\/km/gi, '').trim() : service.pricing?.basePrice}+
                         </Badge>
                       </div>
+                      {service.featured && (
+                        <div className="absolute top-4 left-4">
+                          <Badge className="bg-green-500 text-white">
+                            ⭐ Featured
+                          </Badge>
+                        </div>
+                      )}
                     </div>
                     <div className="p-4 sm:p-6 md:p-8">
                       <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3 md:mb-4">
-                        {service.title}
+                        {service.vehicleName || service.title}
                       </h3>
                       <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4 md:mb-6 line-clamp-2">
                         {service.description}
                       </p>
                       <div className="flex items-center justify-between">
                         <Button
-                          onClick={() => handleBookNow(service.title)}
+                          onClick={() => handleBookNow(service.vehicleName || service.title)}
                           className="bg-admin-gradient text-white hover:opacity-90 text-sm sm:text-base py-2 sm:py-2.5"
                         >
                           Book Now
@@ -770,10 +822,8 @@ export default function CompleteHome() {
               Tour Packages
             </Badge>
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 md:mb-8 px-2">
-              Featured
-              <span className="block text-transparent bg-clip-text bg-admin-gradient">
-                Travel Packages
-              </span>
+              Popular
+              <span className="block text-transparent bg-clip-text bg-admin-gradient">Travel Packages</span>
             </h2>
             <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-xs sm:max-w-2xl md:max-w-3xl mx-auto px-2">
               Discover the beauty of Tamil Nadu with our carefully crafted tour packages
@@ -781,56 +831,60 @@ export default function CompleteHome() {
           </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:gap-10">
-            {staticPackages.map((pkg, index) => (
+            {(packagesData.length > 0 ? packagesData.slice(0, 6) : staticPackages).map((pkg, index) => (
               <motion.div
-                key={pkg._id}
+                key={pkg._id || pkg.id}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
-                <Card className="group hover:shadow-2xl transition-all duration-300 border-0 shadow-lg hover:scale-105">
-                  <CardContent className="p-0">
+                <Card className="group hover:shadow-2xl transition-all duration-300 border-0 shadow-lg hover:scale-105 h-full">
+                  <CardContent className="p-0 h-full flex flex-col">
                     <div className="relative h-48 overflow-hidden rounded-t-lg">
-                      <Image
-                        src={pkg.image}
-                        alt={pkg.title}
-                        fill
-                        className="object-cover"
-                      />
+                      <Image src={pkg.image || "/placeholder.svg"} alt={pkg.title} fill className="object-cover" />
                       <div className="absolute inset-0 bg-black/20" />
                       <div className="absolute top-4 right-4">
                         <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm">
                           {pkg.duration}
                         </Badge>
                       </div>
+                      {pkg.featured && (
+                        <div className="absolute top-4 left-4">
+                          <Badge className="bg-green-500 text-white">
+                            ⭐ Bestseller
+                          </Badge>
+                        </div>
+                      )}
                     </div>
-                    <div className="p-4 sm:p-6 md:p-8">
+                    <div className="p-4 sm:p-6 md:p-8 flex flex-col flex-grow">
                       <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3 md:mb-4">
                         {pkg.title}
                       </h3>
-                      <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4 md:mb-6 line-clamp-2">
+                      <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4 md:mb-6 line-clamp-2 flex-grow">
                         {pkg.description}
                       </p>
-                      <div className="flex items-center justify-between mb-3 sm:mb-4 md:mb-6">
-                        <div className="flex items-center text-xs sm:text-sm text-gray-500">
-                          <MapPin className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                          {pkg.destinations.slice(0, 2).join(', ')}
-                          {pkg.destinations.length > 2 && '...'}
-                        </div>
-                        <div className="text-base sm:text-lg md:text-xl font-bold text-admin-primary">
-                          ₹{pkg.price}
+                      <div className="flex items-center justify-between mb-3 sm:mb-4">
+                        <span className="text-lg sm:text-xl md:text-2xl font-bold text-admin-primary">
+                          {pkg.price}
+                        </span>
+                        <div className="flex items-center text-yellow-500">
+                          <Star className="h-4 w-4 fill-current" />
+                          <Star className="h-4 w-4 fill-current" />
+                          <Star className="h-4 w-4 fill-current" />
+                          <Star className="h-4 w-4 fill-current" />
+                          <Star className="h-4 w-4 fill-current" />
                         </div>
                       </div>
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between mt-auto">
                         <Button
-                          onClick={() => handleBookNow(pkg.title)}
+                          onClick={() => handleBookPackage(pkg.title)}
                           className="bg-admin-gradient text-white hover:opacity-90 text-sm sm:text-base py-2 sm:py-2.5"
                         >
                           Book Now
                         </Button>
                         <Link
-                          href="/packages"
+                          href={pkg.slug ? `/packages/${pkg.slug}` : "/packages"}
                           className="text-admin-primary hover:text-admin-secondary transition-colors font-medium text-xs sm:text-sm"
                         >
                           View Details
@@ -858,94 +912,8 @@ export default function CompleteHome() {
       {/* Popular Routes Section */}
       <PopularRoutes showAll={true} />
 
-      {/* Testimonials Section */}
-      <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gradient-to-br from-gray-50 to-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-white"></div>
-        {/* Subtle animated elements for white background */}
-        <div className="absolute inset-0 overflow-hidden">
-          <motion.div
-            className="absolute top-1/4 right-1/4 w-32 h-32 bg-gradient-to-r from-yellow-100/30 to-orange-100/30 rounded-full blur-2xl"
-            animate={{
-              scale: [1, 1.1, 1],
-              opacity: [0.2, 0.4, 0.2],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            }}
-          />
-          <motion.div
-            className="absolute bottom-1/4 left-1/4 w-24 h-24 bg-gradient-to-r from-orange-100/20 to-yellow-100/20 rounded-full blur-xl"
-            animate={{
-              y: [-10, 10, -10],
-              opacity: [0.3, 0.5, 0.3],
-            }}
-            transition={{
-              duration: 6,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            }}
-          />
-        </div>
-        <div className="container mx-auto px-4 sm:px-6 md:px-8 relative z-10 max-w-7xl">
-          <motion.div
-            className="text-center mb-12 sm:mb-16 md:mb-20"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <Badge className="mb-4 sm:mb-6 bg-admin-gradient text-white px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm">
-              <Users className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
-              Customer Reviews
-            </Badge>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 md:mb-8 px-2">
-              What Our Customers
-              <span className="block text-transparent bg-clip-text bg-admin-gradient">
-                Say About Us
-              </span>
-            </h2>
-            <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-xs sm:max-w-2xl md:max-w-3xl mx-auto px-2">
-              Read testimonials from our satisfied customers who have experienced our exceptional travel services
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 md:gap-10">
-            {staticTestimonials.slice(0, 3).map((testimonial, index) => (
-              <motion.div
-                key={testimonial.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <Card className="card-hover h-full border-0 shadow-lg bg-gradient-to-br from-white to-gray-50 overflow-hidden">
-                  <CardContent className="p-6 sm:p-8">
-                    <div className="flex items-center mb-4">
-                      <div className="w-12 h-12 bg-admin-gradient rounded-full flex items-center justify-center text-white font-bold text-lg mr-4">
-                        {testimonial.name.charAt(0)}
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
-                        <p className="text-sm text-gray-600">{testimonial.location}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center mb-4">
-                      {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star key={i} className="h-4 w-4 text-yellow-400 fill-current" />
-                      ))}
-                    </div>
-                    <p className="text-gray-700 leading-relaxed italic">
-                      "{testimonial.comment}"
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Dynamic Testimonials Section */}
+      <Testimonials testimonials={testimonials} />
 
       {/* CTA Section */}
       <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-admin-gradient relative overflow-hidden">
@@ -1003,14 +971,14 @@ export default function CompleteHome() {
         </div>
 
         <div className="container mx-auto px-4 sm:px-6 md:px-8 text-center relative z-10 max-w-7xl">
-          <motion.div 
+          <motion.div
             variants={{
               initial: { opacity: 0, y: 60 },
               animate: { opacity: 1, y: 0 },
             }}
             transition={{ duration: 0.6 }}
-            initial="initial" 
-            whileInView="animate" 
+            initial="initial"
+            whileInView="animate"
             viewport={{ once: true }}
           >
             <Badge className="mb-3 sm:mb-4 md:mb-6 bg-admin-secondary text-white border-white/30 backdrop-blur-sm px-3 py-1 sm:px-4 sm:py-1.5 md:px-6 md:py-2 text-xs sm:text-sm md:text-base">
@@ -1024,12 +992,17 @@ export default function CompleteHome() {
               </span>
             </h2>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl mb-6 sm:mb-8 md:mb-10 text-white/90 max-w-3xl mx-auto leading-relaxed px-2 sm:px-4">
-              Experience the comfort and reliability of our travel services. Book your journey across Tamil Nadu and discover the beauty of the state with our professional team.
+              Experience the comfort and reliability of our travel services. Book your journey across Tamil Nadu and
+              discover the beauty of the state with our professional team.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center items-center">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
                 <Button
-                  onClick={() => handleBookNow()}
+                  onClick={() => {
+                    const whatsappNumber = contactInfo?.whatsappNumber || contactInfo?.primaryPhone || '919003782966';
+                    const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=Hi, I would like to book a trip. Please provide more details.`;
+                    window.open(whatsappUrl, '_blank');
+                  }}
                   size="lg"
                   className="w-full sm:w-auto bg-white text-admin-secondary hover:bg-gray-100 px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-semibold transition-all duration-300 hover:shadow-lg hover:scale-105"
                 >
@@ -1052,8 +1025,6 @@ export default function CompleteHome() {
           </motion.div>
         </div>
       </section>
-
-
     </div>
-  );
+  )
 }

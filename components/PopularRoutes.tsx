@@ -1,26 +1,20 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MapPin, ArrowRight, Car } from "lucide-react";
 import Link from "next/link";
+import { useContact } from "@/hooks/use-contact";
 
-const popularRoutes = [
-  'Chennai Drop Taxi',
-  'Madurai Drop Taxi', 
-  'Coimbatore Drop Taxi',
-  'Kodaikanal Drop Taxi',
-  'Ooty Drop Taxi',
-  'Bangalore Drop Taxi',
-  'Kerala Drop Taxi',
-  'Salem Drop Taxi',
-  'Trichy Drop Taxi',
-  'Thanjavur Drop Taxi',
-  'Rameswaram Drop Taxi',
-  'Kanyakumari Drop Taxi'
-];
+interface PopularRoute {
+  _id: string;
+  name: string;
+  isActive: boolean;
+  isPopularRoute: boolean;
+  order: number;
+}
 
 interface PopularRoutesProps {
   showAll?: boolean;
@@ -28,11 +22,76 @@ interface PopularRoutesProps {
 }
 
 export default function PopularRoutes({ showAll = false, limit = 12 }: PopularRoutesProps) {
-  const displayRoutes = showAll ? popularRoutes : popularRoutes.slice(0, limit);
+  const { contactInfo } = useContact();
+  const [popularRoutes, setPopularRoutes] = useState<PopularRoute[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fallback routes if API fails
+  const fallbackRoutes = [
+    'Chennai Drop Taxi',
+    'Madurai Drop Taxi', 
+    'Coimbatore Drop Taxi',
+    'Kodaikanal Drop Taxi',
+    'Ooty Drop Taxi',
+    'Bangalore Drop Taxi',
+    'Kerala Drop Taxi',
+    'Salem Drop Taxi',
+    'Trichy Drop Taxi',
+    'Thanjavur Drop Taxi',
+    'Rameswaram Drop Taxi',
+    'Kanyakumari Drop Taxi'
+  ];
+
+  // Fetch popular routes from API
+  useEffect(() => {
+    const fetchPopularRoutes = async () => {
+      try {
+        const response = await fetch('/api/admin/locations');
+        const result = await response.json();
+        
+        if (result.success) {
+          // Filter only popular routes and sort by order
+          const routes = result.data
+            .filter((location: PopularRoute) => location.isActive && location.isPopularRoute)
+            .sort((a: PopularRoute, b: PopularRoute) => a.order - b.order);
+          setPopularRoutes(routes);
+        }
+      } catch (error) {
+        console.error('Error fetching popular routes:', error);
+        // Use fallback routes
+        const fallbackData = fallbackRoutes.map((route, index) => ({
+          _id: `fallback-${index}`,
+          name: route,
+          isActive: true,
+          isPopularRoute: true,
+          order: index
+        }));
+        setPopularRoutes(fallbackData);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPopularRoutes();
+  }, []);
+
+  // Use fallback if no routes found
+  const routesToDisplay = popularRoutes.length > 0 
+    ? popularRoutes 
+    : fallbackRoutes.map((route, index) => ({
+        _id: `fallback-${index}`,
+        name: route,
+        isActive: true,
+        isPopularRoute: true,
+        order: index
+      }));
+
+  const displayRoutes = showAll ? routesToDisplay : routesToDisplay.slice(0, limit);
 
   const handleBookRoute = (routeName: string) => {
     const message = `Hi, I'd like to book ${routeName}. Please provide availability and confirm the fare.`;
-    const whatsappUrl = `https://wa.me/919003782966?text=${encodeURIComponent(message)}`;
+    const whatsappNumber = contactInfo?.whatsappNumber || contactInfo?.primaryPhone || '919003782966';
+    const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
@@ -113,28 +172,34 @@ export default function PopularRoutes({ showAll = false, limit = 12 }: PopularRo
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
-          {displayRoutes.map((routeName, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.05 }}
-              viewport={{ once: true }}
-            >
-              <Button
-                onClick={() => handleBookRoute(routeName)}
-                variant="outline"
-                className="w-full h-auto p-3 sm:p-4 text-center border-2 border-gray-200 hover:border-admin-primary hover:bg-admin-gradient hover:text-white transition-all duration-300 text-sm sm:text-base font-medium text-gray-700 rounded-lg flex flex-col items-center gap-2"
+        {isLoading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
+            {displayRoutes.map((route, index) => (
+              <motion.div
+                key={route._id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.05 }}
+                viewport={{ once: true }}
               >
-                <Car className="h-4 w-4 sm:h-5 sm:w-5" />
-                {routeName}
-              </Button>
-            </motion.div>
-          ))}
-        </div>
+                <Button
+                  onClick={() => handleBookRoute(route.name)}
+                  variant="outline"
+                  className="w-full h-auto p-3 sm:p-4 text-center border-2 border-gray-200 hover:border-admin-primary hover:bg-admin-gradient hover:text-white transition-all duration-300 text-sm sm:text-base font-medium text-gray-700 rounded-lg flex flex-col items-center gap-2"
+                >
+                  <Car className="h-4 w-4 sm:h-5 sm:w-5" />
+                  {route.name}
+                </Button>
+              </motion.div>
+            ))}
+          </div>
+        )}
 
-        {!showAll && popularRoutes.length > limit && (
+        {!showAll && routesToDisplay.length > limit && (
           <div className="text-center mt-8">
             <Link href="/tariff">
               <Button className="bg-admin-gradient text-white hover:opacity-90 px-6 py-2 text-base font-medium">

@@ -3,19 +3,23 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Phone } from "lucide-react";
+import { useContact } from "@/hooks/use-contact";
 
 export default function FloatingContactButtons() {
   const [showWhatsAppTooltip, setShowWhatsAppTooltip] = useState(false);
   const [showCallTooltip, setShowCallTooltip] = useState(false);
+  const { contactInfo } = useContact();
 
   const handleWhatsAppClick = () => {
     const message = "Hi! I'm interested in your travel services. Please provide more details.";
-    const whatsappUrl = `https://wa.me/919003782966?text=${encodeURIComponent(message)}`;
+    const whatsappNumber = contactInfo?.whatsappNumber || "919003782966";
+    const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
   const handleCallClick = () => {
-    window.open('tel:+919003782966', '_self');
+    const phoneNumber = contactInfo?.primaryPhone || "+919003782966";
+    window.open(`tel:${phoneNumber}`, '_self');
   };
 
   return (
@@ -40,7 +44,7 @@ export default function FloatingContactButtons() {
         {/* WhatsApp Tooltip */}
         {showWhatsAppTooltip && (
           <div className="absolute right-16 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap shadow-lg">
-            WhatsApp: +91 90037 82966
+            WhatsApp: {contactInfo?.whatsappNumber || "+91 90037 82966"}
             <div className="absolute right-0 top-1/2 transform translate-x-1 -translate-y-1/2 w-0 h-0 border-l-4 border-l-gray-900 border-t-4 border-t-transparent border-b-4 border-b-transparent"></div>
           </div>
         )}
@@ -60,7 +64,7 @@ export default function FloatingContactButtons() {
         {/* Call Tooltip */}
         {showCallTooltip && (
           <div className="absolute right-16 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white px-3 py-2 rounded-lg text-sm whitespace-nowrap shadow-lg">
-            Call: +91 90037 82966
+            Call: {contactInfo?.primaryPhone || "+91 90037 82966"}
             <div className="absolute right-0 top-1/2 transform translate-x-1 -translate-y-1/2 w-0 h-0 border-l-4 border-l-gray-900 border-t-4 border-t-transparent border-b-4 border-b-transparent"></div>
           </div>
         )}

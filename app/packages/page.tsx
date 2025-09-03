@@ -9,9 +9,9 @@ export const dynamic = 'force-dynamic';
 export const metadata = {
   title: "Tour Packages - Vinushree Tours & Travels",
   description:
-    "Discover amazing tour packages across Tamil Nadu. Explore temples, hill stations, beaches, and cultural destinations with our customized travel packages.",
+    "Discover amazing tour packages to beautiful destinations. Explore temples, hill stations, beaches, and cultural sites with our customized travel packages.",
   keywords:
-    "Tamil Nadu tour packages, temple tours, hill station packages, beach tours, cultural tours, travel packages",
+    "tour packages, temple tours, hill station packages, beach tours, cultural tours, travel packages",
 }; 
 
 // Fetch packages from API

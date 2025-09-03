@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
-import { Save, Search, Edit } from "lucide-react"
+import { Save, Search, Edit, Loader2 } from "lucide-react"
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -19,54 +19,23 @@ const fadeInUp = {
   transition: { duration: 0.5 },
 }
 
+interface SEOPage {
+  _id?: string;
+  id: string;
+  pageName: string;
+  title: string;
+  description: string;
+  keywords: string;
+  lastUpdated: string;
+}
+
 export default function SEOManagerPage() {
   const { toast } = useToast()
   const [isEditing, setIsEditing] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
-  // Sample SEO data for Vinushree Tours & Travels
-  const [seoPages, setSeoPages] = useState([
-    {
-      id: "1",
-      pageName: "Home Page",
-      title: "Vinushree Tours & Travels - Best Taxi Services in Tamil Nadu",
-      description: "Book reliable taxi services, tour packages, and travel solutions across Tamil Nadu. One-way trips, round trips, airport taxi, and tour packages available 24/7.",
-      keywords: "taxi service tamil nadu, tour packages, airport taxi, vinushree tours, chennai taxi, bangalore taxi, travel services",
-      lastUpdated: "2024-01-15"
-    },
-    {
-      id: "2", 
-      pageName: "About Page",
-      title: "About Vinushree Tours & Travels - Your Trusted Travel Partner",
-      description: "Learn about Vinushree Tours & Travels, your trusted travel partner in Tamil Nadu. We provide reliable taxi services, tour packages, and travel solutions since 2010.",
-      keywords: "about vinushree tours, travel company tamil nadu, trusted taxi service, travel partner, company history",
-      lastUpdated: "2024-01-14"
-    },
-    {
-      id: "3",
-      pageName: "Tariff Page", 
-      title: "Taxi Tariff & Pricing - Vinushree Tours & Travels",
-      description: "Check our competitive taxi tariff and pricing for one-way trips, round trips, airport taxi, and hourly packages. Transparent pricing with no hidden charges.",
-      keywords: "taxi tariff, taxi pricing, one way taxi rates, round trip rates, airport taxi charges, hourly package rates",
-      lastUpdated: "2024-01-13"
-    },
-    {
-      id: "4",
-      pageName: "Packages Page",
-      title: "Tour Packages Tamil Nadu - Ooty, Kodaikanal, Chennai Tours",
-      description: "Explore our exciting tour packages for Ooty, Kodaikanal, Chennai, and other Tamil Nadu destinations. Complete packages with accommodation and sightseeing.",
-      keywords: "tour packages tamil nadu, ooty tour package, kodaikanal tour, chennai tour, hill station packages, south india tours",
-      lastUpdated: "2024-01-12"
-    },
-    {
-      id: "5",
-      pageName: "Contact Page",
-      title: "Contact Vinushree Tours & Travels - Book Your Taxi Now",
-      description: "Contact Vinushree Tours & Travels for taxi booking, tour packages, and travel inquiries. Available 24/7 for all your travel needs across Tamil Nadu.",
-      keywords: "contact vinushree tours, taxi booking, travel inquiry, phone number, whatsapp booking, 24/7 service",
-      lastUpdated: "2024-01-11"
-    }
-  ]);
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [seoPages, setSeoPages] = useState<SEOPage[]>([])
 
   const [formData, setFormData] = useState({
     pageName: "",
@@ -75,10 +44,37 @@ export default function SEOManagerPage() {
     keywords: "",
   })
 
-  // Initialize with sample data
+  // Fetch SEO data from API
   useEffect(() => {
-    setLoading(false);
+    fetchSEOData();
   }, [])
+
+  const fetchSEOData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/admin/seo');
+      const result = await response.json();
+      
+      if (result.success) {
+        setSeoPages(result.data);
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to fetch SEO data",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching SEO data:", error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch SEO data",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  }
 
   const handleEdit = (page: any) => {
     setEditingId(page.id)
@@ -102,19 +98,55 @@ export default function SEOManagerPage() {
     }
 
     if (editingId) {
-      // Update the SEO page in state
-      setSeoPages(seoPages.map(page => 
-        page.id === editingId 
-          ? { ...page, ...formData, lastUpdated: new Date().toISOString().split('T')[0] }
-          : page
-      ));
-      
-      toast({
-        title: "Success",
-        description: "SEO page updated successfully",
-      })
-      
-      handleCancel()
+      try {
+        setSaving(true);
+        
+        const response = await fetch('/api/admin/seo', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: editingId,
+            title: formData.title,
+            description: formData.description,
+            keywords: formData.keywords,
+          }),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          // Update the SEO page in state
+          setSeoPages(seoPages.map(page => 
+            page.id === editingId 
+              ? { ...page, ...formData, lastUpdated: new Date().toISOString().split('T')[0] }
+              : page
+          ));
+          
+          toast({
+            title: "Success",
+            description: "SEO page updated successfully",
+          })
+          
+          handleCancel()
+        } else {
+          toast({
+            title: "Error",
+            description: result.error || "Failed to update SEO data",
+            variant: "destructive"
+          })
+        }
+      } catch (error) {
+        console.error("Error updating SEO:", error);
+        toast({
+          title: "Error",
+          description: "Failed to update SEO data",
+          variant: "destructive"
+        })
+      } finally {
+        setSaving(false);
+      }
     }
   }
 
@@ -218,11 +250,15 @@ export default function SEOManagerPage() {
              
 
               <div className="flex gap-4">
-                <Button onClick={handleSave} className="bg-admin-gradient text-white">
-                  <Save className="h-4 w-4 mr-2" />
-                  Save SEO Settings
+                <Button onClick={handleSave} className="bg-admin-gradient text-white" disabled={saving}>
+                  {saving ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Save className="h-4 w-4 mr-2" />
+                  )}
+                  {saving ? "Saving..." : "Save SEO Settings"}
                 </Button>
-                <Button variant="outline" onClick={handleCancel}>
+                <Button variant="outline" onClick={handleCancel} disabled={saving}>
                   Cancel
                 </Button>
               </div>
@@ -244,8 +280,14 @@ export default function SEOManagerPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6">
-            <div className="space-y-4">
-              {seoPages.map((page) => (
+            {loading ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin text-admin-primary" />
+                <span className="ml-2 text-gray-600">Loading SEO data...</span>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {seoPages.map((page) => (
                 <div key={page.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
@@ -283,8 +325,9 @@ export default function SEOManagerPage() {
                     <div className="text-xs text-gray-500">Last updated: {page.lastUpdated}</div>
                   </div>
                 </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </motion.div>

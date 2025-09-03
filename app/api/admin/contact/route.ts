@@ -6,20 +6,26 @@ import Contact from "@/config/utils/admin/contact/ContactSchema";
 export async function GET(request: NextRequest) {
   try {
     await connectDB();
-    
+
     // Get the contact information (there should only be one record)
     let contactInfo = await Contact.findOne();
-    
+
     // If no contact info exists, create default data
     if (!contactInfo) {
       const defaultContactInfo = {
-        phone: "9158549166",
-        email: "info@filigreesolutions.com",
-        address: "88/153, East Street, Pandiyan Nagar",
-        city: "South Madurai",
+        primaryPhone: "9003782966",
+        secondaryPhone: "9443935045",
+        whatsappNumber: "9150639506",
+        email: "info@vinushreetours.com",
+        address: "1/92, Near By Sai Baba Temple, Mellur Main Road, Uthangudi",
+        city: "Madurai",
         state: "Tamil Nadu",
-        pincode: "625006", 
+        pincode: "625107",
         country: "India",
+        businessHours: "24/7 Available",
+        bookingHours: "24/7 Online Booking Available",
+        servicesOffered: "One-way trips, Round trips, Airport Taxi, Day rentals, Hourly packages, Local pickup/drop, Tour packages",
+        coverageAreas: "Chennai, Bangalore, Madurai, Coimbatore, Ooty, Kodaikanal, Pondicherry, Trichy, Salem, Tirunelveli",
         facebook: "",
         twitter: "",
         linkedin: "",
@@ -31,17 +37,18 @@ export async function GET(request: NextRequest) {
         behance: "",
         dribbble: "",
         mapEmbedCode: "",
-        pageTitle: "Let's Discuss Your Engineering Needs",
-        pageDescription: "Ready to transform your engineering challenges into innovative solutions? Contact our expert team today and start your journey to excellence.",
-        officeTitle: "Visit Our Office in Madurai, Tamil Nadu",
-        officeDescription: "Located in the heart of Madurai, our office is easily accessible and welcoming to all our clients",
-
+        latitude: "",
+        longitude: "",
+        pageTitle: "Plan Your Perfect Journey",
+        pageDescription: "Ready to explore beautiful destinations? Contact our travel experts today and let us plan your perfect journey with comfort and safety.",
+        officeTitle: "Visit Our Office",
+        officeDescription: "Conveniently located, our office is your gateway to exploring wonderful destinations",
       };
-      
+
       contactInfo = new Contact(defaultContactInfo);
       await contactInfo.save();
     }
-    
+
     return NextResponse.json({
       success: true,
       data: contactInfo,
@@ -64,11 +71,11 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     await connectDB();
-    
+
     const body = await request.json();
-    
+
     // Validate required fields
-    const requiredFields = ['phone', 'email', 'address', 'city', 'state', 'pincode', 'country', 'pageTitle', 'pageDescription', 'officeTitle', 'officeDescription'];
+    const requiredFields = ['primaryPhone', 'whatsappNumber', 'email', 'address', 'city', 'state', 'pincode', 'country', 'pageTitle', 'pageDescription', 'officeTitle', 'officeDescription'];
     for (const field of requiredFields) {
       if (!body[field] || body[field].trim() === '') {
         return NextResponse.json(
@@ -80,10 +87,10 @@ export async function POST(request: NextRequest) {
         );
       }
     }
-    
+
     // Check if contact info already exists
     let contactInfo = await Contact.findOne();
-    
+
     if (contactInfo) {
       // Update existing contact info
       Object.assign(contactInfo, body);
@@ -93,7 +100,7 @@ export async function POST(request: NextRequest) {
       contactInfo = new Contact(body);
       await contactInfo.save();
     }
-    
+
     return NextResponse.json({
       success: true,
       data: contactInfo,
@@ -116,11 +123,11 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     await connectDB();
-    
+
     const body = await request.json();
-    
+
     // Validate required fields
-    const requiredFields = ['phone', 'email', 'address', 'city', 'state', 'pincode', 'country', 'pageTitle', 'pageDescription', 'officeTitle', 'officeDescription'];
+    const requiredFields = ['primaryPhone', 'whatsappNumber', 'email', 'address', 'city', 'state', 'pincode', 'country', 'pageTitle', 'pageDescription', 'officeTitle', 'officeDescription'];
     for (const field of requiredFields) {
       if (!body[field] || body[field].trim() === '') {
         return NextResponse.json(
@@ -132,14 +139,14 @@ export async function PUT(request: NextRequest) {
         );
       }
     }
-    
+
     // Find and update the contact info (there should only be one record)
     const contactInfo = await Contact.findOneAndUpdate(
       {},
       body,
       { new: true, upsert: true }
     );
-    
+
     return NextResponse.json({
       success: true,
       data: contactInfo,

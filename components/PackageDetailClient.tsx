@@ -19,6 +19,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
+import { useContact } from "@/hooks/use-contact";
 
 interface PackageData {
   id: number;
@@ -45,6 +46,8 @@ interface PackageDetailClientProps {
 }
 
 export default function PackageDetailClient({ packageData }: PackageDetailClientProps) {
+  const { contactInfo } = useContact();
+
   const handleBookPackage = () => {
     const message = `🏖️ *Package Booking Request*
 
@@ -59,12 +62,14 @@ I'm interested in booking this package. Please provide:
 
 Thank you!`;
 
-    const whatsappUrl = `https://wa.me/919876543210?text=${encodeURIComponent(message)}`;
+    const whatsappNumber = contactInfo?.whatsappNumber || contactInfo?.primaryPhone || '919876543210';
+    const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
   const handleCallNow = () => {
-    window.open('tel:+919876543210', '_self');
+    const phoneNumber = contactInfo?.primaryPhone || '+919876543210';
+    window.open(`tel:${phoneNumber}`, '_self');
   };
 
   return (
@@ -375,7 +380,7 @@ Thank you!`;
                       <div className="text-sm">
                         <div className="flex items-center mb-1">
                           <Phone className="h-4 w-4 mr-2 text-admin-primary" />
-                          <span>+91 98765 43210</span>
+                          <span>{contactInfo?.primaryPhone || '+91 98765 43210'}</span>
                         </div>
                         <div className="flex items-center">
                           <WhatsAppIcon className="h-4 w-4 mr-2 text-green-500" />

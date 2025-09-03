@@ -9,9 +9,9 @@ export const dynamic = 'force-dynamic';
 export const metadata = {
   title: "Travel Tariff & Pricing - Vinushree Tours & Travels",
   description:
-    "Explore our competitive travel tariff and pricing for one-way trips, round trips, airport taxi, day rentals, hourly packages across Tamil Nadu.",
+    "Explore our competitive travel tariff and pricing for one-way trips, round trips, airport taxi, day rentals, hourly packages for all destinations.",
   keywords:
-    "travel tariff, taxi pricing, tour package rates, airport taxi fare, day rental rates, Tamil Nadu travel cost",
+    "travel tariff, taxi pricing, tour package rates, airport taxi fare, day rental rates, travel cost",
 }; 
 
 // Fetch tariff data from API

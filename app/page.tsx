@@ -6,9 +6,9 @@ import FloatingContactButtons from "@/components/FloatingContactButtons";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Vinushree Tours & Travels - Premium Travel Services in Tamil Nadu',
-  description: 'Experience Tamil Nadu with Vinushree Tours & Travels. Offering one-way trips, round trips, airport taxi, day rentals, hourly packages, and tour packages across Tamil Nadu.',
-  keywords: 'Tamil Nadu travel, tour packages, airport taxi, day rental, one way trip, round trip, travel services, Vinushree Tours'
+  title: 'Vinushree Tours & Travels - Premium Travel Services',
+  description: 'Experience premium travel services with Vinushree Tours & Travels. Offering one-way trips, round trips, airport taxi, day rentals, hourly packages, and tour packages.',
+  keywords: 'travel services, tour packages, airport taxi, day rental, one way trip, round trip, Vinushree Tours'
 };
 
 // Static data for travel services

@@ -2,6 +2,7 @@
   "name": "my-v0-project",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "next build",
     "dev": "next dev",
@@ -9,7 +10,8 @@
     "start": "next start",
     "seed-admin": "node scripts/seed-admin.js",
     "seed-smtp": "node scripts/seed-smtp.js",
-    "seed-packages": "node scripts/seed-packages.js"
+    "seed-packages": "node scripts/seed-packages.js",
+    "seed-leads": "node scripts/seed-leads.js"
   },
   "dependencies": {
     "@alloc/quick-lru": "^5.2.0",
@@ -73,6 +75,7 @@
     "react-resizable-panels": "^2.1.7",
     "recharts": "2.15.0",
     "sonner": "^1.7.1",
+    "swr": "^2.3.6",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.6",

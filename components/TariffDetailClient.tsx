@@ -19,6 +19,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 import { useState } from "react";
+import { useContact } from "@/hooks/use-contact";
 import BookingModal from "@/components/BookingModal";
 
 interface TariffData {
@@ -46,6 +47,7 @@ interface TariffDetailClientProps {
 
 export default function TariffDetailClient({ tariffData }: TariffDetailClientProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { contactInfo } = useContact();
 
   const handleBookNow = () => {
     const message = `🚗 *Vehicle Booking Request*
@@ -62,12 +64,14 @@ I'm interested in booking this vehicle. Please provide:
 
 Thank you!`;
 
-    const whatsappUrl = `https://wa.me/919003782966?text=${encodeURIComponent(message)}`;
+    const whatsappNumber = contactInfo?.whatsappNumber || contactInfo?.primaryPhone || '919003782966';
+    const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
   const handleCallNow = () => {
-    window.open('tel:+919003782966', '_self');
+    const phoneNumber = contactInfo?.primaryPhone || '+919003782966';
+    window.open(`tel:${phoneNumber}`, '_self');
   };
 
   const handleModalBooking = () => {
@@ -341,7 +345,7 @@ Thank you!`;
                       <div className="text-sm">
                         <div className="flex items-center mb-1">
                           <Phone className="h-4 w-4 mr-2 text-admin-primary" />
-                          <span>+91 90037 82966</span>
+                          <span>{contactInfo?.primaryPhone || '+91 90037 82966'}</span>
                         </div>
                         <div className="flex items-center">
                           <WhatsAppIcon className="h-4 w-4 mr-2 text-green-500" />

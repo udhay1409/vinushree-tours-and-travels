@@ -18,44 +18,13 @@ import {
   Shield
 } from "lucide-react";
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
-import { useEffect, useState } from "react";
 import { useTheme } from "./providers/theme";
+import { useContact } from "@/hooks/use-contact";
 import Image from "next/image";
 
-interface ContactInfo {
-  phone: string;
-  email: string;
-  address: string;
-  city: string;
-  state: string;
-  pincode: string;
-  country: string;
-  facebook?: string;
-  twitter?: string;
-  instagram?: string;
-  whatsapp?: string;
-}
-
 export default function Footer() {
-  const [contactInfo, setContactInfo] = useState<ContactInfo | null>(null);
   const { themeData } = useTheme();
-
-  useEffect(() => {
-    // Set static contact info for travel business
-    setContactInfo({
-      phone: "+91 90037 82966",
-      email: "info@vinushree.com",
-      address: "mani road, Uthangudi, Othakadai",
-      city: "Madurai",
-      state: "Tamil Nadu",
-      pincode: "625007",
-      country: "India",
-      whatsapp: "+91 90037 82966",
-      facebook: "https://facebook.com/vinushree",
-      instagram: "https://instagram.com/vinushree",
-      twitter: "https://twitter.com/vinushree"
-    });
-  }, []);
+  const { contactInfo } = useContact();
 
   const travelServices = [
     { name: 'One-way Trip', href: '/tariff' },
@@ -80,12 +49,13 @@ export default function Footer() {
 
   const handleWhatsAppClick = () => {
     const message = "Hi! I'm interested in your travel services. Please provide more details.";
-    const whatsappUrl = `https://wa.me/${contactInfo?.whatsapp?.replace(/[^0-9]/g, '') || '919003782966'}?text=${encodeURIComponent(message)}`;
+    const whatsappNumber = contactInfo?.whatsappNumber || contactInfo?.primaryPhone || '919003782966';
+    const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
   const handleCallClick = () => {
-    window.open(`tel:${contactInfo?.phone || '+919003782966'}`, '_self');
+    window.open(`tel:${contactInfo?.primaryPhone || '+919003782966'}`, '_self');
   };
 
   return (
@@ -141,10 +111,10 @@ export default function Footer() {
               <div className="flex items-center space-x-3">
                 <Phone className="h-4 w-4 text-admin-primary flex-shrink-0" />
                 <a
-                  href={`tel:${contactInfo?.phone || "+919003782966"}`}
+                  href={`tel:${contactInfo?.primaryPhone || "+919003782966"}`}
                   className="text-gray-300 hover:text-white transition-colors text-sm font-medium"
                 >
-                  {contactInfo?.phone || "+91 90037 82966"}
+                  {contactInfo?.primaryPhone || "+91 90037 82966"}
                 </a>
               </div>
               <div className="flex items-center space-x-3">

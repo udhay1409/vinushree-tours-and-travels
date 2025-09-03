@@ -7,6 +7,8 @@ import { MapPin, Clock, Phone } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import PopularRoutes from "@/components/PopularRoutes";
+import { useBanner } from "@/hooks/use-banner";
+import { useContact } from "@/hooks/use-contact";
 
 interface PackageItem {
   id: number;
@@ -27,22 +29,26 @@ interface PackagesPageClientProps {
 }
 
 export default function PackagesPageClient({ packagesData }: PackagesPageClientProps) {
+  const { banner } = useBanner("packages");
+  const { contactInfo } = useContact();
+  
   const handleBookPackage = (packageTitle: string) => {
     const message = `Hi, I'm interested in the ${packageTitle} package. Please provide more details and availability.`;
-    const whatsappUrl = `https://wa.me/919003782966?text=${encodeURIComponent(message)}`;
+    const whatsappNumber = contactInfo?.whatsappNumber || contactInfo?.primaryPhone || '919003782966';
+    const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
   };
 
   return (
     <>
-      {/* Hero Section with Animated Background */}
-      <section className="relative bg-admin-gradient text-white py-20 sm:py-24 lg:py-32 overflow-hidden">
+      {/* Hero Section with Dynamic Banner */}
+  <section className="relative bg-admin-gradient text-white py-16 sm:py-20 lg:py-24 flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img
-            src="/kodaikanal-hill-station.png"
-            alt="Tamil Nadu Tourism Packages"
-            className="w-full h-full object-cover"
-          />
+            <img
+              src={banner?.status === "active" && banner?.image ? banner.image : '/placeholder.jpg'}
+              alt={banner?.title || "Tour Packages"}
+              className="w-full h-full object-cover"
+            />
           <div className="absolute inset-0 bg-admin-gradient/80"></div>
           
           {/* Animated overlay gradients */}
@@ -84,13 +90,13 @@ export default function PackagesPageClient({ packagesData }: PackagesPageClientP
               Tour Packages
             </Badge>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-              Discover Tamil Nadu
+              Discover Amazing Destinations
               <span className="block text-2xl sm:text-3xl lg:text-4xl mt-2 font-normal">
-                Amazing Travel Experiences
+                Unforgettable Travel Experiences
               </span>
             </h1>
             <p className="text-lg sm:text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
-              Experience the rich culture, stunning landscapes, and spiritual heritage of Tamil Nadu 
+              Experience rich culture, stunning landscapes, and spiritual heritage 
               with our expertly designed travel packages.
             </p>
           </motion.div>
@@ -102,7 +108,7 @@ export default function PackagesPageClient({ packagesData }: PackagesPageClientP
         <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
           <div className="text-center mb-12 sm:mb-16 md:mb-20">
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 md:mb-8 px-2">
-              Featured
+              Explore Our
               <span className="block text-transparent bg-clip-text bg-admin-gradient">
                 Travel Packages
               </span>
@@ -131,10 +137,10 @@ export default function PackagesPageClient({ packagesData }: PackagesPageClientP
                     <div className="absolute top-4 left-4">
                       <Badge className={`${
                         pkg.featured 
-                          ? 'bg-yellow-500 text-yellow-900' 
+                          ? 'bg-green-500 text-white' 
                           : 'bg-admin-gradient text-white'
                       } backdrop-blur-sm`}>
-                        {pkg.featured ? '⭐ Featured' : pkg.category}
+                        {pkg.featured ? '⭐ Bestseller' : pkg.category}
                       </Badge>
                     </div>
                     <div className="absolute bottom-4 left-4 text-white">
@@ -233,14 +239,20 @@ export default function PackagesPageClient({ packagesData }: PackagesPageClientP
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
-              onClick={() => window.open('tel:+919003782966', '_blank')}
+              onClick={() => {
+                const phoneNumber = contactInfo?.primaryPhone || '+919003782966';
+                window.open(`tel:${phoneNumber}`, '_blank');
+              }}
               className="bg-admin-gradient text-white hover:opacity-90"
             >
               <Phone className="h-4 w-4 mr-2" />
               Call for Custom Trip
             </Button>
             <Button
-              onClick={() => window.open('https://wa.me/919003782966?text=Hi, I would like to plan a personalized trip to Tamil Nadu. Please help me create a custom travel package.', '_blank')}
+              onClick={() => {
+                const whatsappNumber = contactInfo?.whatsappNumber || contactInfo?.primaryPhone || '919003782966';
+                window.open(`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=Hi, I would like to plan a personalized trip. Please help me create a custom travel package.`, '_blank');
+              }}
               variant="outline"
               className="border-admin-primary text-admin-primary hover:bg-admin-gradient hover:text-white"
             >

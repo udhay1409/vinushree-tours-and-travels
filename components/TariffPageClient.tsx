@@ -9,6 +9,7 @@ import { useState } from "react";
 import Link from "next/link";
 import BookingModal from "@/components/BookingModal";
 import PopularRoutes from "@/components/PopularRoutes";
+import { useBanner } from "@/hooks/use-banner";
 
 interface TariffItem {
   id: string;
@@ -64,16 +65,18 @@ export default function TariffPageClient({ tariffData }: TariffPageClientProps) 
     return cleaned;
   };
 
+  const { banner } = useBanner("tariff")
+
   return (
     <>
-      {/* Hero Section with Animated Background */}
-      <section className="relative bg-admin-gradient text-white py-20 sm:py-24 lg:py-32 overflow-hidden">
+      {/* Hero Section with Dynamic Banner */}
+  <section className="relative bg-admin-gradient text-white py-16 sm:py-20 lg:py-24 flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img
-            src="/luxury-taxi-service-in-tamil-nadu.png"
-            alt="Luxury Taxi Service"
-            className="w-full h-full object-cover"
-          />
+            <img
+              src={banner?.status === "active" && banner?.image ? banner.image : '/placeholder.jpg'}
+              alt={banner?.title || "Luxury Taxi Service"}
+              className="w-full h-full object-cover"
+            />
           <div className="absolute inset-0 bg-admin-gradient/80"></div>
           
           {/* Animated overlay gradients */}
@@ -121,7 +124,7 @@ export default function TariffPageClient({ tariffData }: TariffPageClientProps) 
               </span>
             </h1>
             <p className="text-lg sm:text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
-              Discover our competitive rates for travel services across Tamil Nadu. 
+              Discover our competitive rates for all travel services. 
               No hidden charges, just honest pricing for quality service.
             </p>
           </motion.div>

@@ -23,6 +23,7 @@ import {
   Phone,
   PanelLeftClose,
   PanelLeft,
+  MapPin,
 } from "lucide-react"
 import { Suspense } from "react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
@@ -230,6 +231,12 @@ export default function AdminLayout({
       href: "/admin/leads",
       icon: <MessageSquare className="h-5 w-5" />,
       color: "text-red-600",
+    },
+    {
+      name: "Location Manager",
+      href: "/admin/locations",
+      icon: <MapPin className="h-5 w-5" />,
+      color: "text-emerald-600",
     },
     {
       name: "Theme Settings",
@@ -482,11 +489,13 @@ export default function AdminLayout({
                                 ? "Testimonial Manager"
                                 : pathname === "/admin/leads"
                                   ? "Lead Manager"
-                                  : pathname === "/admin/theme"
-                                    ? "Theme Settings"
-                                    : pathname === "/admin/profile"
-                                      ? "Profile Settings"
-                                      : "Admin Panel"}
+                                  : pathname === "/admin/locations"
+                                    ? "Location Manager"
+                                    : pathname === "/admin/theme"
+                                      ? "Theme Settings"
+                                      : pathname === "/admin/profile"
+                                        ? "Profile Settings"
+                                        : "Admin Panel"}
                 </h1>
                 <p className="text-sm text-gray-500">Manage your website content</p>
               </div>

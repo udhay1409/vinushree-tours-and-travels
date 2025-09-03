@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { MapPin, Navigation } from "lucide-react";
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 import { useToast } from "@/hooks/use-toast";
+import { useContact } from "@/hooks/use-contact";
 
 interface BookingModalProps {
   isOpen: boolean;
@@ -17,20 +18,11 @@ interface BookingModalProps {
   prefilledTitle?: string;
 }
 
-// Declare Google Maps types
-declare global {
-  interface Window {
-    google: any;
-    initAutocomplete: () => void;
-  }
-}
-
 export default function BookingModal({ isOpen, onClose, prefilledService, prefilledTitle }: BookingModalProps) {
   const { toast } = useToast();
+  const { contactInfo } = useContact();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isGoogleLoaded, setIsGoogleLoaded] = useState(false);
-  const pickupRef = useRef<HTMLInputElement>(null);
-  const dropRef = useRef<HTMLInputElement>(null);
+  const [locations, setLocations] = useState<string[]>([]);
   
   const [formData, setFormData] = useState({
     name: "",
@@ -43,66 +35,43 @@ export default function BookingModal({ isOpen, onClose, prefilledService, prefil
     returnDate: ""
   });
 
+  // Get dynamic services from contact info or use fallback
+  const services = contactInfo?.servicesOffered 
+    ? contactInfo.servicesOffered.split(',').map(s => s.trim()).filter(s => s.length > 0)
+    : [
+        "One-way Trip",
+        "Round Trip", 
+        "Airport Taxi",
+        "Day Rental",
+        "Hourly Package",
+        "Local Pickup/Drop",
+        "Tour Package"
+      ];
 
-
-  const services = [
-    "One-way Trip",
-    "Round Trip", 
-    "Airport Taxi",
-    "Day Rental",
-    "Hourly Package",
-    "Local Pickup/Drop",
-    "Tour Package"
-  ];
-
-  // Load Google Maps API
+  // Fetch locations from API
   useEffect(() => {
-    if (isOpen && !window.google) {
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places&callback=initAutocomplete`;
-      script.async = true;
-      script.defer = true;
-      
-      window.initAutocomplete = () => {
-        setIsGoogleLoaded(true);
-      };
-      
-      document.head.appendChild(script);
-    } else if (window.google) {
-      setIsGoogleLoaded(true);
-    }
-  }, [isOpen]);
-
-  // Initialize autocomplete when Google is loaded
-  useEffect(() => {
-    if (isGoogleLoaded && window.google && pickupRef.current && dropRef.current) {
-      const pickupAutocomplete = new window.google.maps.places.Autocomplete(pickupRef.current, {
-        componentRestrictions: { country: 'IN' },
-        fields: ['formatted_address', 'geometry', 'name'],
-        types: ['establishment', 'geocode']
-      });
-
-      const dropAutocomplete = new window.google.maps.places.Autocomplete(dropRef.current, {
-        componentRestrictions: { country: 'IN' },
-        fields: ['formatted_address', 'geometry', 'name'],
-        types: ['establishment', 'geocode']
-      });
-
-      pickupAutocomplete.addListener('place_changed', () => {
-        const place = pickupAutocomplete.getPlace();
-        if (place.formatted_address) {
-          setFormData(prev => ({ ...prev, pickupLocation: place.formatted_address }));
+    const fetchLocations = async () => {
+      try {
+        const response = await fetch('/api/locations');
+        const result = await response.json();
+        
+        if (result.success) {
+          setLocations(result.data.map((loc: any) => loc.name));
         }
-      });
+      } catch (error) {
+        console.error('Error fetching locations:', error);
+        // Fallback locations if API fails
+        setLocations([
+          "Madurai", "Chennai", "Mumbai", "Delhi", "Bangalore",
+          "Coimbatore", "Trichy", "Salem", "Erode", "Tirunelveli"
+        ]);
+      }
+    };
 
-      dropAutocomplete.addListener('place_changed', () => {
-        const place = dropAutocomplete.getPlace();
-        if (place.formatted_address) {
-          setFormData(prev => ({ ...prev, dropLocation: place.formatted_address }));
-        }
-      });
-    }
-  }, [isGoogleLoaded]);
+    fetchLocations();
+  }, []);
+
+
 
   // Reset form when modal opens with prefilled data
   useEffect(() => {
@@ -123,8 +92,39 @@ export default function BookingModal({ isOpen, onClose, prefilledService, prefil
     setIsSubmitting(true);
 
     try {
-      // Simulate API call to save lead
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Save lead to database
+      const leadData = {
+        fullName: formData.name,
+        email: "", // No email provided in modal booking
+        phone: formData.phone,
+        serviceType: formData.service,
+        travelDate: formData.travelDate,
+        travelTime: formData.travelTime || "",
+        returnDate: formData.returnDate || "",
+        pickupLocation: formData.pickupLocation,
+        dropLocation: formData.dropLocation,
+        passengers: 1, // Default value
+        message: `Modal booking request for ${formData.service}. Pickup: ${formData.pickupLocation}, Drop: ${formData.dropLocation}, Date: ${formData.travelDate}${formData.travelTime ? `, Time: ${formData.travelTime}` : ''}${formData.returnDate ? `, Return: ${formData.returnDate}` : ''}`,
+        status: "new",
+        priority: "high",
+        source: "website",
+        estimatedCost: "To be determined",
+        notes: "Modal booking form submission"
+      };
+
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(leadData),
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to save lead');
+      }
 
       // Create WhatsApp message
       const message = `🚗 *Booking Request*
@@ -140,7 +140,8 @@ export default function BookingModal({ isOpen, onClose, prefilledService, prefil
 Please confirm availability and provide final pricing.`;
 
       // Open WhatsApp
-      const whatsappUrl = `https://wa.me/919876543210?text=${encodeURIComponent(message)}`;
+      const whatsappNumber = contactInfo?.whatsappNumber || contactInfo?.primaryPhone || '919876543210';
+      const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
       window.open(whatsappUrl, '_blank');
 
       toast({
@@ -161,6 +162,7 @@ Please confirm availability and provide final pricing.`;
       });
       onClose();
     } catch (error) {
+      console.error('Error submitting booking:', error);
       toast({
         title: "Error",
         description: "Please try again or call us directly.",
@@ -228,13 +230,7 @@ Please confirm availability and provide final pricing.`;
             </Label>
             <Select
               value={formData.service}
-              onValueChange={(value) => {
-                handleInputChange("service", value);
-                // Clear return date if not Round Trip
-                if (value !== "Round Trip") {
-                  setFormData(prev => ({ ...prev, returnDate: "" }));
-                }
-              }}
+              onValueChange={(value) => handleInputChange("service", value)}
               required
             >
               <SelectTrigger className="mt-1">
@@ -250,39 +246,51 @@ Please confirm availability and provide final pricing.`;
             </Select>
           </div>
 
-          {/* Location Fields with Google Autocomplete */}
+          {/* Location Fields */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="pickup" className="text-gray-700 font-medium flex items-center">
                 <Navigation className="h-4 w-4 mr-1 text-green-500" />
                 Pickup Location *
               </Label>
-              <Input
-                ref={pickupRef}
-                id="pickup"
-                type="text"
-                required
+              <Select
                 value={formData.pickupLocation}
-                onChange={(e) => handleInputChange("pickupLocation", e.target.value)}
-                placeholder="Enter pickup location"
-                className="mt-1"
-              />
+                onValueChange={(value) => handleInputChange("pickupLocation", value)}
+                required
+              >
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select pickup location" />
+                </SelectTrigger>
+                <SelectContent>
+                  {locations.map((location) => (
+                    <SelectItem key={location} value={location}>
+                      {location}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label htmlFor="drop" className="text-gray-700 font-medium flex items-center">
                 <MapPin className="h-4 w-4 mr-1 text-red-500" />
                 Drop Location *
               </Label>
-              <Input
-                ref={dropRef}
-                id="drop"
-                type="text"
-                required
+              <Select
                 value={formData.dropLocation}
-                onChange={(e) => handleInputChange("dropLocation", e.target.value)}
-                placeholder="Enter drop location"
-                className="mt-1"
-              />
+                onValueChange={(value) => handleInputChange("dropLocation", value)}
+                required
+              >
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select drop location" />
+                </SelectTrigger>
+                <SelectContent>
+                  {locations.map((location) => (
+                    <SelectItem key={location} value={location}>
+                      {location}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
@@ -316,11 +324,11 @@ Please confirm availability and provide final pricing.`;
             </div>
           </div>
 
-          {/* Return Date for Round Trip */}
-          {formData.service === "Round Trip" && (
+          {/* Return Date (Optional) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="returnDate" className="text-gray-700 font-medium">
-                Return Date *
+                Return Date {formData.service === "Round Trip" ? "*" : "(Optional)"}
               </Label>
               <Input
                 id="returnDate"
@@ -330,9 +338,11 @@ Please confirm availability and provide final pricing.`;
                 onChange={(e) => handleInputChange("returnDate", e.target.value)}
                 className="mt-1"
                 min={formData.travelDate || new Date().toISOString().split('T')[0]}
+                placeholder="Select return date if needed"
               />
             </div>
-          )}
+            <div></div>
+          </div>
 
           {/* Submit Button */}
           <div className="flex gap-4 pt-4">

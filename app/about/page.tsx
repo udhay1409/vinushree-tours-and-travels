@@ -22,6 +22,7 @@ import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 import FloatingContactButtons from "@/components/FloatingContactButtons"
 import { useSEOMeta } from "@/hooks/use-seo-meta"
+import { useBanner } from "@/hooks/use-banner"
 
 const fadeInUp = {
   initial: { opacity: 0, y: 60 },
@@ -46,13 +47,16 @@ const scaleIn = {
 export default function AboutPage() {
   // Use SEO data for about page
   useSEOMeta({
-    pageId: 'about',
+    pageId: "about",
     fallback: {
-      title: 'About Vinushree Tours & Travels - Your Trusted Travel Partner',
-      description: 'Discover Vinushree Tours & Travels - your trusted partner for exploring Tamil Nadu. Learn about our mission, vision, and commitment to exceptional travel experiences.',
-      keywords: 'about vinushree tours, travel company, Tamil Nadu tourism, travel services, tour operator'
-    }
+      title: "About Vinushree Tours & Travels - Your Trusted Travel Partner",
+      description:
+        "Discover Vinushree Tours & Travels - your trusted partner for exploring Tamil Nadu. Learn about our mission, vision, and commitment to exceptional travel experiences.",
+      keywords: "about vinushree tours, travel company, Tamil Nadu tourism, travel services, tour operator",
+    },
   })
+
+  const { banner } = useBanner("about")
 
   const whyVinushree = [
     {
@@ -84,14 +88,14 @@ export default function AboutPage() {
     {
       icon: <Car className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8" />,
       title: "Modern Fleet",
-      description:
-        "Clean, comfortable, and well-maintained vehicles equipped with modern amenities for your journey.",
+      description: "Clean, comfortable, and well-maintained vehicles equipped with modern amenities for your journey.",
       gradient: "from-indigo-500 to-blue-600",
     },
     {
       icon: <MapPin className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8" />,
       title: "Local Expertise",
-      description: "Deep knowledge of Tamil Nadu's destinations, routes, and hidden gems for the best travel experience.",
+      description:
+        "Deep knowledge of destinations, routes, and hidden gems for the best travel experience.",
       gradient: "from-teal-500 to-green-600",
     },
   ]
@@ -135,17 +139,15 @@ export default function AboutPage() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="relative py-12 sm:py-16 md:py-20 lg:py-24 flex items-center justify-center overflow-hidden">
+  <section className="relative bg-admin-gradient text-white py-16 sm:py-20 lg:py-24 flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <img
-            src="/bryant-park-kodaikanal.png"
-            alt="Tamil Nadu Tourism"
-            className="w-full h-full object-cover"
-          />
+            <img
+              src={banner?.status === "active" && banner?.image ? banner.image : "/placeholder.jpg"}
+              alt={banner?.title || "Tamil Nadu Tourism"}
+              className="w-full h-full object-cover"
+            />
           <div className="absolute inset-0 bg-admin-gradient/80"></div>
         </div>
-
-
 
         <div className="container mx-auto px-4 sm:px-6 md:px-8 relative z-10 max-w-7xl">
           <motion.div
@@ -158,12 +160,20 @@ export default function AboutPage() {
               <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
               About Vinushree Tours & Travels
             </Badge>
+
+            {/* Optional dynamic banner title (keeps existing main heading) */}
+            {banner?.title && (
+              <p className="text-white/90 text-base sm:text-lg md:text-xl mb-2 sm:mb-3">{banner.title}</p>
+            )}
+
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
-              Your Travel Partner
-              <span className="block text-lg sm:text-xl md:text-2xl lg:text-3xl mt-1 sm:mt-2 font-normal">Across Tamil Nadu</span>
+              Your Trusted Travel Partner
+              <span className="block text-lg sm:text-xl md:text-2xl lg:text-3xl mt-1 sm:mt-2 font-normal">
+                For All Destinations
+              </span>
             </h1>
             <p className="text-xs sm:text-sm md:text-base lg:text-lg mb-6 sm:mb-8 text-white/90 max-w-3xl mx-auto leading-relaxed px-2 sm:px-0">
-              Discover the story behind our commitment to providing exceptional travel experiences across Tamil Nadu's 
+              Discover the story behind our commitment to providing exceptional travel experiences to
               beautiful destinations with comfort, safety, and personalized service.
             </p>
           </motion.div>
@@ -212,19 +222,19 @@ export default function AboutPage() {
               <h2 className="text-3xl sm:text-3xl md:text-4xl xl:text-5xl font-bold text-gray-900 mb-6 sm:mb-8 leading-tight">
                 Travel Excellence
                 <span className="block text-transparent bg-clip-text bg-admin-gradient text-2xl sm:text-3xl md:text-4xl lg:text-5xl">
-                  Across Tamil Nadu
+                  For Every Journey
                 </span>
               </h2>
               <div className="space-y-4 sm:space-y-6">
                 <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed">
-                  Vinushree Tours & Travels was founded with a vision to make travel across Tamil Nadu comfortable, 
-                  safe, and memorable. Our journey began with a commitment to providing reliable transportation services 
-                  that connect people to the rich cultural heritage and natural beauty of Tamil Nadu.
+                  Vinushree Tours & Travels was founded with a vision to make travel comfortable,
+                  safe, and memorable. Our journey began with a commitment to providing reliable transportation services
+                  that connect people to rich cultural heritage and natural beauty of various destinations.
                 </p>
                 <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed">
-                  Today, we are a trusted travel partner offering comprehensive services including one-way trips, round trips, 
-                  airport taxi, day rentals, hourly packages, and customized tour packages. Our commitment to excellence has 
-                  earned us the trust of thousands of satisfied customers across Tamil Nadu.
+                  Today, we are a trusted travel partner offering comprehensive services including one-way trips, round
+                  trips, airport taxi, day rentals, hourly packages, and customized tour packages. Our commitment to
+                  excellence has earned us the trust of thousands of satisfied customers.
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-4 sm:gap-6 mt-6 sm:mt-8">
@@ -252,11 +262,15 @@ export default function AboutPage() {
             >
               <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-12 shadow-2xl">
                 <div className="text-center">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-admin-gradient rounded-2xl sm:rounded-3xl flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-lg">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-admin-gradient rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-lg">
                     <Building className="h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 text-white" />
                   </div>
-                  <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2 sm:mb-4">Vinushree Tours & Travels</h3>
-                  <p className="text-gray-600 text-sm sm:text-base md:text-lg mb-4 sm:mb-6">Your Trusted Travel Partner</p>
+                  <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2 sm:mb-4">
+                    Vinushree Tours & Travels
+                  </h3>
+                  <p className="text-gray-600 text-sm sm:text-base md:text-lg mb-4 sm:mb-6">
+                    Your Trusted Travel Partner
+                  </p>
                   <div className="flex items-center justify-center space-x-2 sm:space-x-4">
                     <div className="flex">
                       {[...Array(5)].map((_, i) => (
@@ -288,9 +302,7 @@ export default function AboutPage() {
             </Badge>
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 sm:mb-8 leading-tight">
               The Principles That
-              <span className="block text-transparent bg-clip-text bg-admin-gradient">
-                Guide Our Work
-              </span>
+              <span className="block text-transparent bg-clip-text bg-admin-gradient">Guide Our Work</span>
             </h2>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto px-2 sm:px-0">
               The core values and vision that define our commitment to excellence and innovation
@@ -309,14 +321,14 @@ export default function AboutPage() {
                 icon: <Target className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10" />,
                 title: "Our Mission",
                 description:
-                  "To provide safe, comfortable, and reliable travel services that connect people to Tamil Nadu's rich heritage, natural beauty, and cultural treasures with exceptional customer care.",
+                  "To provide safe, comfortable, and reliable travel services that connect people to rich heritage, natural beauty, and cultural treasures with exceptional customer care.",
                 gradient: "from-blue-500 to-purple-600",
               },
               {
                 icon: <Award className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10" />,
                 title: "Our Vision",
                 description:
-                  "To be Tamil Nadu's most trusted travel partner, recognized for our commitment to safety, customer satisfaction, and creating unforgettable travel experiences.",
+                  "To be the most trusted travel partner, recognized for our commitment to safety, customer satisfaction, and creating unforgettable travel experiences.",
                 gradient: "from-purple-500 to-pink-600",
               },
               {
@@ -327,7 +339,11 @@ export default function AboutPage() {
                 gradient: "from-green-500 to-teal-600",
               },
             ].map((item, index) => (
-              <motion.div key={index} variants={fadeInUp} className="sm:col-span-2 lg:col-span-1 last:sm:col-start-1 last:sm:col-span-2 last:lg:col-span-1 last:lg:col-start-auto">
+              <motion.div
+                key={index}
+                variants={fadeInUp}
+                className="sm:col-span-2 lg:col-span-1 last:sm:col-start-1 last:sm:col-span-2 last:lg:col-span-1 last:lg:col-start-auto"
+              >
                 <Card className="card-hover h-full border-0 shadow-xl overflow-hidden">
                   <CardContent className="p-6 sm:p-8 text-center relative">
                     <div
@@ -335,7 +351,9 @@ export default function AboutPage() {
                     >
                       <div className="text-white">{item.icon}</div>
                     </div>
-                    <h3 className="text-lg sm:text-xl md:text-2xl font-semibold mb-3 sm:mb-4 text-gray-900">{item.title}</h3>
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-semibold mb-3 sm:mb-4 text-gray-900">
+                      {item.title}
+                    </h3>
                     <p className="text-sm sm:text-base text-gray-600 leading-relaxed">{item.description}</p>
                   </CardContent>
                 </Card>
@@ -385,12 +403,10 @@ export default function AboutPage() {
             </Badge>
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 sm:mb-8 leading-tight">
               Why Choose
-              <span className="block text-transparent bg-clip-text bg-admin-gradient">
-                Vinushree Tours?
-              </span>
+              <span className="block text-transparent bg-clip-text bg-admin-gradient">Vinushree Tours?</span>
             </h2>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto px-2 sm:px-0">
-              Discover what sets us apart and makes us the preferred choice for travel services in Tamil Nadu
+              Discover what sets us apart and makes us the preferred choice for travel services
             </p>
           </motion.div>
 
@@ -438,12 +454,11 @@ export default function AboutPage() {
             </Badge>
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 sm:mb-8 leading-tight">
               Experienced Team
-              <span className="block text-transparent bg-clip-text bg-admin-gradient">
-                Behind Every Journey
-              </span>
+              <span className="block text-transparent bg-clip-text bg-admin-gradient">Behind Every Journey</span>
             </h2>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto px-2 sm:px-0">
-              Meet our dedicated team of travel professionals who ensure your journey is safe, comfortable, and memorable
+              Meet our dedicated team of travel professionals who ensure your journey is safe, comfortable, and
+              memorable
             </p>
           </motion.div>
 
@@ -462,9 +477,9 @@ export default function AboutPage() {
                       Travel Excellence Team
                     </h3>
                     <p className="text-gray-600 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base md:text-lg">
-                      Our team consists of experienced drivers, travel coordinators, and customer service professionals 
-                      dedicated to making your travel experience exceptional. Each team member brings local expertise and 
-                      a commitment to your safety and satisfaction.
+                      Our team consists of experienced drivers, travel coordinators, and customer service professionals
+                      dedicated to making your travel experience exceptional. Each team member brings local expertise
+                      and a commitment to your safety and satisfaction.
                     </p>
                     <div className="grid gap-3 sm:gap-4">
                       {[
@@ -486,8 +501,12 @@ export default function AboutPage() {
                     <div className="w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 bg-admin-gradient rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-lg">
                       <Users className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 text-white" />
                     </div>
-                    <h4 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-3 sm:mb-4">Travel Professionals</h4>
-                    <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">Working together to deliver exceptional travel experiences</p>
+                    <h4 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-3 sm:mb-4">
+                      Travel Professionals
+                    </h4>
+                    <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">
+                      Working together to deliver exceptional travel experiences
+                    </p>
                     <div className="grid grid-cols-2 gap-3 sm:gap-4 text-xs sm:text-sm">
                       <div className="p-3 sm:p-4 bg-white rounded-lg sm:rounded-xl shadow-sm">
                         <div className="text-xl sm:text-2xl font-bold text-transparent bg-clip-text bg-admin-gradient">
