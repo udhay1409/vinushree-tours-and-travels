@@ -301,16 +301,39 @@ export default function CompleteHome() {
       {/* Hero Section with Banner Images */}
       <section className="relative flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <div className="absolute inset-0 opacity-100 transition-opacity duration-700">
-            <Image
-              src={banner?.status === "active" && banner?.image ? banner.image : "/placeholder.svg"}
-              alt={banner?.title || "Home banner"}
-              fill
-              className={`object-cover ${isLoading ? 'opacity-0' : 'opacity-100'}`}
-              priority
-            />
+          <div className="absolute inset-0">
+            {/* Image Layer */}
+            <div className="absolute inset-0 opacity-100 transition-opacity duration-700">
+              <Image
+                src={banner?.status === "active" && banner?.image ? banner.image : "/placeholder.svg"}
+                alt={banner?.title || "Home banner"}
+                fill
+                className={`object-cover ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+                priority
+              />
+            </div>
+            
+            {/* Dark Overlay Layer */}
             <div className="absolute inset-0 bg-black/50" />
+            
+            {/* Gradient Overlay Layer */}
+            <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/50 to-transparent" />
+            
+            {/* Admin Gradient Layer */}
             <div className="absolute inset-0 bg-admin-gradient/20" />
+            
+            {/* Optional: Animated Gradient Layer */}
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-tr from-yellow-600/20 via-transparent to-orange-600/20"
+              animate={{
+                opacity: [0.2, 0.4, 0.2],
+              }}
+              transition={{
+                duration: 8,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "easeInOut",
+              }}
+            />
           </div>
         </div>
 

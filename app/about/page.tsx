@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { motion } from "framer-motion";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   Target,
   Award,
@@ -17,18 +17,18 @@ import {
   Car,
   Heart,
   Compass,
-} from "lucide-react"
-import Navbar from "@/components/navbar"
-import Footer from "@/components/footer"
-import FloatingContactButtons from "@/components/FloatingContactButtons"
-import { useSEOMeta } from "@/hooks/use-seo-meta"
-import { useBanner } from "@/hooks/use-banner"
+} from "lucide-react";
+import Navbar from "@/components/navbar";
+import Footer from "@/components/footer";
+import FloatingContactButtons from "@/components/FloatingContactButtons";
+import { useSEOMeta } from "@/hooks/use-seo-meta";
+import { useBanner } from "@/hooks/use-banner";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 60 },
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.6 },
-}
+};
 
 const staggerContainer = {
   animate: {
@@ -36,13 +36,13 @@ const staggerContainer = {
       staggerChildren: 0.1,
     },
   },
-}
+};
 
 const scaleIn = {
   initial: { opacity: 0, scale: 0.8 },
   animate: { opacity: 1, scale: 1 },
   transition: { duration: 0.6 },
-}
+};
 
 export default function AboutPage() {
   // Use SEO data for about page
@@ -52,11 +52,12 @@ export default function AboutPage() {
       title: "About Vinushree Tours & Travels - Your Trusted Travel Partner",
       description:
         "Discover Vinushree Tours & Travels - your trusted partner for exploring Tamil Nadu. Learn about our mission, vision, and commitment to exceptional travel experiences.",
-      keywords: "about vinushree tours, travel company, Tamil Nadu tourism, travel services, tour operator",
+      keywords:
+        "about vinushree tours, travel company, Tamil Nadu tourism, travel services, tour operator",
     },
-  })
+  });
 
-  const { banner } = useBanner("about")
+  const { banner } = useBanner("about");
 
   const whyVinushree = [
     {
@@ -76,19 +77,22 @@ export default function AboutPage() {
     {
       icon: <Shield className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8" />,
       title: "Safe & Secure",
-      description: "Well-maintained vehicles, experienced drivers, and comprehensive insurance for your peace of mind.",
+      description:
+        "Well-maintained vehicles, experienced drivers, and comprehensive insurance for your peace of mind.",
       gradient: "from-green-500 to-teal-600",
     },
     {
       icon: <Clock className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8" />,
       title: "Punctual Service",
-      description: "Always on time, every time. We value your schedule and ensure timely pickups and drop-offs.",
+      description:
+        "Always on time, every time. We value your schedule and ensure timely pickups and drop-offs.",
       gradient: "from-orange-500 to-red-600",
     },
     {
       icon: <Car className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8" />,
       title: "Modern Fleet",
-      description: "Clean, comfortable, and well-maintained vehicles equipped with modern amenities for your journey.",
+      description:
+        "Clean, comfortable, and well-maintained vehicles equipped with modern amenities for your journey.",
       gradient: "from-indigo-500 to-blue-600",
     },
     {
@@ -98,7 +102,7 @@ export default function AboutPage() {
         "Deep knowledge of destinations, routes, and hidden gems for the best travel experience.",
       gradient: "from-teal-500 to-green-600",
     },
-  ]
+  ];
 
   const values = [
     {
@@ -125,28 +129,82 @@ export default function AboutPage() {
         "We strive to provide exceptional travel experiences that showcase the beauty and culture of Tamil Nadu.",
       icon: <Compass className="h-5 w-5 sm:h-6 sm:w-6" />,
     },
-  ]
+  ];
 
   const stats = [
-    { number: "1000+", label: "Happy Travelers", icon: <Users className="h-4 w-4 sm:h-5 sm:w-5" /> },
-    { number: "500+", label: "Trips Completed", icon: <Car className="h-4 w-4 sm:h-5 sm:w-5" /> },
-    { number: "50+", label: "Destinations Covered", icon: <MapPin className="h-4 w-4 sm:h-5 sm:w-5" /> },
-    { number: "99%", label: "Customer Satisfaction", icon: <Heart className="h-4 w-4 sm:h-5 sm:w-5" /> },
-  ]
+    {
+      number: "1000+",
+      label: "Happy Travelers",
+      icon: <Users className="h-4 w-4 sm:h-5 sm:w-5" />,
+    },
+    {
+      number: "500+",
+      label: "Trips Completed",
+      icon: <Car className="h-4 w-4 sm:h-5 sm:w-5" />,
+    },
+    {
+      number: "50+",
+      label: "Destinations Covered",
+      icon: <MapPin className="h-4 w-4 sm:h-5 sm:w-5" />,
+    },
+    {
+      number: "99%",
+      label: "Customer Satisfaction",
+      icon: <Heart className="h-4 w-4 sm:h-5 sm:w-5" />,
+    },
+  ];
 
   return (
     <div className="min-h-screen">
       <Navbar />
 
       {/* Hero Section */}
-  <section className="relative bg-admin-gradient text-white py-16 sm:py-20 lg:py-24 flex items-center justify-center overflow-hidden">
+     <section className="relative bg-admin-gradient text-white py-16 sm:py-20 lg:py-24 flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
-            <img
-              src={banner?.status === "active" && banner?.image ? banner.image : "/placeholder.jpg"}
-              alt={banner?.title || "Tamil Nadu Tourism"}
-              className="w-full h-full object-cover"
+          <div className="absolute inset-0">
+            {/* Image Layer */}
+            <div className="absolute inset-0 opacity-100 transition-opacity duration-700">
+              <img
+                src={banner?.status === "active" && banner?.image ? banner.image : "/placeholder.jpg"}
+                alt={banner?.title || "Tamil Nadu Tourism"}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            
+            {/* Dark Overlay Layer */}
+            <div className="absolute inset-0 bg-black/50" />
+            
+            {/* Gradient Overlay Layer */}
+            <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/50 to-transparent" />
+            
+            {/* Admin Gradient Layer */}
+            <div className="absolute inset-0 bg-admin-gradient/20" />
+            
+            {/* Animated Gradient Layers */}
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-tr from-yellow-600/20 via-transparent to-orange-600/20"
+              animate={{
+                opacity: [0.2, 0.4, 0.2],
+              }}
+              transition={{
+                duration: 8,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "easeInOut",
+              }}
             />
-          <div className="absolute inset-0 bg-admin-gradient/80"></div>
+
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-bl from-orange-500/20 via-transparent to-yellow-500/20"
+              animate={{
+                opacity: [0.7, 0.3, 0.7],
+              }}
+              transition={{
+                duration: 6,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "easeInOut",
+              }}
+            />
+          </div>
         </div>
 
         <div className="container mx-auto px-4 sm:px-6 md:px-8 relative z-10 max-w-7xl">
@@ -200,7 +258,9 @@ export default function AboutPage() {
                     <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-transparent bg-clip-text bg-admin-gradient mb-1 sm:mb-2">
                       {stat.number}
                     </div>
-                    <div className="text-gray-600 font-medium text-xs sm:text-sm">{stat.label}</div>
+                    <div className="text-gray-600 font-medium text-xs sm:text-sm">
+                      {stat.label}
+                    </div>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -210,11 +270,19 @@ export default function AboutPage() {
       </section>
 
       {/* Company Story */}
-      <section id="story" className="py-16 sm:py-20 md:py-24 bg-white relative overflow-hidden">
+      <section
+        id="story"
+        className="py-16 sm:py-20 md:py-24 bg-white relative overflow-hidden"
+      >
         <div className="absolute inset-0 bg-gradient-to-br from-yellow-50/50 to-orange-50/50"></div>
         <div className="container mx-auto px-4 sm:px-6 md:px-8 relative max-w-7xl">
           <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 md:gap-16 items-center max-w-7xl mx-auto">
-            <motion.div variants={fadeInUp} initial="initial" whileInView="animate" viewport={{ once: true }}>
+            <motion.div
+              variants={fadeInUp}
+              initial="initial"
+              whileInView="animate"
+              viewport={{ once: true }}
+            >
               <Badge className="mb-4 sm:mb-6 bg-admin-gradient text-white px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm">
                 <Award className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
                 Our Story
@@ -227,14 +295,18 @@ export default function AboutPage() {
               </h2>
               <div className="space-y-4 sm:space-y-6">
                 <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed">
-                  Vinushree Tours & Travels was founded with a vision to make travel comfortable,
-                  safe, and memorable. Our journey began with a commitment to providing reliable transportation services
-                  that connect people to rich cultural heritage and natural beauty of various destinations.
+                  Vinushree Tours & Travels was founded with a vision to make
+                  travel comfortable, safe, and memorable. Our journey began
+                  with a commitment to providing reliable transportation
+                  services that connect people to rich cultural heritage and
+                  natural beauty of various destinations.
                 </p>
                 <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 leading-relaxed">
-                  Today, we are a trusted travel partner offering comprehensive services including one-way trips, round
-                  trips, airport taxi, day rentals, hourly packages, and customized tour packages. Our commitment to
-                  excellence has earned us the trust of thousands of satisfied customers.
+                  Today, we are a trusted travel partner offering comprehensive
+                  services including one-way trips, round trips, airport taxi,
+                  day rentals, hourly packages, and customized tour packages.
+                  Our commitment to excellence has earned us the trust of
+                  thousands of satisfied customers.
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-4 sm:gap-6 mt-6 sm:mt-8">
@@ -242,13 +314,17 @@ export default function AboutPage() {
                   <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-admin-gradient mb-1 sm:mb-2">
                     1000+
                   </div>
-                  <div className="text-gray-600 font-medium text-xs sm:text-sm">Happy Travelers</div>
+                  <div className="text-gray-600 font-medium text-xs sm:text-sm">
+                    Happy Travelers
+                  </div>
                 </div>
                 <div className="text-center p-3 sm:p-4 md:p-6 bg-gradient-to-br from-orange-50 to-yellow-50 rounded-xl sm:rounded-2xl">
                   <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-1 sm:mb-2">
                     50+
                   </div>
-                  <div className="text-gray-600 font-medium text-xs sm:text-sm">Destinations</div>
+                  <div className="text-gray-600 font-medium text-xs sm:text-sm">
+                    Destinations
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -274,10 +350,15 @@ export default function AboutPage() {
                   <div className="flex items-center justify-center space-x-2 sm:space-x-4">
                     <div className="flex">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400 fill-current" />
+                        <Star
+                          key={i}
+                          className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400 fill-current"
+                        />
                       ))}
                     </div>
-                    <span className="text-gray-600 font-medium text-sm sm:text-base">5.0 Rating</span>
+                    <span className="text-gray-600 font-medium text-sm sm:text-base">
+                      5.0 Rating
+                    </span>
                   </div>
                 </div>
               </div>
@@ -302,10 +383,13 @@ export default function AboutPage() {
             </Badge>
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 sm:mb-8 leading-tight">
               The Principles That
-              <span className="block text-transparent bg-clip-text bg-admin-gradient">Guide Our Work</span>
+              <span className="block text-transparent bg-clip-text bg-admin-gradient">
+                Guide Our Work
+              </span>
             </h2>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto px-2 sm:px-0">
-              The core values and vision that define our commitment to excellence and innovation
+              The core values and vision that define our commitment to
+              excellence and innovation
             </p>
           </motion.div>
 
@@ -318,21 +402,27 @@ export default function AboutPage() {
           >
             {[
               {
-                icon: <Target className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10" />,
+                icon: (
+                  <Target className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10" />
+                ),
                 title: "Our Mission",
                 description:
                   "To provide safe, comfortable, and reliable travel services that connect people to rich heritage, natural beauty, and cultural treasures with exceptional customer care.",
                 gradient: "from-blue-500 to-purple-600",
               },
               {
-                icon: <Award className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10" />,
+                icon: (
+                  <Award className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10" />
+                ),
                 title: "Our Vision",
                 description:
                   "To be the most trusted travel partner, recognized for our commitment to safety, customer satisfaction, and creating unforgettable travel experiences.",
                 gradient: "from-purple-500 to-pink-600",
               },
               {
-                icon: <Heart className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10" />,
+                icon: (
+                  <Heart className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10" />
+                ),
                 title: "Our Values",
                 description:
                   "Safety, reliability, customer satisfaction, and integrity are the core values that guide everything we do, ensuring memorable travel experiences for every customer.",
@@ -354,7 +444,9 @@ export default function AboutPage() {
                     <h3 className="text-lg sm:text-xl md:text-2xl font-semibold mb-3 sm:mb-4 text-gray-900">
                       {item.title}
                     </h3>
-                    <p className="text-sm sm:text-base text-gray-600 leading-relaxed">{item.description}</p>
+                    <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
+                      {item.description}
+                    </p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -376,8 +468,12 @@ export default function AboutPage() {
                     <div className="w-10 h-10 sm:w-12 sm:h-12 bg-admin-gradient rounded-lg sm:rounded-xl flex items-center justify-center mx-auto mb-3 sm:mb-4">
                       <div className="text-white">{value.icon}</div>
                     </div>
-                    <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3 text-gray-900">{value.title}</h3>
-                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">{value.description}</p>
+                    <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3 text-gray-900">
+                      {value.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                      {value.description}
+                    </p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -403,10 +499,13 @@ export default function AboutPage() {
             </Badge>
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 sm:mb-8 leading-tight">
               Why Choose
-              <span className="block text-transparent bg-clip-text bg-admin-gradient">Vinushree Tours?</span>
+              <span className="block text-transparent bg-clip-text bg-admin-gradient">
+                Vinushree Tours?
+              </span>
             </h2>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto px-2 sm:px-0">
-              Discover what sets us apart and makes us the preferred choice for travel services
+              Discover what sets us apart and makes us the preferred choice for
+              travel services
             </p>
           </motion.div>
 
@@ -429,7 +528,9 @@ export default function AboutPage() {
                     <h3 className="text-lg sm:text-xl font-semibold mb-3 sm:mb-4 text-gray-900 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-admin-gradient transition-all duration-300">
                       {item.title}
                     </h3>
-                    <p className="text-sm sm:text-base text-gray-600 leading-relaxed">{item.description}</p>
+                    <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
+                      {item.description}
+                    </p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -454,11 +555,13 @@ export default function AboutPage() {
             </Badge>
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 sm:mb-8 leading-tight">
               Experienced Team
-              <span className="block text-transparent bg-clip-text bg-admin-gradient">Behind Every Journey</span>
+              <span className="block text-transparent bg-clip-text bg-admin-gradient">
+                Behind Every Journey
+              </span>
             </h2>
             <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto px-2 sm:px-0">
-              Meet our dedicated team of travel professionals who ensure your journey is safe, comfortable, and
-              memorable
+              Meet our dedicated team of travel professionals who ensure your
+              journey is safe, comfortable, and memorable
             </p>
           </motion.div>
 
@@ -477,9 +580,11 @@ export default function AboutPage() {
                       Travel Excellence Team
                     </h3>
                     <p className="text-gray-600 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base md:text-lg">
-                      Our team consists of experienced drivers, travel coordinators, and customer service professionals
-                      dedicated to making your travel experience exceptional. Each team member brings local expertise
-                      and a commitment to your safety and satisfaction.
+                      Our team consists of experienced drivers, travel
+                      coordinators, and customer service professionals dedicated
+                      to making your travel experience exceptional. Each team
+                      member brings local expertise and a commitment to your
+                      safety and satisfaction.
                     </p>
                     <div className="grid gap-3 sm:gap-4">
                       {[
@@ -492,7 +597,9 @@ export default function AboutPage() {
                       ].map((item, index) => (
                         <div key={index} className="flex items-center">
                           <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 mr-2 sm:mr-3 flex-shrink-0" />
-                          <span className="text-gray-700 font-medium text-sm sm:text-base">{item}</span>
+                          <span className="text-gray-700 font-medium text-sm sm:text-base">
+                            {item}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -532,5 +639,5 @@ export default function AboutPage() {
       <Footer />
       <FloatingContactButtons />
     </div>
-  )
+  );
 }

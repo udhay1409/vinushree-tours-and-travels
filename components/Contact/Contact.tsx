@@ -1,25 +1,31 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
-import { motion } from "framer-motion"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
-import { useToast } from "@/hooks/use-toast"
-import { Phone, Mail, MapPin, Send } from "lucide-react"
-import { useBanner } from "@/hooks/use-banner"
-import { useContact } from "@/hooks/use-contact"
+import type React from "react";
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { Phone, Mail, MapPin, Send } from "lucide-react";
+import { useBanner } from "@/hooks/use-banner";
+import { useContact } from "@/hooks/use-contact";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 60 },
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.6 },
-}
+};
 
 const staggerContainer = {
   animate: {
@@ -27,44 +33,47 @@ const staggerContainer = {
       staggerChildren: 0.1,
     },
   },
-}
+};
 interface ContactProps {
-  services?: string[]
+  services?: string[];
 }
 
 export const Contact = ({ services: propServices }: ContactProps) => {
-  const { toast } = useToast()
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     phone: "",
     service: "",
     message: "",
-  })
+  });
 
   // Use dynamic contact info from API
-  const { contactInfo } = useContact()
+  const { contactInfo } = useContact();
 
   // Get dynamic services from contact info or use prop services or fallback
-  const services = contactInfo?.servicesOffered 
-    ? contactInfo.servicesOffered.split(',').map(s => s.trim()).filter(s => s.length > 0)
+  const services = contactInfo?.servicesOffered
+    ? contactInfo.servicesOffered
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0)
     : propServices || [
         "One-way Trip",
-        "Round Trip", 
+        "Round Trip",
         "Airport Taxi",
         "Day Rental",
         "Hourly Package",
         "Local Pickup/Drop",
-        "Tour Package"
-      ]
+        "Tour Package",
+      ];
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
-    }))
-  }
+    }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,7 +91,7 @@ export const Contact = ({ services: propServices }: ContactProps) => {
         email: formData.email.trim(),
         phone: formData.phone.trim(),
         serviceType: formData.service.trim(),
-        travelDate: new Date().toISOString().split('T')[0],
+        travelDate: new Date().toISOString().split("T")[0],
         pickupLocation: "To be specified", // Required field
         dropLocation: "To be specified",
         passengers: 1,
@@ -91,7 +100,7 @@ export const Contact = ({ services: propServices }: ContactProps) => {
         priority: "medium", // Required field
         source: "website", // Changed from "contact_form" to "website"
         estimatedCost: "To be determined",
-        notes: `Contact form submission\nEmail: ${formData.email}\nMessage: ${formData.message}`
+        notes: `Contact form submission\nEmail: ${formData.email}\nMessage: ${formData.message}`,
       };
 
       const response = await fetch("/api/leads", {
@@ -111,8 +120,9 @@ export const Contact = ({ services: propServices }: ContactProps) => {
 
       toast({
         title: "Message Sent Successfully!",
-        description: "Thank you for contacting us. We'll get back to you within 24 hours.",
-      })
+        description:
+          "Thank you for contacting us. We'll get back to you within 24 hours.",
+      });
 
       // Reset form
       setFormData({
@@ -121,19 +131,21 @@ export const Contact = ({ services: propServices }: ContactProps) => {
         phone: "",
         service: "",
         message: "",
-      })
+      });
     } catch (error) {
-      console.error("Error sending message:", error)
+      console.error("Error sending message:", error);
       toast({
         title: "Error",
         description:
-          error instanceof Error ? error.message : "There was an error sending your message. Please try again.",
+          error instanceof Error
+            ? error.message
+            : "There was an error sending your message. Please try again.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   // Contact details using dynamic data with fallbacks
   const contactDetails = [
@@ -157,21 +169,63 @@ export const Contact = ({ services: propServices }: ContactProps) => {
         contactInfo?.state || "Tamil Nadu"
       }-${contactInfo?.pincode || "625006"}`,
     },
-  ]
+  ];
 
-  const { banner } = useBanner("contact")
+  const { banner } = useBanner("contact");
 
   return (
     <>
       {/* Hero Section */}
-  <section className="relative bg-admin-gradient text-white py-16 sm:py-20 lg:py-24 flex items-center justify-center overflow-hidden">
+      <section className="relative bg-admin-gradient text-white py-16 sm:py-20 lg:py-24 flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
-            <img
-              src={banner?.status === "active" && banner?.image ? banner.image : "/placeholder.jpg"}
-              alt={banner?.title || "Tamil Nadu Tourism"}
-              className="w-full h-full object-cover"
+          <div className="absolute inset-0">
+            {/* Image Layer */}
+            <div className="absolute inset-0 opacity-100 transition-opacity duration-700">
+              <img
+                src={
+                  banner?.status === "active" && banner?.image
+                    ? banner.image
+                    : "/placeholder.jpg"
+                }
+                alt={banner?.title || "Tamil Nadu Tourism"}
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            {/* Dark Overlay Layer */}
+            <div className="absolute inset-0 bg-black/50" />
+
+            {/* Gradient Overlay Layer */}
+            <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/50 to-transparent" />
+
+            {/* Admin Gradient Layer */}
+            <div className="absolute inset-0 bg-admin-gradient/20" />
+
+            {/* Animated Gradient Layers */}
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-tr from-yellow-600/20 via-transparent to-orange-600/20"
+              animate={{
+                opacity: [0.2, 0.4, 0.2],
+              }}
+              transition={{
+                duration: 8,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "easeInOut",
+              }}
             />
-          <div className="absolute inset-0 bg-admin-gradient/80"></div>
+
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-bl from-orange-500/20 via-transparent to-yellow-500/20"
+              animate={{
+                opacity: [0.7, 0.3, 0.7],
+              }}
+              transition={{
+                duration: 6,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "easeInOut",
+              }}
+            />
+          </div>
         </div>
 
         <div className="container mx-auto px-3 sm:px-4 md:px-6 relative z-10">
@@ -187,7 +241,9 @@ export const Contact = ({ services: propServices }: ContactProps) => {
             </Badge>
 
             {banner?.title && (
-              <p className="text-white/90 text-base sm:text-lg md:text-xl mb-2 sm:mb-3">{banner.title}</p>
+              <p className="text-white/90 text-base sm:text-lg md:text-xl mb-2 sm:mb-3">
+                {banner.title}
+              </p>
             )}
 
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 leading-tight px-2">
@@ -202,20 +258,34 @@ export const Contact = ({ services: propServices }: ContactProps) => {
       </section>
 
       {/* Contact Form and Info */}
-      <section id="contact-form" className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gradient-to-br from-gray-50 to-white">
+      <section
+        id="contact-form"
+        className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gradient-to-br from-gray-50 to-white"
+      >
         <div className="container mx-auto px-3 sm:px-4 md:px-6">
           <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 max-w-7xl mx-auto">
             {/* Contact Form */}
-            <motion.div variants={fadeInUp} initial="initial" whileInView="animate" viewport={{ once: true }}>
+            <motion.div
+              variants={fadeInUp}
+              initial="initial"
+              whileInView="animate"
+              viewport={{ once: true }}
+            >
               <Card className="shadow-xl border-0">
                 <CardContent className="p-4 sm:p-6 lg:p-8">
                   <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">
                     Send Us a Message
                   </h2>
-                  <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+                  <form
+                    onSubmit={handleSubmit}
+                    className="space-y-4 sm:space-y-6"
+                  >
                     <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
                       <div>
-                        <Label htmlFor="fullName" className="text-gray-700 font-medium text-sm sm:text-base">
+                        <Label
+                          htmlFor="fullName"
+                          className="text-gray-700 font-medium text-sm sm:text-base"
+                        >
                           Full Name *
                         </Label>
                         <Input
@@ -223,13 +293,18 @@ export const Contact = ({ services: propServices }: ContactProps) => {
                           type="text"
                           required
                           value={formData.fullName}
-                          onChange={(e) => handleInputChange("fullName", e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("fullName", e.target.value)
+                          }
                           placeholder="Enter your full name"
                           className="mt-1.5 sm:mt-2 h-10 sm:h-12 text-sm sm:text-base"
                         />
                       </div>
                       <div>
-                        <Label htmlFor="email" className="text-gray-700 font-medium text-sm sm:text-base">
+                        <Label
+                          htmlFor="email"
+                          className="text-gray-700 font-medium text-sm sm:text-base"
+                        >
                           Email Address *
                         </Label>
                         <Input
@@ -237,7 +312,9 @@ export const Contact = ({ services: propServices }: ContactProps) => {
                           type="email"
                           required
                           value={formData.email}
-                          onChange={(e) => handleInputChange("email", e.target.value)}
+                          onChange={(e) =>
+                            handleInputChange("email", e.target.value)
+                          }
                           placeholder="Enter your email"
                           className="mt-1.5 sm:mt-2 h-10 sm:h-12 text-sm sm:text-base"
                         />
@@ -246,7 +323,10 @@ export const Contact = ({ services: propServices }: ContactProps) => {
 
                     <div className="grid sm:grid-cols-2 gap-3 sm:gap-4">
                       <div>
-                        <Label htmlFor="phone" className="text-gray-700 font-medium text-sm sm:text-base">
+                        <Label
+                          htmlFor="phone"
+                          className="text-gray-700 font-medium text-sm sm:text-base"
+                        >
                           Phone Number
                         </Label>
                         <Input
@@ -256,24 +336,39 @@ export const Contact = ({ services: propServices }: ContactProps) => {
                           inputMode="numeric"
                           value={formData.phone}
                           onChange={(e) => {
-                            const numericValue = e.target.value.replace(/[^0-9]/g, "")
-                            handleInputChange("phone", numericValue)
+                            const numericValue = e.target.value.replace(
+                              /[^0-9]/g,
+                              ""
+                            );
+                            handleInputChange("phone", numericValue);
                           }}
                           placeholder="Enter your phone number"
                           className="mt-1.5 sm:mt-2 h-10 sm:h-12 text-sm sm:text-base"
                         />
                       </div>
                       <div>
-                        <Label htmlFor="service" className="text-gray-700 font-medium text-sm sm:text-base">
+                        <Label
+                          htmlFor="service"
+                          className="text-gray-700 font-medium text-sm sm:text-base"
+                        >
                           Service of Interest
                         </Label>
-                        <Select value={formData.service} onValueChange={(value) => handleInputChange("service", value)}>
+                        <Select
+                          value={formData.service}
+                          onValueChange={(value) =>
+                            handleInputChange("service", value)
+                          }
+                        >
                           <SelectTrigger className="mt-1.5 sm:mt-2 h-10 sm:h-12 text-sm sm:text-base">
                             <SelectValue placeholder="Select a service" />
                           </SelectTrigger>
                           <SelectContent>
                             {services.map((service) => (
-                              <SelectItem key={service} value={service} className="text-sm sm:text-base">
+                              <SelectItem
+                                key={service}
+                                value={service}
+                                className="text-sm sm:text-base"
+                              >
                                 {service}
                               </SelectItem>
                             ))}
@@ -283,14 +378,19 @@ export const Contact = ({ services: propServices }: ContactProps) => {
                     </div>
 
                     <div>
-                      <Label htmlFor="message" className="text-gray-700 font-medium text-sm sm:text-base">
+                      <Label
+                        htmlFor="message"
+                        className="text-gray-700 font-medium text-sm sm:text-base"
+                      >
                         Message *
                       </Label>
                       <Textarea
                         id="message"
                         required
                         value={formData.message}
-                        onChange={(e) => handleInputChange("message", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("message", e.target.value)
+                        }
                         placeholder="Tell us about your travel requirements..."
                         rows={4}
                         className="mt-1.5 sm:mt-2 text-sm sm:text-base resize-none"
@@ -306,11 +406,15 @@ export const Contact = ({ services: propServices }: ContactProps) => {
                       {isSubmitting ? (
                         <>
                           <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-white mr-2"></div>
-                          <span className="text-xs sm:text-sm lg:text-base">Sending Message...</span>
+                          <span className="text-xs sm:text-sm lg:text-base">
+                            Sending Message...
+                          </span>
                         </>
                       ) : (
                         <>
-                          <span className="text-xs sm:text-sm lg:text-base">Send Message</span>
+                          <span className="text-xs sm:text-sm lg:text-base">
+                            Send Message
+                          </span>
                           <Send className="ml-1.5 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4" />
                         </>
                       )}
@@ -333,8 +437,9 @@ export const Contact = ({ services: propServices }: ContactProps) => {
                   Contact Information
                 </h2>
                 <p className="text-sm sm:text-base lg:text-lg text-gray-600 mb-4 sm:mb-6 lg:mb-8 leading-relaxed">
-                  Get in touch with our team of travel experts. We're here to help you with all your travel needs and
-                  provide exceptional travel experiences across Tamil Nadu.
+                  Get in touch with our team of travel experts. We're here to
+                  help you with all your travel needs and provide exceptional
+                  travel experiences across Tamil Nadu.
                 </p>
               </motion.div>
 
@@ -353,7 +458,9 @@ export const Contact = ({ services: propServices }: ContactProps) => {
                           <p className="text-gray-900 font-medium mb-1 text-sm sm:text-base break-words">
                             {info.details}
                           </p>
-                          <p className="text-xs sm:text-sm text-gray-600">{info.description}</p>
+                          <p className="text-xs sm:text-sm text-gray-600">
+                            {info.description}
+                          </p>
                         </div>
                       </div>
                     </CardContent>
@@ -380,7 +487,8 @@ export const Contact = ({ services: propServices }: ContactProps) => {
               Visit Our Office
             </Badge>
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 lg:mb-8 leading-tight px-2">
-              {contactInfo?.officeTitle || "Visit Our Office in Madurai, Tamil Nadu"}
+              {contactInfo?.officeTitle ||
+                "Visit Our Office in Madurai, Tamil Nadu"}
             </h2>
             <p className="text-sm sm:text-base  text-gray-600 max-w-3xl mx-auto px-4 leading-relaxed">
               {contactInfo?.officeDescription ||
@@ -400,15 +508,21 @@ export const Contact = ({ services: propServices }: ContactProps) => {
                 <div className="w-full h-64 sm:h-80 md:h-96 lg:h-[500px] relative">
                   <div
                     className="w-full h-full [&>iframe]:w-full [&>iframe]:h-full [&>iframe]:border-0"
-                    dangerouslySetInnerHTML={{ __html: contactInfo.mapEmbedCode }}
+                    dangerouslySetInnerHTML={{
+                      __html: contactInfo.mapEmbedCode,
+                    }}
                   />
                 </div>
               ) : (
                 <div className="w-full h-64 sm:h-80 md:h-96 lg:h-[500px] bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                   <div className="text-center">
                     <MapPin className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-500 text-lg font-medium">Map will be displayed here</p>
-                    <p className="text-gray-400 text-sm">Configure map embed code in admin panel</p>
+                    <p className="text-gray-500 text-lg font-medium">
+                      Map will be displayed here
+                    </p>
+                    <p className="text-gray-400 text-sm">
+                      Configure map embed code in admin panel
+                    </p>
                   </div>
                 </div>
               )}
@@ -417,5 +531,5 @@ export const Contact = ({ services: propServices }: ContactProps) => {
         </div>
       </section>
     </>
-  )
-}
+  );
+};
