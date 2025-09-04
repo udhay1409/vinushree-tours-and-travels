@@ -21,56 +21,62 @@ interface PopularRoutesProps {
   limit?: number;
 }
 
-export default function PopularRoutes({ showAll = false, limit = 12 }: PopularRoutesProps) {
+export default function PopularRoutes({
+  showAll = false,
+  limit = 12,
+}: PopularRoutesProps) {
   const { contactInfo } = useContact();
   const [popularRoutes, setPopularRoutes] = useState<PopularRoute[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Fallback routes if API fails
   const fallbackRoutes = [
-    'Chennai Drop Taxi',
-    'Madurai Drop Taxi', 
-    'Coimbatore Drop Taxi',
-    'Kodaikanal Drop Taxi',
-    'Ooty Drop Taxi',
-    'Bangalore Drop Taxi',
-    'Kerala Drop Taxi',
-    'Salem Drop Taxi',
-    'Trichy Drop Taxi',
-    'Thanjavur Drop Taxi',
-    'Rameswaram Drop Taxi',
-    'Kanyakumari Drop Taxi'
+    "Chennai Drop Taxi",
+    "Madurai Drop Taxi",
+    "Coimbatore Drop Taxi",
+    "Kodaikanal Drop Taxi",
+    "Ooty Drop Taxi",
+    "Bangalore Drop Taxi",
+    "Kerala Drop Taxi",
+    "Salem Drop Taxi",
+    "Trichy Drop Taxi",
+    "Thanjavur Drop Taxi",
+    "Rameswaram Drop Taxi",
+    "Kanyakumari Drop Taxi",
   ];
 
   // Fetch popular routes from API
   useEffect(() => {
     const fetchPopularRoutes = async () => {
       try {
-        const response = await fetch('/api/admin/locations');
+        const response = await fetch("/api/admin/locations");
         const result = await response.json();
-        
+
         if (result.success) {
           // Filter only popular routes, add "Drop Taxi" suffix, and sort by order
           const routes = result.data
-            .filter((location: PopularRoute) => location.isActive && location.isPopularRoute)
+            .filter(
+              (location: PopularRoute) =>
+                location.isActive && location.isPopularRoute
+            )
             .map((location: PopularRoute) => ({
               ...location,
-              name: location.name.toLowerCase().includes('taxi') 
-                ? location.name 
-                : `${location.name} Drop Taxi`
+              name: location.name.toLowerCase().includes("taxi")
+                ? location.name
+                : `${location.name} Drop Taxi`,
             }))
             .sort((a: PopularRoute, b: PopularRoute) => a.order - b.order);
           setPopularRoutes(routes);
         }
       } catch (error) {
-        console.error('Error fetching popular routes:', error);
+        console.error("Error fetching popular routes:", error);
         // Use fallback routes
         const fallbackData = fallbackRoutes.map((route, index) => ({
           _id: `fallback-${index}`,
           name: route,
           isActive: true,
           isPopularRoute: true,
-          order: index
+          order: index,
         }));
         setPopularRoutes(fallbackData);
       } finally {
@@ -82,23 +88,32 @@ export default function PopularRoutes({ showAll = false, limit = 12 }: PopularRo
   }, []);
 
   // Use fallback if no routes found
-  const routesToDisplay = popularRoutes.length > 0 
-    ? popularRoutes 
-    : fallbackRoutes.map((route, index) => ({
-        _id: `fallback-${index}`,
-        name: route,
-        isActive: true,
-        isPopularRoute: true,
-        order: index
-      }));
+  const routesToDisplay =
+    popularRoutes.length > 0
+      ? popularRoutes
+      : fallbackRoutes.map((route, index) => ({
+          _id: `fallback-${index}`,
+          name: route,
+          isActive: true,
+          isPopularRoute: true,
+          order: index,
+        }));
 
-  const displayRoutes = showAll ? routesToDisplay : routesToDisplay.slice(0, limit);
+  const displayRoutes = showAll
+    ? routesToDisplay
+    : routesToDisplay.slice(0, limit);
 
   const handleBookRoute = (routeName: string) => {
     const message = `Hi, I'd like to book ${routeName}. Please provide availability and confirm the fare.`;
-    const whatsappNumber = contactInfo?.whatsappNumber || contactInfo?.primaryPhone || '919003782966';
-    const whatsappUrl = `https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    const whatsappNumber =
+      contactInfo?.whatsappNumber ||
+      contactInfo?.primaryPhone ||
+      "919003782966";
+    const whatsappUrl = `https://wa.me/${whatsappNumber.replace(
+      /[^0-9]/g,
+      ""
+    )}?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, "_blank");
   };
 
   return (
@@ -128,8 +143,6 @@ export default function PopularRoutes({ showAll = false, limit = 12 }: PopularRo
           }}
         />
       </div>
-
-
 
       {/* Small floating bubbles like About section */}
       <div className="absolute inset-0 overflow-hidden">
@@ -169,12 +182,11 @@ export default function PopularRoutes({ showAll = false, limit = 12 }: PopularRo
             Popular Routes
           </Badge>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 md:mb-8 px-2">
-            <span className="text-yellow-200">
-              Most Traveled Routes
-            </span>
+            <span className="text-yellow-200">Most Traveled Routes</span>
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-white/90 max-w-xs sm:max-w-2xl md:max-w-3xl mx-auto px-2">
-            Book drop taxi services to popular destinations with professional drivers
+            Book drop taxi services to popular destinations with professional
+            drivers
           </p>
         </motion.div>
 
@@ -183,13 +195,15 @@ export default function PopularRoutes({ showAll = false, limit = 12 }: PopularRo
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
           </div>
         ) : (
-          <div className={`grid gap-3 sm:gap-4 justify-center ${
-            displayRoutes.length <= 2 
-              ? 'grid-cols-2 max-w-md mx-auto' 
-              : displayRoutes.length <= 4
-              ? 'grid-cols-2 sm:grid-cols-4 max-w-2xl mx-auto'
-              : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6'
-          }`}>
+          <div
+            className={`grid gap-3 sm:gap-4 justify-center ${
+              displayRoutes.length <= 2
+                ? "grid-cols-2 max-w-md mx-auto"
+                : displayRoutes.length <= 4
+                ? "grid-cols-2 sm:grid-cols-4 max-w-2xl mx-auto"
+                : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
+            }`}
+          >
             {displayRoutes.map((route, index) => (
               <motion.div
                 key={route._id}
@@ -201,10 +215,15 @@ export default function PopularRoutes({ showAll = false, limit = 12 }: PopularRo
                 <Button
                   onClick={() => handleBookRoute(route.name)}
                   variant="outline"
-                  className="w-full h-auto p-3 sm:p-4 text-center border-2 border-gray-200 hover:border-admin-primary hover:bg-admin-gradient hover:text-white transition-all duration-300 text-sm sm:text-base font-medium text-gray-700 rounded-lg flex flex-col items-center gap-2"
+                  className="w-full h-full min-h-[80px] p-3 sm:p-4 text-center border-2 border-gray-200 
+    hover:border-admin-primary hover:bg-admin-gradient hover:text-white 
+    transition-all duration-300 text-xs sm:text-sm font-medium text-gray-700 
+    rounded-lg flex flex-col items-center justify-center gap-2 overflow-hidden"
                 >
-                  <Car className="h-4 w-4 sm:h-5 sm:w-5" />
-                  {route.name}
+                  <Car className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+                  <span className="line-clamp-2 text-center break-words">
+                    {route.name}
+                  </span>
                 </Button>
               </motion.div>
             ))}
