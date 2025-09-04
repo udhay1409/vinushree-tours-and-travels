@@ -89,6 +89,8 @@ interface TravelLead {
   lastUpdated: string;
   estimatedCost?: string;
   notes?: string;
+  reviewLink?: string;
+  reviewToken?: string;
 }
 
 const fadeInUp = {
@@ -114,24 +116,62 @@ export default function LeadManager() {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const scrollPositionRef = useRef<number>(0);
 
-  // Travel services for Vinushree Tours & Travels
-  const travelServices = [
-    "One-way Trip",
-    "Round Trip", 
-    "Airport Taxi",
-    "Day Rental",
-    "Hourly Package",
-    "Local Pickup/Drop",
-    "Tour Package - Ooty",
-    "Tour Package - Kodaikanal",
-    "Tour Package - Chennai",
-    "Tour Package - Bangalore",
-    "Corporate Travel",
-    "Wedding Transportation"
-  ];
+  // Dynamic service types from contact API
+  const [serviceTypes, setServiceTypes] = useState<string[]>([]);
+  const [servicesLoading, setServicesLoading] = useState(true);
 
   const { leads: leadsData, isLoading: leadsLoading, mutate } = useLeads();
   const [leads, setLeads] = useState<TravelLead[]>([]);
+
+  // Fetch service types from contact API
+  useEffect(() => {
+    fetchServiceTypes();
+  }, []);
+
+  const fetchServiceTypes = async () => {
+    try {
+      setServicesLoading(true);
+      const response = await fetch('/api/admin/contact');
+      const result = await response.json();
+      
+      if (result.success && result.data?.servicesOffered) {
+        const services = result.data.servicesOffered
+          .split(',')
+          .map((s: string) => s.trim())
+          .filter((s: string) => s.length > 0);
+        setServiceTypes(services);
+      } else {
+        // Fallback services
+        setServiceTypes([
+          "One-way Trip",
+          "Round Trip", 
+          "Airport Taxi",
+          "Day Rental",
+          "Hourly Package",
+          "Local Pickup/Drop",
+          "Tour Package",
+          "Corporate Travel",
+          "Wedding Transportation"
+        ]);
+      }
+    } catch (error) {
+      console.error('Error fetching service types:', error);
+      // Fallback services
+      setServiceTypes([
+        "One-way Trip",
+        "Round Trip", 
+        "Airport Taxi",
+        "Day Rental",
+        "Hourly Package",
+        "Local Pickup/Drop",
+        "Tour Package",
+        "Corporate Travel",
+        "Wedding Transportation"
+      ]);
+    } finally {
+      setServicesLoading(false);
+    }
+  };
 
   // Transform leads data when it changes
   useEffect(() => {
@@ -156,7 +196,9 @@ export default function LeadManager() {
         submittedAt: lead.submittedAt,
         lastUpdated: lead.lastUpdated,
         estimatedCost: lead.estimatedCost || "",
-        notes: lead.notes || ""
+        notes: lead.notes || "",
+        reviewLink: lead.reviewLink || "",
+        reviewToken: lead.reviewToken || ""
       }));
       setLeads(transformedLeads);
     }
@@ -290,7 +332,9 @@ export default function LeadManager() {
 
   const handleViewLead = (lead: TravelLead) => {
     scrollPositionRef.current = window.scrollY;
-    setSelectedLead(lead);
+    // Find the most up-to-date lead data from the leads array
+    const currentLead = leads.find(l => l._id === lead._id) || lead;
+    setSelectedLead(currentLead);
     setIsViewModalOpen(true);
   };
 
@@ -741,11 +785,15 @@ export default function LeadManager() {
                         <SelectValue placeholder="Select service type" />
                       </SelectTrigger>
                       <SelectContent>
-                        {travelServices.map((service) => (
-                          <SelectItem key={service} value={service}>
-                            {service}
-                          </SelectItem>
-                        ))}
+                        {servicesLoading ? (
+                          <SelectItem value="loading" disabled>Loading services...</SelectItem>
+                        ) : (
+                          serviceTypes.map((service) => (
+                            <SelectItem key={service} value={service}>
+                              {service}
+                            </SelectItem>
+                          ))
+                        )}
                       </SelectContent>
                     </Select>
                     {isFormSubmitted && !newLead.serviceType && (
@@ -1043,11 +1091,15 @@ export default function LeadManager() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">All Services</SelectItem>
-                      {travelServices.map((service) => (
-                        <SelectItem key={service} value={service}>
-                          {service}
-                        </SelectItem>
-                      ))}
+                      {servicesLoading ? (
+                        <SelectItem value="loading" disabled>Loading services...</SelectItem>
+                      ) : (
+                        serviceTypes.map((service) => (
+                          <SelectItem key={service} value={service}>
+                            {service}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
@@ -1176,6 +1228,27 @@ export default function LeadManager() {
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
+                            {/* Share Review Link Button for Completed Leads */}
+                            {lead.status === "completed" && lead.reviewLink && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  const reviewMessage = `Hi ${lead.fullName}! Thank you for choosing Vinushree Tours & Travels. We hope you had a great experience with our ${lead.serviceType} service. 
+
+Please take a moment to share your feedback by clicking here: ${lead.reviewLink}
+
+If the link doesn't work, you can copy and paste this URL in your browser: ${lead.reviewLink}
+
+Your feedback helps us serve you better! 🙏`;
+                                  window.open(`https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(reviewMessage)}`);
+                                }}
+                                className="h-8 w-8 p-0 text-yellow-600 hover:bg-yellow-50"
+                                title="Share Review Link via WhatsApp"
+                              >
+                                <Star className="h-4 w-4" />
+                              </Button>
+                            )}
                             <Button
                               size="sm"
                               variant="outline"
@@ -1412,6 +1485,7 @@ export default function LeadManager() {
 
         {/* View Lead Modal */}
         <ViewLeads
+          key={selectedLead?._id || 'no-lead'}
           lead={selectedLead}
           isOpen={isViewModalOpen}
           onClose={() => setIsViewModalOpen(false)}

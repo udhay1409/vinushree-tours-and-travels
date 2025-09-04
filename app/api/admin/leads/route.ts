@@ -70,7 +70,7 @@ export async function PUT(request: NextRequest) {
     // Generate review link if status is changing to completed
     if (updateData.status === "completed" && currentLead.status !== "completed") {
       // Generate a unique review token
-      const reviewToken = `review_${_id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      const reviewToken = `review_${_id}_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
       const reviewLink = `${process.env.APP_URL || 'http://localhost:3000'}/review?token=${reviewToken}`;
       
       console.log('Generating review link:', { reviewToken, reviewLink });

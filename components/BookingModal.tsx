@@ -78,7 +78,7 @@ export default function BookingModal({ isOpen, onClose, prefilledService, prefil
     if (isOpen) {
       setFormData(prev => ({
         ...prev,
-        service: prefilledService || "",
+        service: prefilledService || prev.service || "",
       }));
     }
   }, [isOpen, prefilledService]);
@@ -90,6 +90,39 @@ export default function BookingModal({ isOpen, onClose, prefilledService, prefil
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    // Validate required fields
+    const requiredFields = [
+      { field: 'name', label: 'Full Name' },
+      { field: 'phone', label: 'Phone Number' },
+      { field: 'service', label: 'Service Type' },
+      { field: 'pickupLocation', label: 'Pickup Location' },
+      { field: 'dropLocation', label: 'Drop Location' },
+      { field: 'travelDate', label: 'Travel Date' }
+    ];
+
+    const missingFields = requiredFields.filter(({ field }) => !formData[field as keyof typeof formData]);
+
+    if (missingFields.length > 0) {
+      toast({
+        title: "Please fill required fields",
+        description: `Missing: ${missingFields.map(f => f.label).join(', ')}`,
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Validate return date for round trips
+    if (formData.service === "Round Trip" && !formData.returnDate) {
+      toast({
+        title: "Return date required",
+        description: "Please select a return date for round trip service",
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+      return;
+    }
 
     try {
       // Save lead to database
@@ -123,7 +156,13 @@ export default function BookingModal({ isOpen, onClose, prefilledService, prefil
       const result = await response.json();
 
       if (!result.success) {
-        throw new Error(result.error || 'Failed to save lead');
+        toast({
+          title: "Booking failed",
+          description: result.error || "Failed to submit booking. Please try again or call us directly.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
       }
 
       // Create WhatsApp message
@@ -164,8 +203,8 @@ Please confirm availability and provide final pricing.`;
     } catch (error) {
       console.error('Error submitting booking:', error);
       toast({
-        title: "Error",
-        description: "Please try again or call us directly.",
+        title: "Booking submission failed",
+        description: "Unable to submit your booking request. Please try again or contact us directly for assistance.",
         variant: "destructive",
       });
     } finally {

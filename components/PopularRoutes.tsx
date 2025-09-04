@@ -50,9 +50,15 @@ export default function PopularRoutes({ showAll = false, limit = 12 }: PopularRo
         const result = await response.json();
         
         if (result.success) {
-          // Filter only popular routes and sort by order
+          // Filter only popular routes, add "Drop Taxi" suffix, and sort by order
           const routes = result.data
             .filter((location: PopularRoute) => location.isActive && location.isPopularRoute)
+            .map((location: PopularRoute) => ({
+              ...location,
+              name: location.name.toLowerCase().includes('taxi') 
+                ? location.name 
+                : `${location.name} Drop Taxi`
+            }))
             .sort((a: PopularRoute, b: PopularRoute) => a.order - b.order);
           setPopularRoutes(routes);
         }
@@ -177,7 +183,13 @@ export default function PopularRoutes({ showAll = false, limit = 12 }: PopularRo
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
+          <div className={`grid gap-3 sm:gap-4 justify-center ${
+            displayRoutes.length <= 2 
+              ? 'grid-cols-2 max-w-md mx-auto' 
+              : displayRoutes.length <= 4
+              ? 'grid-cols-2 sm:grid-cols-4 max-w-2xl mx-auto'
+              : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6'
+          }`}>
             {displayRoutes.map((route, index) => (
               <motion.div
                 key={route._id}

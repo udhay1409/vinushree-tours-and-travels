@@ -7,11 +7,11 @@ export async function GET() {
   try {
     await connectDB();
     
-    // Check if SEO data exists, if not create default data
+    // Check if SEO data exists, if not create default data (only once)
     let seoData = await SEO.find({}).sort({ lastUpdated: -1 });
     
     if (seoData.length === 0) {
-      // Create default SEO data if none exists
+      // Create default SEO data if none exists - using upsert to prevent duplicates
       const defaultSEOData = [
         {
           id: "home",
@@ -60,7 +60,17 @@ export async function GET() {
         },
       ];
 
-      seoData = await SEO.insertMany(defaultSEOData);
+      // Use bulkWrite with upsert to prevent duplicates
+      const bulkOps = defaultSEOData.map(item => ({
+        updateOne: {
+          filter: { id: item.id },
+          update: { $setOnInsert: item },
+          upsert: true
+        }
+      }));
+
+      await SEO.bulkWrite(bulkOps);
+      seoData = await SEO.find({}).sort({ lastUpdated: -1 });
       console.log("✅ SEO data initialized with default values");
     }
     

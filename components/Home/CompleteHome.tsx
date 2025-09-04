@@ -332,7 +332,7 @@ export default function CompleteHome() {
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl 2xl:text-8xl font-bold mb-4 sm:mb-6 leading-tight">
                 <span className="block">Travel With Us</span>
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-400 to-orange-400">
-                  With Comfort
+                  In Comfort
                 </span>
               </h1>
             </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,7 +20,7 @@ interface LeadDetails {
   dropLocation: string;
 }
 
-export default function ReviewPage() {
+function ReviewPageContent() {
   const { toast } = useToast();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -294,5 +294,17 @@ export default function ReviewPage() {
         </motion.div>
       </div>
     </div>
+  );
+}
+
+export default function ReviewPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-orange-50 to-yellow-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
+      </div>
+    }>
+      <ReviewPageContent />
+    </Suspense>
   );
 }

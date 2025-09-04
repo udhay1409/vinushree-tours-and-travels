@@ -422,19 +422,7 @@ export default function ViewLeads({ lead, isOpen, onClose }: ViewLeadsProps) {
                 </Card>
               )}
 
-              {/* Debug Info - Remove this after testing */}
-              <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm">
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-xl font-bold text-gray-800">Debug Info</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="p-4 bg-gray-50 rounded-xl">
-                    <p className="text-xs font-mono">Status: {lead.status}</p>
-                    <p className="text-xs font-mono">Review Link: {lead.reviewLink || 'Not set'}</p>
-                    <p className="text-xs font-mono">Review Token: {lead.reviewToken || 'Not set'}</p>
-                  </div>
-                </CardContent>
-              </Card>
+
 
               {/* Review Link Info (for completed leads) */}
               {lead.status === "completed" && lead.reviewLink && (
@@ -538,7 +526,13 @@ export default function ViewLeads({ lead, isOpen, onClose }: ViewLeadsProps) {
                           <Button
                             className="h-12 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-medium shadow-lg"
                             onClick={() => {
-                              const reviewMessage = `Hi ${lead.fullName}! Thank you for choosing Vinushree Tours & Travels. We hope you had a great experience with our ${lead.serviceType} service. Please take a moment to share your feedback: ${lead.reviewLink}`;
+                              const reviewMessage = `Hi ${lead.fullName}! Thank you for choosing Vinushree Tours & Travels. We hope you had a great experience with our ${lead.serviceType} service. 
+
+Please take a moment to share your feedback by clicking here: ${lead.reviewLink}
+
+If the link doesn't work, you can copy and paste this URL in your browser: ${lead.reviewLink}
+
+Your feedback helps us serve you better! 🙏`;
                               window.open(`https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(reviewMessage)}`);
                             }}
                           >
@@ -548,8 +542,7 @@ export default function ViewLeads({ lead, isOpen, onClose }: ViewLeadsProps) {
                         ) : (
                           <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                             <p className="text-sm text-yellow-800">
-                              Review link will be generated when you update this lead to completed status.
-                              Please edit the lead and save to generate the review link.
+                              Review link will be generated automatically. Please refresh the page or close and reopen this modal to see the share button.
                             </p>
                           </div>
                         )}
