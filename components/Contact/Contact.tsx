@@ -67,47 +67,47 @@ export const Contact = ({ services: propServices }: ContactProps) => {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
 
     try {
-      // Prepare data for API
-      const submissionData = {
-        fullName: formData.fullName,
-        email: formData.email,
-        phone: formData.phone,
-        serviceType: formData.service,
-        travelDate: new Date().toISOString().split('T')[0], // Default to today
-        pickupLocation: "To be determined",
-        dropLocation: "",
-        passengers: 1,
-        message: formData.message,
-        status: "new",
-        priority: "medium",
-        source: "website",
-        estimatedCost: "",
-        notes: "Contact form submission"
+      // Validate required fields
+      if (!formData.fullName || !formData.phone || !formData.service) {
+        throw new Error("Please fill in all required fields");
       }
 
-      // Submit to API
+      // Prepare data for API
+      const submissionData = {
+        fullName: formData.fullName.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        serviceType: formData.service.trim(),
+        travelDate: new Date().toISOString().split('T')[0],
+        pickupLocation: "To be specified", // Required field
+        dropLocation: "To be specified",
+        passengers: 1,
+        message: formData.message.trim(),
+        status: "new", // Required field
+        priority: "medium", // Required field
+        source: "website", // Changed from "contact_form" to "website"
+        estimatedCost: "To be determined",
+        notes: `Contact form submission\nEmail: ${formData.email}\nMessage: ${formData.message}`
+      };
+
       const response = await fetch("/api/leads", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(submissionData),
-      })
-
-      const result = await response.json()
+      });
 
       if (!response.ok) {
-        throw new Error(result.message || "Failed to send message")
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to send message");
       }
 
-      toast({
-        title: "Message Sent Successfully!",
-        description: "Thank you for contacting us. We'll get back to you within 24 hours.",
-      })
+      const result = await response.json();
 
       // Reset form
       setFormData({

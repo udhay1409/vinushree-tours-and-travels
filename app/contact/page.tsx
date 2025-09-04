@@ -15,17 +15,7 @@ export const metadata = {
     "contact travel services, travel booking, tour package inquiry, travel support, trip planning",
 }; 
 
-// Static travel services data
-const travelServices = [
-  "One-way Trip",
-  "Round Trip", 
-  "Airport Taxi",
-  "Day Rental",
-  "Hourly Package",
-  "Local Pickup/Drop",
-  "Tour Package",
-  "Other"
-];
+
 
 
 
