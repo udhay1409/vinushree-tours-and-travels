@@ -109,6 +109,11 @@ export const Contact = ({ services: propServices }: ContactProps) => {
 
       const result = await response.json();
 
+      toast({
+        title: "Message Sent Successfully!",
+        description: "Thank you for contacting us. We'll get back to you within 24 hours.",
+      })
+
       // Reset form
       setFormData({
         fullName: "",
