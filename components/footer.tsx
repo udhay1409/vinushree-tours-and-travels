@@ -313,9 +313,8 @@ export default function Footer() {
             </div>
           </div>
         </div>
-      </div>
-
-        <div className="border-t border-gray-800 mt-6 sm:mt-8 pt-6 sm:pt-8 pb-6 sm:pb-8 text-center">
+          
+        <div className="border-t border-gray-800 pt-5  text-center">
           <p className="text-gray-400 text-xs sm:text-sm leading-relaxed px-2">
             © 2025 Vinushree Tours & Travels. All rights reserved. ❤️ 
             <span className="block sm:inline sm:ml-1 hover:text-white transition-colors">
@@ -323,6 +322,10 @@ export default function Footer() {
             </span>
           </p>
         </div>
+
+      </div>
+
+    
     </footer>
   );
 }
