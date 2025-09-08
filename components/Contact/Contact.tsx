@@ -67,42 +67,47 @@ export const Contact = ({ services: propServices }: ContactProps) => {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
+    e.preventDefault();
+    setIsSubmitting(true);
 
     try {
-      // Prepare data for API
-      const submissionData = {
-        fullName: formData.fullName,
-        email: formData.email,
-        phone: formData.phone,
-        serviceType: formData.service,
-        travelDate: new Date().toISOString().split('T')[0], // Default to today
-        pickupLocation: "To be determined",
-        dropLocation: "",
-        passengers: 1,
-        message: formData.message,
-        status: "new",
-        priority: "medium",
-        source: "website",
-        estimatedCost: "",
-        notes: "Contact form submission"
+      // Validate required fields
+      if (!formData.fullName || !formData.phone || !formData.service) {
+        throw new Error("Please fill in all required fields");
       }
 
-      // Submit to API
+      // Prepare data for API
+      const submissionData = {
+        fullName: formData.fullName.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        serviceType: formData.service.trim(),
+        travelDate: new Date().toISOString().split('T')[0],
+        pickupLocation: "To be specified", // Required field
+        dropLocation: "To be specified",
+        passengers: 1,
+        message: formData.message.trim(),
+        status: "new", // Required field
+        priority: "medium", // Required field
+        source: "website", // Changed from "contact_form" to "website"
+        estimatedCost: "To be determined",
+        notes: `Contact form submission\nEmail: ${formData.email}\nMessage: ${formData.message}`
+      };
+
       const response = await fetch("/api/leads", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(submissionData),
-      })
-
-      const result = await response.json()
+      });
 
       if (!response.ok) {
-        throw new Error(result.message || "Failed to send message")
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to send message");
       }
+
+      const result = await response.json();
 
       toast({
         title: "Message Sent Successfully!",
@@ -135,7 +140,18 @@ export const Contact = ({ services: propServices }: ContactProps) => {
     {
       icon: <Phone className="h-5 w-5 text-white" />,
       title: "Phone",
-      details: contactInfo?.primaryPhone || "9158549166",
+      details: (
+        <div className="space-y-1">
+          <p className="text-gray-900 font-medium text-sm sm:text-base break-words">
+            {contactInfo?.primaryPhone}
+          </p>
+          {contactInfo?.secondaryPhone && (
+            <p className="text-gray-900 font-medium text-sm sm:text-base break-words">
+              {contactInfo.secondaryPhone}
+            </p>
+          )}
+        </div>
+      ),
       description: contactInfo?.businessHours || "24/7 Available",
     },
     {
@@ -161,12 +177,50 @@ export const Contact = ({ services: propServices }: ContactProps) => {
       {/* Hero Section */}
   <section className="relative bg-admin-gradient text-white py-16 sm:py-20 lg:py-24 flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
-            <img
-              src={banner?.status === "active" && banner?.image ? banner.image : "/placeholder.jpg"}
-              alt={banner?.title || "Tamil Nadu Tourism"}
-              className="w-full h-full object-cover"
+          <div className="absolute inset-0">
+            {/* Image Layer */}
+            <div className="absolute inset-0 opacity-100 transition-opacity duration-700">
+              <img
+                src={banner?.status === "active" && banner?.image ? banner.image : "/placeholder.jpg"}
+                alt={banner?.title || "Tamil Nadu Tourism"}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            
+            {/* Dark Overlay Layer */}
+            <div className="absolute inset-0 bg-black/50" />
+            
+            {/* Gradient Overlay Layer */}
+            <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/50 to-transparent" />
+            
+            {/* Admin Gradient Layer */}
+            <div className="absolute inset-0 bg-admin-gradient/20" />
+            
+            {/* Animated Gradient Layers */}
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-tr from-yellow-600/20 via-transparent to-orange-600/20"
+              animate={{
+                opacity: [0.2, 0.4, 0.2],
+              }}
+              transition={{
+                duration: 8,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "easeInOut",
+              }}
             />
-          <div className="absolute inset-0 bg-admin-gradient/80"></div>
+
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-bl from-orange-500/20 via-transparent to-yellow-500/20"
+              animate={{
+                opacity: [0.7, 0.3, 0.7],
+              }}
+              transition={{
+                duration: 6,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "easeInOut",
+              }}
+            />
+          </div>
         </div>
 
         <div className="container mx-auto px-3 sm:px-4 md:px-6 relative z-10">
@@ -345,9 +399,13 @@ export const Contact = ({ services: propServices }: ContactProps) => {
                           <h3 className="font-semibold text-gray-900 mb-1 text-sm sm:text-base lg:text-lg">
                             {info.title}
                           </h3>
-                          <p className="text-gray-900 font-medium mb-1 text-sm sm:text-base break-words">
-                            {info.details}
-                          </p>
+                          {typeof info.details === 'string' ? (
+                            <p className="text-gray-900 font-medium mb-1 text-sm sm:text-base break-words">
+                              {info.details}
+                            </p>
+                          ) : (
+                            info.details
+                          )}
                           <p className="text-xs sm:text-sm text-gray-600">{info.description}</p>
                         </div>
                       </div>

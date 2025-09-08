@@ -22,11 +22,23 @@ import Image from "next/image";
 // Separate client component for pathname functionality
 function NavbarContent() {
   const { themeData } = useTheme();
-  const { contactInfo } = useContact();
+  const { contactInfo, isLoading: contactLoading } = useContact();
   const pathname = usePathname();
-
+  
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showFallback, setShowFallback] = useState(false);
+
+  // Add timeout for fallback data
+  useEffect(() => {
+    const fallbackTimer = setTimeout(() => {
+      if (contactLoading) {
+        setShowFallback(true);
+      }
+    }, 5000); // 5 second timeout
+
+    return () => clearTimeout(fallbackTimer);
+  }, [contactLoading]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -68,41 +80,83 @@ function NavbarContent() {
     return pathname.startsWith(href);
   };
 
+  // Update contact info section with loading states
+  const renderContactInfo = () => {
+    if (!contactInfo && !showFallback) {
+      return null; // Don't show anything while loading
+    }
+
+    return (
+      <div className="flex flex-wrap items-center justify-center sm:justify-center lg:justify-start gap-2 sm:gap-4 lg:gap-6">
+        {/* Primary Phone */}
+        {(contactInfo?.primaryPhone || showFallback) && (
+          <div className="flex items-center gap-1 sm:gap-2">
+            <Phone className="h-3 w-3 sm:h-3 sm:w-3 lg:h-4 lg:w-4" />
+            <a
+              href={`tel:${contactInfo?.primaryPhone}`}
+              className="font-medium text-xs sm:text-xs lg:text-sm hover:text-white/80 transition-colors"
+            >
+              {contactInfo?.primaryPhone}
+            </a>
+          </div>
+        )}
+        
+        {/* Secondary Phone - only show if exists */}
+        {contactInfo?.secondaryPhone && (
+          <div className="flex items-center gap-1 sm:gap-2">
+            <Phone className="h-3 w-3 sm:h-3 sm:w-3 lg:h-4 lg:w-4" />
+            <a
+              href={`tel:${contactInfo.secondaryPhone}`}
+              className="font-medium text-xs sm:text-xs lg:text-sm hover:text-white/80 transition-colors"
+            >
+              {contactInfo.secondaryPhone}
+            </a>
+          </div>
+        )}
+
+        {/* Email */}
+        {(contactInfo?.email || showFallback) && (
+          <div className="flex items-center gap-1 sm:gap-2">
+            <Mail className="h-3 w-3 sm:h-3 sm:w-3 lg:h-4 lg:w-4" />
+            <a
+              href={`mailto:${contactInfo?.email}`}
+              className="font-medium text-xs sm:text-xs lg:text-sm hover:text-white/80 transition-colors truncate max-w-[200px] sm:max-w-none"
+            >
+              {contactInfo?.email}
+            </a>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Update address section
+  const renderAddress = () => {
+    if (!contactInfo && !showFallback) {
+      return null;
+    }
+
+    if (contactInfo) {
+      return (
+        <div className="hidden lg:flex xl:flex items-center gap-2">
+          <MapPin className="h-4 w-4" />
+          <span className="font-medium text-sm">
+            {`${contactInfo.address}, ${contactInfo.city}, ${contactInfo.state}-${contactInfo.pincode}`}
+          </span>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <>
       {/* Top Bar with Dynamic Contact Info - Responsive */}
       <div className="bg-admin-gradient text-white py-1.5 sm:py-2 px-2 sm:px-4 text-xs sm:text-sm">
         <div className="container mx-auto flex flex-col sm:flex-row lg:flex-row justify-between items-center gap-1 sm:gap-2">
-          <div className="flex flex-wrap items-center justify-center sm:justify-center lg:justify-start gap-2 sm:gap-4 lg:gap-6">
-            <div className="flex items-center gap-1 sm:gap-2">
-              <Phone className="h-3 w-3 sm:h-3 sm:w-3 lg:h-4 lg:w-4" />
-              <a
-                href={`tel:${contactInfo?.primaryPhone || "+91 90037 82966"}`}
-                className="font-medium text-xs sm:text-xs lg:text-sm hover:text-white/80 transition-colors"
-              >
-                {contactInfo?.primaryPhone || "+91 90037 82966"}
-              </a>
-            </div>
-            <div className="flex items-center gap-1 sm:gap-2">
-              <Mail className="h-3 w-3 sm:h-3 sm:w-3 lg:h-4 lg:w-4" />
-              <a
-                href={`mailto:${
-                  contactInfo?.email || "info@vinushree.com"
-                }`}
-                className="font-medium text-xs sm:text-xs lg:text-sm hover:text-white/80 transition-colors truncate max-w-[200px] sm:max-w-none"
-              >
-                {contactInfo?.email || "info@vinushree.com"}
-              </a>
-            </div>
-          </div>
-          <div className="hidden lg:flex xl:flex items-center gap-2">
-            <MapPin className="h-4 w-4" />
-            <span className="font-medium text-sm">
-              {contactInfo
-                ? `${contactInfo.address}, ${contactInfo.city}, ${contactInfo.state}-${contactInfo.pincode}`
-                : "mani road, Uthangudi, Othakadai, Madurai, Tamil Nadu-625007"}
-            </span>
-          </div>
+          {renderContactInfo()}
+          {renderAddress()}
         </div>
       </div>
 
@@ -122,24 +176,28 @@ function NavbarContent() {
               className="flex items-center space-x-1.5 sm:space-x-2 lg:space-x-3 group"
             >
               <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-xl sm:rounded-2xl overflow-hidden flex items-center justify-center bg-white shadow-md">
-                <Image
-                  src={themeData?.logo || "/vinushree-tours-logo.png"}
-                  alt={`${themeData?.siteName || "Vinushree Tours"} Logo`}
-                  width={48}
-                  height={48}
-                  className="w-full h-full object-contain"
-                />
+                {themeData?.logo && (
+                  <Image
+                    src={themeData.logo}
+                    alt={`${themeData?.siteName || ''} Logo`}
+                    width={48}
+                    height={48}
+                    className="w-full h-full object-contain"
+                  />
+                )}
               </div>
-              <div>
-                <div className="font-bold text-sm sm:text-lg lg:text-xl xl:text-2xl bg-admin-gradient bg-clip-text text-transparent">
-                  {themeData?.siteName?.split(' ')[0] || "Vinushree"}
+              {themeData?.siteName && (
+                <div>
+                  <div className="font-bold text-sm sm:text-lg lg:text-xl xl:text-2xl bg-admin-gradient bg-clip-text text-transparent">
+                    {themeData.siteName.split(' ')[0]}
+                  </div>
+                  <div className="text-xs sm:text-xs lg:text-sm text-gray-600 font-medium">
+                    {themeData.siteName.includes('Tours') 
+                      ? 'Tours & Travels' 
+                      : themeData.siteName.split(' ').slice(1).join(' ')}
+                  </div>
                 </div>
-                <div className="text-xs sm:text-xs lg:text-sm text-gray-600 font-medium">
-                  {themeData?.siteName?.includes('Tours') 
-                    ? 'Tours & Travels' 
-                    : themeData?.siteName?.split(' ').slice(1).join(' ') || 'Tours & Travels'}
-                </div>
-              </div>
+              )}
             </Link>
 
             {/* Desktop Navigation */}
@@ -174,11 +232,14 @@ function NavbarContent() {
               {/* WhatsApp Button */}
               <Button
                 onClick={() => {
-                  const whatsappNumber = contactInfo?.whatsappNumber || contactInfo?.primaryPhone || '919003782966';
-                  window.open(`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=Hi, I'm interested in your travel services`, '_blank');
+                  if (contactInfo?.whatsappNumber || contactInfo?.primaryPhone) {
+                    const number = (contactInfo.whatsappNumber || contactInfo.primaryPhone).replace(/[^0-9]/g, '');
+                    window.open(`https://wa.me/${number}?text=Hi, I'm interested in your travel services`, '_blank');
+                  }
                 }}
                 variant="outline"
                 className="border-admin-primary text-admin-primary hover:bg-admin-gradient hover:text-white px-4 xl:px-6 py-2 font-semibold text-sm xl:text-base transition-all duration-300 hover:shadow-lg hover:scale-105"
+                disabled={!contactInfo}
               >
                 <Phone className="h-4 w-4 mr-2" />
                 WhatsApp

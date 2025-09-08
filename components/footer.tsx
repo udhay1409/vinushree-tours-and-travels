@@ -11,20 +11,27 @@ import {
   Clock,
   Award,
   Users,
-
   Car,
   Plane,
   Calendar,
-  Shield
+  Shield,
+  IndianRupee,
+  Copy
 } from "lucide-react";
 import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 import { useTheme } from "./providers/theme";
 import { useContact } from "@/hooks/use-contact";
 import Image from "next/image";
+import { useState } from "react";
+import { QRCodeSVG } from "qrcode.react";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 
 export default function Footer() {
   const { themeData } = useTheme();
   const { contactInfo } = useContact();
+  const { toast } = useToast();
+  const [isQRModalOpen, setIsQRModalOpen] = useState(false);
 
   const travelServices = [
     { name: 'One-way Trip', href: '/tariff' },
@@ -43,9 +50,9 @@ export default function Footer() {
     { name: 'Contact', href: '/contact' }
   ];
 
-  const destinations = [
+/*   const destinations = [
     'Chennai', 'Madurai', 'Coimbatore', 'Trichy', 'Salem', 'Tirunelveli'
-  ];
+  ] */;
 
   const handleWhatsAppClick = () => {
     const message = "Hi! I'm interested in your travel services. Please provide more details.";
@@ -108,6 +115,7 @@ export default function Footer() {
 
             {/* Dynamic Contact Info */}
             <div className="space-y-3">
+              {/* Primary Phone */}
               <div className="flex items-center space-x-3">
                 <Phone className="h-4 w-4 text-admin-primary flex-shrink-0" />
                 <a
@@ -117,6 +125,20 @@ export default function Footer() {
                   {contactInfo?.primaryPhone || "+91 90037 82966"}
                 </a>
               </div>
+              
+              {/* Add Secondary Phone */}
+              {contactInfo?.secondaryPhone && (
+                <div className="flex items-center space-x-3">
+                  <Phone className="h-4 w-4 text-admin-primary flex-shrink-0" />
+                  <a
+                    href={`tel:${contactInfo.secondaryPhone}`}
+                    className="text-gray-300 hover:text-white transition-colors text-sm font-medium"
+                  >
+                    {contactInfo.secondaryPhone}
+                  </a>
+                </div>
+              )}
+
               <div className="flex items-center space-x-3">
                 <Mail className="h-4 w-4 text-admin-primary flex-shrink-0" />
                 <a
@@ -213,19 +235,82 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Popular Destinations */}
+          {/* Payment Options */}
           <div>
-            <h3 className="text-lg font-bold mb-6 text-white">Popular Destinations</h3>
-            <ul className="space-y-3">
-              {destinations.map((destination, index) => (
-                <li key={index} className="text-gray-300 flex items-center">
-                  <MapPin className="h-3 w-3 mr-2 text-admin-primary" />
-                  {destination}
-                </li>
-              ))}
-            </ul>
+            <h3 className="text-lg font-bold mb-6 text-white">Payment Options</h3>
             
+            {/* Desktop QR Code - Hidden on mobile */}
+            <div className="hidden md:block bg-white p-4 rounded-xl mb-4 w-fit">
+              <QRCodeSVG
+                value={`upi://pay?pa=vinusree@sbi&pn=${encodeURIComponent("Vinushree Tours and Travels")}`}
+                size={150}
+                level="H"
+                className="rounded-lg"
+              />
+            </div>
 
+            {/* UPI Payment Links - Optimized for mobile */}
+            <div className="space-y-4">
+              {/* Mobile UPI App Link */}
+              <a
+                href="upi://pay?pa=vinusree@sbi&pn=Vinushree%20Tours%20and%20Travels"
+                className="md:hidden flex items-center gap-3 p-3 bg-green-500/10 hover:bg-green-500/20 rounded-lg transition-all duration-300 border border-green-500/20 hover:border-green-500/30"
+              >
+                <IndianRupee className="h-5 w-5 text-green-500" />
+                <div className="flex-1">
+                  <div className="text-sm font-medium text-white">Pay via UPI</div>
+                  <div className="text-xs text-gray-400">Tap to open UPI app</div>
+                </div>
+                <ArrowRight className="h-4 w-4 text-green-500" />
+              </a>
+
+              {/* Copyable UPI ID */}
+              <div className="flex flex-col gap-2">
+                <div className="text-sm font-medium text-gray-300">UPI ID:</div>
+                <div className="flex items-center gap-2 bg-white/10 px-3 py-2 rounded-lg">
+                  <span className="text-sm font-mono text-gray-300">vinusree@sbi</span>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 hover:bg-white/10"
+                    onClick={() => {
+                      navigator.clipboard.writeText("vinusree@sbi");
+                      toast({
+                        title: "UPI ID Copied",
+                        description: "UPI ID has been copied to clipboard",
+                      });
+                    }}
+                  >
+                    <Copy className="h-4 w-4 text-gray-400" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Payment Apps Links */}
+              <div className="flex flex-wrap gap-2">
+                <a
+                  href="phonepe://pay?pa=vinusree@sbi&pn=Vinushree%20Tours%20and%20Travels"
+                  className="flex items-center gap-2 px-4 py-2.5 bg-admin-gradient hover:opacity-90 rounded-lg transition-all duration-300 group"
+                >
+                  <span className="text-xs font-medium text-white">PhonePe</span>
+                  <ArrowRight className="h-3 w-3 text-white opacity-0 group-hover:opacity-100 transition-all" />
+                </a>
+                <a
+                  href="gpay://upi/pay?pa=vinusree@sbi&pn=Vinushree%20Tours%20and%20Travels"
+                  className="flex items-center gap-2 px-4 py-2.5 bg-admin-gradient hover:opacity-90 rounded-lg transition-all duration-300 group"
+                >
+                  <span className="text-xs font-medium text-white">Google Pay</span>
+                  <ArrowRight className="h-3 w-3 text-white opacity-0 group-hover:opacity-100 transition-all" />
+                </a>
+                <a
+                  href="paytmmp://pay?pa=vinusree@sbi&pn=Vinushree%20Tours%20and%20Travels"
+                  className="flex items-center gap-2 px-4 py-2.5 bg-admin-gradient hover:opacity-90 rounded-lg transition-all duration-300 group"
+                >
+                  <span className="text-xs font-medium text-white">Paytm</span>
+                  <ArrowRight className="h-3 w-3 text-white opacity-0 group-hover:opacity-100 transition-all" />
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -397,20 +397,27 @@ export default function AdminDashboard() {
                       key={lead._id}
                       className="flex items-center gap-4 p-4 bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg hover:shadow-md transition-all duration-200"
                     >
-                      <div className="w-12 h-12 bg-admin-gradient rounded-full flex items-center justify-center">
-                        <span className="text-white font-semibold text-sm">
+                      {/* Profile Avatar - Updated styling */}
+                      <div className="w-10 h-10 min-w-[40px] bg-admin-gradient rounded-full flex items-center justify-center overflow-hidden">
+                        <span className="text-white font-medium text-xs leading-none">
                           {lead.fullName
                             .split(" ")
+                            .slice(0, 2) // Only take first two names
                             .map((n: string) => n[0])
-                            .join("")}
+                            .join("")
+                            .toUpperCase()}
                         </span>
                       </div>
-                      <div className="flex-1">
-                        <p className="font-semibold text-gray-900">{lead.fullName}</p>
-                        <p className="text-sm text-gray-600">{lead.service}</p>
-                        <p className="text-xs text-gray-500">{lead.email}</p>
+
+                      {/* Lead Details - Added text truncation */}
+                      <div className="flex-1 min-w-0"> {/* Added min-w-0 to enable text truncation */}
+                        <p className="font-semibold text-gray-900 truncate">{lead.fullName}</p>
+                        <p className="text-sm text-gray-600 truncate">{lead.service}</p>
+                        <p className="text-xs text-gray-500 truncate">{lead.email}</p>
                       </div>
-                      <div className="text-right">
+
+                      {/* Status Badge - No changes needed */}
+                      <div className="text-right flex-shrink-0">
                         <Badge
                           variant={lead.status === "new" ? "default" : "secondary"}
                           className={

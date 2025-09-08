@@ -199,9 +199,14 @@ export default function ProfileInformation() {
       <div className="flex flex-col items-center space-y-4">
         <div className="relative">
           <Avatar className="w-24 h-24">
-            <AvatarImage src={profileData.avatar || "/placeholder.svg"} alt="Profile picture" />
-            <AvatarFallback className="bg-gradient-to-r from-amber-500 to-orange-600 text-white text-2xl font-bold">
-              {profileData.firstName.charAt(0)}{profileData.lastName.charAt(0)}
+            <AvatarImage 
+              src={profileData.avatar || "/placeholder.svg"} 
+              alt="Profile picture" 
+            />
+            <AvatarFallback className="bg-admin-gradient text-white text-xl font-semibold">
+              {profileData.firstName && profileData.lastName ? 
+                `${profileData.firstName[0]}${profileData.lastName[0]}`.toUpperCase() 
+                : 'VT'}
             </AvatarFallback>
           </Avatar>
           <label htmlFor="avatar-upload" className="absolute -bottom-2 -right-2">

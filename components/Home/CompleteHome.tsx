@@ -17,223 +17,7 @@ import { usePackages } from "@/hooks/use-packages"
 import { useContact } from "@/hooks/use-contact"
 import { Testimonials } from "./Testimonial"
 
-// Static data for travel business
-const staticBanners = [
-  {
-    _id: "1",
-    title: "Explore Beautiful Destinations",
-    subtitle:
-      "Professional travel services for all your needs. One-way trips, round trips, airport taxi, day rentals, and tour packages.",
-    image: "/kodaikanal-hill-station.png",
-    isActive: true,
-  },
-  {
-    _id: "2",
-    title: "Comfortable Journeys",
-    subtitle: "Experience safe and comfortable travel with our well-maintained vehicles and experienced drivers.",
-    image: "/luxury-taxi-service-in-tamil-nadu.png",
-    isActive: true,
-  },
-]
-
-const staticTariffServices = [
-  {
-    _id: "1",
-    title: "One-way Trip",
-    description: "Comfortable one-way travel to your destination with professional drivers",
-    image: "/toyota-innova-crysta-luxury-taxi.png",
-    pricing: { basePrice: 12, currency: "INR" },
-    features: ["Professional Driver", "Clean Vehicle", "On-time Service"],
-    isActive: true,
-    featured: true,
-  },
-  {
-    _id: "2",
-    title: "Round Trip",
-    description: "Complete round trip service with flexible timing and comfortable travel",
-    image: "/toyota-innova-taxi.png",
-    pricing: { basePrice: 20, currency: "INR" },
-    features: ["Flexible Timing", "Wait Time Included", "Return Journey"],
-    isActive: true,
-    featured: true,
-  },
-  {
-    _id: "3",
-    title: "Airport Taxi",
-    description: "Reliable airport pickup and drop services available 24/7",
-    image: "/airport-taxi.png",
-    pricing: { basePrice: 15, currency: "INR" },
-    features: ["24/7 Available", "Flight Tracking", "Meet & Greet"],
-    isActive: true,
-    featured: true,
-  },
-  {
-    _id: "4",
-    title: "Day Rental",
-    description: "Full day vehicle rental for local sightseeing and business trips",
-    image: "/maruti-brezza-suv-taxi.png",
-    pricing: { basePrice: 2500, currency: "INR" },
-    features: ["8 Hours Service", "Local Sightseeing", "Fuel Included"],
-    isActive: true,
-    featured: false,
-  },
-  {
-    _id: "5",
-    title: "Hourly Package",
-    description: "Flexible hourly rental service for short trips and quick errands",
-    image: "/wagon-r-taxi.png",
-    pricing: { basePrice: 300, currency: "INR" },
-    features: ["Minimum 2 Hours", "Flexible Timing", "City Limits"],
-    isActive: true,
-    featured: false,
-  },
-  {
-    _id: "6",
-    title: "Tour Package",
-    description: "Complete tour packages to popular destinations in Tamil Nadu",
-    image: "/tempo-traveller-12-seater.png",
-    pricing: { basePrice: 5000, currency: "INR" },
-    features: ["Multi-day Tours", "Accommodation Help", "Local Guide"],
-    isActive: true,
-    featured: false,
-  },
-]
-
-// Static testimonials data for travel business (fallback)
-const staticTestimonials = [
-  {
-    _id: "1",
-    name: "Rajesh Kumar",
-    location: "Chennai",
-    avatar: "",
-    content: "Excellent service! The driver was punctual and the vehicle was very clean and comfortable. Highly recommend Vinushree Tours for reliable travel.",
-    rating: 5,
-    servicesType: "Airport Taxi",
-    status: "published",
-  },
-  {
-    _id: "2",
-    name: "Priya Sharma",
-    location: "Coimbatore",
-    avatar: "",
-    content: "Had a wonderful trip to Ooty with Vinushree Tours. The team was professional and the pricing was very reasonable. Will definitely book again!",
-    rating: 5,
-    servicesType: "Tour Package",
-    status: "published",
-  },
-  {
-    _id: "3",
-    name: "Arun Krishnan",
-    location: "Madurai",
-    avatar: "",
-    content: "Best travel service in Tamil Nadu. Highly recommend for family trips and business travel. Safe, comfortable, and reliable service every time.",
-    rating: 5,
-    servicesType: "Round Trip",
-    status: "published",
-  },
-  {
-    _id: "4",
-    name: "Meera Patel",
-    location: "Trichy",
-    avatar: "",
-    content: "Amazing experience with their tour packages. The Kodaikanal trip was perfectly organized and the driver was very knowledgeable about local places.",
-    rating: 5,
-    servicesType: "Tour Package - Kodaikanal",
-    status: "published",
-  },
-  {
-    _id: "5",
-    name: "Suresh Babu",
-    location: "Salem",
-    avatar: "",
-    content: "Used their airport taxi service multiple times. Always on time, clean vehicles, and professional drivers. Excellent customer service!",
-    rating: 5,
-    servicesType: "Airport Taxi",
-    status: "published",
-  },
-  {
-    _id: "6",
-    name: "Lakshmi Devi",
-    location: "Tirunelveli",
-    avatar: "",
-    content: "Booked their day rental for local sightseeing. The driver was courteous and helped us visit all the places we wanted. Great value for money!",
-    rating: 5,
-    servicesType: "Day Rental",
-    status: "published",
-  },
-]
-
-const staticPackages = [
-  {
-    _id: "1",
-    title: "Kodaikanal Hill Station",
-    description: "Experience the beauty of Kodaikanal with our 2-day tour package",
-    image: "/kodaikanal-lake-and-hills-scenic-view.png",
-    duration: "2 Days",
-    price: 7500,
-    destinations: ["Kodaikanal", "Berijam Lake", "Coaker's Walk"],
-    highlights: ["Hill Station", "Lake Views", "Pleasant Weather"],
-    isActive: true,
-  },
-  {
-    _id: "2",
-    title: "Ooty Queen of Hills",
-    description: "Discover the charm of Ooty with our comprehensive tour package",
-    image: "/ooty-hills-tea-gardens.png",
-    duration: "3 Days",
-    price: 12000,
-    destinations: ["Ooty", "Coonoor", "Kotagiri"],
-    highlights: ["Tea Gardens", "Toy Train", "Botanical Garden"],
-    isActive: true,
-  },
-  {
-    _id: "3",
-    title: "Rameswaram Pilgrimage",
-    description: "Sacred pilgrimage tour to Rameswaram temple and surrounding areas",
-    image: "/rameswaram-temple.png",
-    duration: "2 Days",
-    price: 6500,
-    destinations: ["Rameswaram", "Dhanushkodi", "Pamban Bridge"],
-    highlights: ["Temple Visit", "Beach Views", "Spiritual Journey"],
-    isActive: true,
-  },
-  {
-    _id: "4",
-    title: "Madurai Temple City",
-    description: "Explore the historic temples and culture of Madurai",
-    image: "/madurai-meenakshi-temple.png",
-    duration: "1 Day",
-    price: 2500,
-    destinations: ["Meenakshi Temple", "Thirumalai Nayakkar Palace", "Gandhi Museum"],
-    highlights: ["Ancient Temples", "Rich History", "Cultural Heritage"],
-    isActive: true,
-  },
-  {
-    _id: "5",
-    title: "Kodaikanal Pillar Rocks",
-    description: "Visit the famous Pillar Rocks and scenic viewpoints in Kodaikanal",
-    image: "/pillar-rocks-kodaikanal.png",
-    duration: "2 Days",
-    price: 5500,
-    destinations: ["Pillar Rocks", "Bryant Park", "Coaker's Walk"],
-    highlights: ["Rock Formations", "Valley Views", "Cool Climate"],
-    isActive: true,
-  },
-  {
-    _id: "6",
-    title: "Thirumalai Palace Tour",
-    description: "Explore the magnificent Thirumalai Nayakkar Palace in Madurai",
-    image: "/thirumalai-nayakkar-palace.png",
-    duration: "1 Day",
-    price: 3500,
-    destinations: ["Thirumalai Palace", "Gandhi Museum", "Local Markets"],
-    highlights: ["Royal Architecture", "Historical Sites", "Cultural Experience"],
-    isActive: true,
-  },
-]
-
 export default function CompleteHome() {
-  const [currentBanner, setCurrentBanner] = useState(0)
   const { banner, isLoading } = useBanner("home") // dynamic hero banner for Home
   const { tariffData } = useTariff() // dynamic tariff services
   const { packagesData } = usePackages() // dynamic packages
@@ -241,33 +25,19 @@ export default function CompleteHome() {
   const [testimonials, setTestimonials] = useState([])
   const [testimonialsLoading, setTestimonialsLoading] = useState(true)
 
-  // Auto-rotate banners (only if no dynamic banner; otherwise no rotation needed)
-  useEffect(() => {
-    if (!banner && staticBanners.length > 1) {
-      const interval = setInterval(() => {
-        setCurrentBanner((prev) => (prev + 1) % staticBanners.length)
-      }, 5000)
-      return () => clearInterval(interval)
-    }
-  }, [banner])
-
   // Fetch testimonials
   useEffect(() => {
     const fetchTestimonials = async () => {
       try {
+        setTestimonialsLoading(true)
         const response = await fetch('/api/admin/testimonial?status=published')
         const result = await response.json()
         
         if (result.success) {
           setTestimonials(result.data)
-        } else {
-          // Use static testimonials as fallback
-          setTestimonials(staticTestimonials)
         }
       } catch (error) {
         console.error('Error fetching testimonials:', error)
-        // Use static testimonials as fallback
-        setTestimonials(staticTestimonials)
       } finally {
         setTestimonialsLoading(false)
       }
@@ -296,21 +66,230 @@ export default function CompleteHome() {
     window.open(`tel:${phoneNumber}`, "_self")
   }
 
+  // Update service cards rendering
+  const renderServices = () => {
+    if (!tariffData?.length) {
+      return <div className="text-center">No services available</div>
+    }
+
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:gap-10">
+        {tariffData.slice(0, 6).map((service, index) => (
+          <motion.div
+            key={service._id}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: index * 0.1 }}
+            viewport={{ once: true }}
+          >
+            <Card className="group hover:shadow-2xl transition-all duration-300 border-0 shadow-lg hover:scale-105">
+              <CardContent className="p-0">
+                <div className="relative h-48 overflow-hidden rounded-t-lg">
+                  <Image
+                    src={service.image || "/placeholder.svg"}
+                    alt={service.vehicleName}
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/20" />
+                  <div className="absolute top-4 right-4">
+                    <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm">
+                      ₹{service.oneWayRate ? service.oneWayRate.replace(/[₹$]/g, '').replace(/per\s*km/gi, '').replace(/\/km/gi, '').trim() : 'N/A'}+
+                    </Badge>
+                  </div>
+                  {service.featured && (
+                    <div className="absolute top-4 left-4">
+                      <Badge className="bg-green-500 text-white">
+                        ⭐ Featured
+                      </Badge>
+                    </div>
+                  )}
+                </div>
+                <div className="p-4 sm:p-6 md:p-8">
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3 md:mb-4">
+                    {service.vehicleName}
+                  </h3>
+                  <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4 md:mb-6 line-clamp-2">
+                    {service.description}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <Button
+                      onClick={() => handleBookNow(service.vehicleName)}
+                      className="bg-admin-gradient text-white hover:opacity-90 text-sm sm:text-base py-2 sm:py-2.5"
+                    >
+                      Book Now
+                    </Button>
+                    <Link
+                      href="/tariff"
+                      className="text-admin-primary hover:text-admin-secondary transition-colors font-medium text-xs sm:text-sm"
+                    >
+                      View Details
+                      <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 ml-1 inline" />
+                    </Link>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+    )
+  }
+
+  // Update packages rendering
+  const renderPackages = () => {
+    if (!packagesData?.length) {
+      return <div className="text-center">No packages available</div>
+    }
+
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:gap-10">
+        {packagesData.slice(0, 6).map((pkg, index) => (
+          <motion.div
+            key={pkg._id}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: index * 0.1 }}
+            viewport={{ once: true }}
+          >
+            <Card className="group hover:shadow-2xl transition-all duration-300 border-0 shadow-lg hover:scale-105 h-full">
+              <CardContent className="p-0 h-full flex flex-col">
+                <div className="relative h-48 overflow-hidden rounded-t-lg">
+                  <Image src={pkg.image || "/placeholder.svg"} alt={pkg.title} fill className="object-cover" />
+                  <div className="absolute inset-0 bg-black/20" />
+                  <div className="absolute top-4 right-4">
+                    <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm">
+                      {pkg.duration}
+                    </Badge>
+                  </div>
+                  {pkg.featured && (
+                    <div className="absolute top-4 left-4">
+                      <Badge className="bg-green-500 text-white">
+                        ⭐ Bestseller
+                      </Badge>
+                    </div>
+                  )}
+                </div>
+                <div className="p-4 sm:p-6 md:p-8 flex flex-col flex-grow">
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3 md:mb-4">
+                    {pkg.title}
+                  </h3>
+                  <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4 md:mb-6 line-clamp-2 flex-grow">
+                    {pkg.description}
+                  </p>
+                  <div className="flex items-center justify-between mb-3 sm:mb-4">
+                    <span className="text-lg sm:text-xl md:text-2xl font-bold text-admin-primary">
+                      {pkg.price}
+                    </span>
+                    <div className="flex items-center text-yellow-500">
+                      <Star className="h-4 w-4 fill-current" />
+                      <Star className="h-4 w-4 fill-current" />
+                      <Star className="h-4 w-4 fill-current" />
+                      <Star className="h-4 w-4 fill-current" />
+                      <Star className="h-4 w-4 fill-current" />
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between mt-auto">
+                    <Button
+                      onClick={() => handleBookPackage(pkg.title)}
+                      className="bg-admin-gradient text-white hover:opacity-90 text-sm sm:text-base py-2 sm:py-2.5"
+                    >
+                      Book Now
+                    </Button>
+                    <Link
+                      href={pkg.slug ? `/packages/${pkg.slug}` : "/packages"}
+                      className="text-admin-primary hover:text-admin-secondary transition-colors font-medium text-xs sm:text-sm"
+                    >
+                      View Details
+                      <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 ml-1 inline" />
+                    </Link>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+    )
+  }
+
+  // Update testimonials rendering
+  const renderTestimonials = () => {
+    if (testimonialsLoading) {
+      return (
+        <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-gradient-to-br from-gray-50 to-white">
+          <div className="container mx-auto px-4 sm:px-6 md:px-8 max-w-7xl">
+            <motion.div
+              className="text-center mb-12 sm:mb-16 md:mb-20"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              viewport={{ once: true }}
+            >
+              <Badge className="mb-4 sm:mb-6 bg-admin-gradient text-white px-4 sm:px-6 py-1.5 sm:py-2 text-xs sm:text-sm">
+                Client Reviews
+              </Badge>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4 sm:mb-6 md:mb-8 px-2">
+                What Our Customers
+                <span className="block text-transparent bg-clip-text bg-admin-gradient">Say About Us</span>
+              </h2>
+              <div className="flex justify-center items-center min-h-[200px]">
+                <div className="flex flex-col items-center gap-4">
+                  <div className="w-12 h-12 border-4 border-admin-primary border-t-transparent rounded-full animate-spin"></div>
+                  <p className="text-gray-500 text-sm sm:text-base animate-pulse">Loading testimonials...</p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+      )
+    }
+
+    if (!testimonials?.length) {
+      return null; // Don't show the section if there are no testimonials
+    }
+
+    return <Testimonials testimonials={testimonials} />
+  }
+
   return (
     <div className="min-h-screen">
       {/* Hero Section with Banner Images */}
       <section className="relative flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0">
-          <div className="absolute inset-0 opacity-100 transition-opacity duration-700">
-            <Image
-              src={banner?.status === "active" && banner?.image ? banner.image : "/placeholder.svg"}
-              alt={banner?.title || "Home banner"}
-              fill
-              className={`object-cover ${isLoading ? 'opacity-0' : 'opacity-100'}`}
-              priority
-            />
+          <div className="absolute inset-0">
+            {/* Image Layer */}
+            <div className="absolute inset-0 opacity-100 transition-opacity duration-700">
+              <Image
+                src={banner?.status === "active" && banner?.image ? banner.image : "/placeholder.svg"}
+                alt={banner?.title || "Home banner"}
+                fill
+                className={`object-cover ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+                priority
+              />
+            </div>
+            
+            {/* Dark Overlay Layer */}
             <div className="absolute inset-0 bg-black/50" />
+            
+            {/* Gradient Overlay Layer */}
+            <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/50 to-transparent" />
+            
+            {/* Admin Gradient Layer */}
             <div className="absolute inset-0 bg-admin-gradient/20" />
+            
+            {/* Optional: Animated Gradient Layer */}
+            <motion.div
+              className="absolute inset-0 bg-gradient-to-tr from-yellow-600/20 via-transparent to-orange-600/20"
+              animate={{
+                opacity: [0.2, 0.4, 0.2],
+              }}
+              transition={{
+                duration: 8,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "easeInOut",
+              }}
+            />
           </div>
         </div>
 
@@ -373,18 +352,12 @@ export default function CompleteHome() {
           </div>
         </div>
 
-        {/* Banner Indicators - show only when using static rotation */}
-        {!banner && staticBanners.length > 1 && (
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
-            {staticBanners.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentBanner(index)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  index === currentBanner ? "bg-white" : "bg-white/50"
-                }`}
-              />
-            ))}
+        {/* Replace the old banner indicators with a simple loading or no-banner indicator */}
+        {!banner && !isLoading && (
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+            <div className="px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full">
+              <p className="text-white/80 text-sm">No banner available</p>
+            </div>
           </div>
         )}
       </section>
@@ -736,66 +709,7 @@ export default function CompleteHome() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:gap-10">
-            {(tariffData.length > 0 ? tariffData.slice(0, 6) : staticTariffServices).map((service, index) => (
-              <motion.div
-                key={service._id || service.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <Card className="group hover:shadow-2xl transition-all duration-300 border-0 shadow-lg hover:scale-105">
-                  <CardContent className="p-0">
-                    <div className="relative h-48 overflow-hidden rounded-t-lg">
-                      <Image
-                        src={service.image || "/placeholder.svg"}
-                        alt={service.vehicleName || service.title}
-                        fill
-                        className="object-cover"
-                      />
-                      <div className="absolute inset-0 bg-black/20" />
-                      <div className="absolute top-4 right-4">
-                        <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm">
-                          ₹{service.oneWayRate ? service.oneWayRate.replace(/[₹$]/g, '').replace(/per\s*km/gi, '').replace(/\/km/gi, '').trim() : service.pricing?.basePrice}+
-                        </Badge>
-                      </div>
-                      {service.featured && (
-                        <div className="absolute top-4 left-4">
-                          <Badge className="bg-green-500 text-white">
-                            ⭐ Featured
-                          </Badge>
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-4 sm:p-6 md:p-8">
-                      <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3 md:mb-4">
-                        {service.vehicleName || service.title}
-                      </h3>
-                      <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4 md:mb-6 line-clamp-2">
-                        {service.description}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <Button
-                          onClick={() => handleBookNow(service.vehicleName || service.title)}
-                          className="bg-admin-gradient text-white hover:opacity-90 text-sm sm:text-base py-2 sm:py-2.5"
-                        >
-                          Book Now
-                        </Button>
-                        <Link
-                          href="/tariff"
-                          className="text-admin-primary hover:text-admin-secondary transition-colors font-medium text-xs sm:text-sm"
-                        >
-                          View Details
-                          <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 ml-1 inline" />
-                        </Link>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
+          {renderServices()}
 
           <div className="text-center mt-12">
             <Link href="/tariff">
@@ -830,73 +744,7 @@ export default function CompleteHome() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:gap-10">
-            {(packagesData.length > 0 ? packagesData.slice(0, 6) : staticPackages).map((pkg, index) => (
-              <motion.div
-                key={pkg._id || pkg.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <Card className="group hover:shadow-2xl transition-all duration-300 border-0 shadow-lg hover:scale-105 h-full">
-                  <CardContent className="p-0 h-full flex flex-col">
-                    <div className="relative h-48 overflow-hidden rounded-t-lg">
-                      <Image src={pkg.image || "/placeholder.svg"} alt={pkg.title} fill className="object-cover" />
-                      <div className="absolute inset-0 bg-black/20" />
-                      <div className="absolute top-4 right-4">
-                        <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm">
-                          {pkg.duration}
-                        </Badge>
-                      </div>
-                      {pkg.featured && (
-                        <div className="absolute top-4 left-4">
-                          <Badge className="bg-green-500 text-white">
-                            ⭐ Bestseller
-                          </Badge>
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-4 sm:p-6 md:p-8 flex flex-col flex-grow">
-                      <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3 md:mb-4">
-                        {pkg.title}
-                      </h3>
-                      <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4 md:mb-6 line-clamp-2 flex-grow">
-                        {pkg.description}
-                      </p>
-                      <div className="flex items-center justify-between mb-3 sm:mb-4">
-                        <span className="text-lg sm:text-xl md:text-2xl font-bold text-admin-primary">
-                          {pkg.price}
-                        </span>
-                        <div className="flex items-center text-yellow-500">
-                          <Star className="h-4 w-4 fill-current" />
-                          <Star className="h-4 w-4 fill-current" />
-                          <Star className="h-4 w-4 fill-current" />
-                          <Star className="h-4 w-4 fill-current" />
-                          <Star className="h-4 w-4 fill-current" />
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between mt-auto">
-                        <Button
-                          onClick={() => handleBookPackage(pkg.title)}
-                          className="bg-admin-gradient text-white hover:opacity-90 text-sm sm:text-base py-2 sm:py-2.5"
-                        >
-                          Book Now
-                        </Button>
-                        <Link
-                          href={pkg.slug ? `/packages/${pkg.slug}` : "/packages"}
-                          className="text-admin-primary hover:text-admin-secondary transition-colors font-medium text-xs sm:text-sm"
-                        >
-                          View Details
-                          <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 ml-1 inline" />
-                        </Link>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
+          {renderPackages()}
 
           <div className="text-center mt-12">
             <Link href="/packages">
@@ -913,7 +761,7 @@ export default function CompleteHome() {
       <PopularRoutes showAll={true} />
 
       {/* Dynamic Testimonials Section */}
-      <Testimonials testimonials={testimonials} />
+      {renderTestimonials()}
 
       {/* CTA Section */}
       <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-admin-gradient relative overflow-hidden">

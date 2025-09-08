@@ -201,10 +201,15 @@ export default function PopularRoutes({ showAll = false, limit = 12 }: PopularRo
                 <Button
                   onClick={() => handleBookRoute(route.name)}
                   variant="outline"
-                  className="w-full h-auto p-3 sm:p-4 text-center border-2 border-gray-200 hover:border-admin-primary hover:bg-admin-gradient hover:text-white transition-all duration-300 text-sm sm:text-base font-medium text-gray-700 rounded-lg flex flex-col items-center gap-2"
+                  className="w-full h-full min-h-[80px] p-3 sm:p-4 text-center border-2 border-gray-200 
+                      hover:border-admin-primary hover:bg-admin-gradient hover:text-white 
+                      transition-all duration-300 text-xs sm:text-sm font-medium text-gray-700 
+                      rounded-lg flex flex-col items-center justify-center gap-2 overflow-hidden"
                 >
-                  <Car className="h-4 w-4 sm:h-5 sm:w-5" />
-                  {route.name}
+                  <Car className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+                  <span className="line-clamp-2 text-center break-words">
+    {route.name}
+  </span>
                 </Button>
               </motion.div>
             ))}
