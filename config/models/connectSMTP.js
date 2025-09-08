@@ -52,22 +52,22 @@ export const sendTestEmail = async (smtpConfig, testEmailData) => {
     const mailOptions = {
       from: `"${smtpConfig.fromName}" <${smtpConfig.fromEmail}>`,
       to: testEmailData.email,
-      subject: 'SMTP Test Email - Filigree Solutions',
+      subject: 'SMTP Test Email - Vinushree Tours & Travels',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #2563eb;">SMTP Test Email</h2>
+          <h2 style="color: #F59E0B;">SMTP Test Email</h2>
           <p><strong>From:</strong> ${smtpConfig.fromName}</p>
           <p><strong>Message:</strong></p>
-          <div style="background-color: #f8fafc; padding: 15px; border-radius: 8px; margin: 15px 0;">
+          <div style="background-color: #FEF3C7; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #F59E0B;">
             ${testEmailData.message}
           </div>
           <p style="color: #6b7280; font-size: 14px;">
-            This is a test email sent from Filigree Solutions admin panel to verify SMTP configuration.
+            This is a test email sent from Vinushree Tours & Travels admin panel to verify SMTP configuration.
           </p>
           <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;">
           <p style="color: #9ca3af; font-size: 12px;">
             Sent at: ${new Date().toLocaleString()}<br>
-            From: Filigree Solutions Admin Panel
+            From: Vinushree Tours & Travels Admin Panel
           </p>
         </div>
       `

@@ -195,11 +195,11 @@ export async function POST() {
 
     const defaultTheme = {
       id: "default",
-      siteName: "Filigree Solutions",
-      logo: null,
+      siteName: "Vinushree Tours & Travels",
+      logo: "/vinushree-tours-logo.png",
       favicon: null,
-      primaryColor: "#2563eb",
-      secondaryColor: "#9333ea",
+      primaryColor: "#F59E0B", // Gold color for travel theme
+      secondaryColor: "#1F2937", // Dark navy/black color for travel theme
       gradientDirection: "135deg",
       isActive: true,
       lastUpdated: new Date()

@@ -23,13 +23,23 @@ import {
   Phone,
   PanelLeftClose,
   PanelLeft,
+  MapPin,
 } from "lucide-react"
 import { Suspense } from "react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import Image from "next/image"
 import { Toaster } from "@/components/ui/toaster"
 import { useTheme } from "@/components/providers/theme"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import axios from "axios"
+
+interface AdminProfile {
+  firstName: string
+  lastName: string
+  email: string
+  avatar: string
+  role: string
+}
 
 
 export default function AdminLayout({
@@ -40,6 +50,7 @@ export default function AdminLayout({
   const { themeData } = useTheme()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [adminProfile, setAdminProfile] = useState<AdminProfile | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(() => {
     // Initialize from localStorage if available, default to true
     if (typeof window !== 'undefined') {
@@ -96,9 +107,29 @@ export default function AdminLayout({
     return () => window.removeEventListener('resize', handleResize)
   }, [sidebarOpen])
 
+  // Fetch admin profile data
+  const fetchAdminProfile = async () => {
+    try {
+      const token = localStorage.getItem("admin_token")
+      if (!token) return
+
+      const response = await axios.get("/api/admin/profile", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+      if (response.data.success) {
+        setAdminProfile(response.data.admin)
+      }
+    } catch (error) {
+      console.error("Failed to fetch admin profile:", error)
+    }
+  }
+
   useEffect(() => {
     // Check authentication status
-    const checkAuth = () => {
+    const checkAuth = async () => {
       const token = localStorage.getItem("admin_token")
       const publicPaths = [
         "/admin/login",
@@ -108,6 +139,8 @@ export default function AdminLayout({
 
       if (token) {
         setIsAuthenticated(true)
+        // Fetch admin profile data when authenticated
+        await fetchAdminProfile()
       } else {
         setIsAuthenticated(false)
         // Only redirect to login if not on a public path
@@ -123,6 +156,20 @@ export default function AdminLayout({
 
     return () => clearTimeout(timer)
   }, [pathname, router])
+
+  // Listen for profile updates (when user updates profile in settings)
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      fetchAdminProfile()
+    }
+
+    // Listen for custom profile update event
+    window.addEventListener('adminProfileUpdated', handleProfileUpdate)
+    
+    return () => {
+      window.removeEventListener('adminProfileUpdated', handleProfileUpdate)
+    }
+  }, [])
 
   useEffect(() => {
     // Auto-expand Page Manager if we're on any of its sub-pages
@@ -186,6 +233,12 @@ export default function AdminLayout({
       color: "text-red-600",
     },
     {
+      name: "Location Manager",
+      href: "/admin/locations",
+      icon: <MapPin className="h-5 w-5" />,
+      color: "text-emerald-600",
+    },
+    {
       name: "Theme Settings",
       href: "/admin/theme",
       icon: <Palette className="h-5 w-5" />,
@@ -216,7 +269,7 @@ export default function AdminLayout({
             </div>
           ) : (
             <div className="w-16 h-16 bg-admin-gradient rounded-2xl flex items-center justify-center mx-auto mb-4 animate-pulse">
-              <span className="text-white font-bold text-2xl">F</span>
+              <span className="text-white font-bold text-2xl">V</span>
             </div>
           )}
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-admin-primary mx-auto mb-2"></div>
@@ -287,7 +340,7 @@ export default function AdminLayout({
               )}
               <div>
                 <span className="font-bold text-lg text-gray-900">Admin Panel</span>
-                <div className="text-xs text-gray-500">{themeData?.siteName || "Filigree Solutions"}</div>
+                <div className="text-xs text-gray-500">{themeData?.siteName || "Vinushree Tours"}</div>
               </div>
             </div>
           </div>
@@ -376,13 +429,16 @@ export default function AdminLayout({
           <div className="p-6 border-t border-gray-200 flex-shrink-0">
             <div className="flex items-center mb-4 p-3 bg-gray-50 rounded-lg">
               <Avatar className="h-8 w-8">
+                <AvatarImage src={adminProfile?.avatar || "/placeholder.svg"} alt="Admin avatar" />
                 <AvatarFallback className="bg-admin-gradient text-white font-semibold text-sm">
-                  A
+                  {adminProfile ? `${adminProfile.firstName.charAt(0)}${adminProfile.lastName.charAt(0)}` : 'A'}
                 </AvatarFallback>
               </Avatar>
               <div className="ml-3">
-                <div className="font-semibold text-gray-900 text-sm">Admin User</div>
-                <div className="text-xs text-gray-500">Administrator</div>
+                <div className="font-semibold text-gray-900 text-sm">
+                  {adminProfile ? `${adminProfile.firstName} ${adminProfile.lastName}` : 'Admin User'}
+                </div>
+                <div className="text-xs text-gray-500">{adminProfile?.role || 'Administrator'}</div>
               </div>
             </div>
             <Button
@@ -433,11 +489,13 @@ export default function AdminLayout({
                                 ? "Testimonial Manager"
                                 : pathname === "/admin/leads"
                                   ? "Lead Manager"
-                                  : pathname === "/admin/theme"
-                                    ? "Theme Settings"
-                                    : pathname === "/admin/profile"
-                                      ? "Profile Settings"
-                                      : "Admin Panel"}
+                                  : pathname === "/admin/locations"
+                                    ? "Location Manager"
+                                    : pathname === "/admin/theme"
+                                      ? "Theme Settings"
+                                      : pathname === "/admin/profile"
+                                        ? "Profile Settings"
+                                        : "Admin Panel"}
                 </h1>
                 <p className="text-sm text-gray-500">Manage your website content</p>
               </div>
@@ -451,8 +509,9 @@ export default function AdminLayout({
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
                 >
                   <Avatar className="h-8 w-8">
+                    <AvatarImage src={adminProfile?.avatar || "/placeholder.svg"} alt="Admin avatar" />
                     <AvatarFallback className="bg-admin-gradient text-white text-sm font-semibold">
-                      A
+                      {adminProfile ? `${adminProfile.firstName.charAt(0)}${adminProfile.lastName.charAt(0)}` : 'A'}
                     </AvatarFallback>
                   </Avatar>
                   <ChevronDown 

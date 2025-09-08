@@ -18,9 +18,9 @@ import {
   Linkedin,
   Instagram,
   Youtube,
-  MessageCircle,
   Send,
 } from "lucide-react";
+import { WhatsAppIcon } from "@/components/ui/whatsapp-icon";
 
 export default function ContactPage() {
   const { toast } = useToast();
@@ -33,7 +33,6 @@ export default function ContactPage() {
     secondaryPhone: "",
     whatsappNumber: "",
     email: "",
-    supportEmail: "",
     address: "",
     city: "",
     state: "",
@@ -42,7 +41,6 @@ export default function ContactPage() {
 
     // Business Hours
     businessHours: "",
-    emergencyContact: "",
 
     // Social Media Links
     facebook: "",
@@ -70,59 +68,58 @@ export default function ContactPage() {
     bookingHours: "",
   });
 
-  // Initialize with sample data for Vinushree Tours & Travels
+  // Fetch contact information from API
   useEffect(() => {
-    // Set sample data for demo - replace with API call later
-    setContactInfo({
-      primaryPhone: "+91 98765 43210",
-      secondaryPhone: "+91 87654 32109",
-      whatsappNumber: "+91 98765 43210",
-      email: "info@vinushreetours.com",
-      supportEmail: "support@vinushreetours.com",
-      address: "123 Main Street, Anna Nagar",
-      city: "Chennai",
-      state: "Tamil Nadu",
-      pincode: "600040",
-      country: "India",
-      businessHours: "24/7 Available",
-      emergencyContact: "+91 98765 43210",
-      facebook: "https://facebook.com/vinushreetours",
-      twitter: "https://twitter.com/vinushreetours",
-      linkedin: "https://linkedin.com/company/vinushreetours",
-      instagram: "https://instagram.com/vinushreetours",
-      youtube: "https://youtube.com/c/vinushreetours",
-      whatsapp: "https://wa.me/919876543210",
-      telegram: "https://t.me/vinushreetours",
-      mapEmbedCode: '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3886.8663..." width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>',
-      latitude: "13.0827",
-      longitude: "80.2707",
-      pageTitle: "Get in Touch with Vinushree Tours & Travels",
-      pageDescription: "Ready to explore Tamil Nadu? Contact us for the best travel packages, taxi services, and tour arrangements. We're here to make your journey memorable!",
-      officeTitle: "Visit Our Office in Chennai, Tamil Nadu",
-      officeDescription: "Located in the heart of Chennai, our office is easily accessible and our team is ready to assist you with all your travel needs.",
-      servicesOffered: "One-way trips, Round trips, Airport Taxi, Day rentals, Hourly packages, Local pickup/drop, Tour packages",
-      coverageAreas: "Chennai, Bangalore, Madurai, Coimbatore, Ooty, Kodaikanal, Pondicherry, Trichy, Salem, Tirunelveli",
-      bookingHours: "24/7 Online Booking Available"
-    });
-    setIsLoading(false);
-  }, []);
+    const fetchContactInfo = async () => {
+      try {
+        const response = await fetch('/api/admin/contact');
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+          setContactInfo(result.data);
+        }
+      } catch (error) {
+        console.error('Error fetching contact info:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load contact information",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchContactInfo();
+  }, [toast]);
 
   const handleSave = async () => {
     try {
       setIsSaving(true);
       
-      // Simulate API call - replace with actual API later
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast({
-        title: "Contact Information Updated",
-        description: "All contact information has been successfully saved.",
+      const response = await fetch('/api/admin/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(contactInfo),
       });
+
+      const result = await response.json();
+
+      if (result.success) {
+        toast({
+          title: "Contact Information Updated",
+          description: "All contact information has been successfully saved.",
+        });
+      } else {
+        throw new Error(result.message || 'Failed to save contact information');
+      }
     } catch (error) {
       console.error("Error saving contact info:", error);
       toast({
         title: "Error",
-        description: "Failed to save contact information",
+        description: error instanceof Error ? error.message : "Failed to save contact information",
         variant: "destructive",
       });
     } finally {
@@ -229,21 +226,8 @@ export default function ContactPage() {
             </div>
 
             <div>
-              <Label htmlFor="emergencyContact" className="text-base font-semibold">
-                Emergency Contact
-              </Label>
-              <Input
-                id="emergencyContact"
-                value={contactInfo.emergencyContact}
-                onChange={(e) => handleInputChange("emergencyContact", e.target.value)}
-                placeholder="+91 98765 43210"
-                className="mt-2"
-              />
-            </div>
-
-            <div>
               <Label htmlFor="email" className="text-base font-semibold">
-                Primary Email *
+                Email Address *
               </Label>
               <Input
                 id="email"
@@ -251,20 +235,6 @@ export default function ContactPage() {
                 value={contactInfo.email}
                 onChange={(e) => handleInputChange("email", e.target.value)}
                 placeholder="info@vinushreetours.com"
-                className="mt-2"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="supportEmail" className="text-base font-semibold">
-                Support Email
-              </Label>
-              <Input
-                id="supportEmail"
-                type="email"
-                value={contactInfo.supportEmail}
-                onChange={(e) => handleInputChange("supportEmail", e.target.value)}
-                placeholder="support@vinushreetours.com"
                 className="mt-2"
               />
             </div>
@@ -511,7 +481,7 @@ export default function ContactPage() {
                   htmlFor="whatsapp"
                   className="text-base font-semibold flex items-center gap-2"
                 >
-                  <MessageCircle className="h-4 w-4 text-green-600" />
+                  <WhatsAppIcon className="h-4 w-4 text-green-600" />
                   WhatsApp Business URL
                 </Label>
                 <Input

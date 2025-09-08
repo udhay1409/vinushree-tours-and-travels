@@ -218,7 +218,7 @@ export default function AdminLogin() {
               <Sparkles className="h-4 w-4 text-yellow-300 absolute -top-1 -right-1" />
             </div>
             <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent mb-2">
-              Filigree Solutions
+              Vinushree Tours
             </h1>
             <p className="text-blue-200 text-lg">Admin Portal</p>
           </motion.div>
@@ -347,7 +347,7 @@ export default function AdminLogin() {
             animate={{ opacity: 1 }}
             transition={{ delay: 1.2 }}
           >
-            <p className="text-blue-200 text-sm">© 2025 Filigree Solutions. All rights reserved.</p>
+            <p className="text-blue-200 text-sm">© 2025 Vinushree Tours & Travels. All rights reserved.</p>
           </motion.div>
         </motion.div>
       </div>

@@ -1,96 +1,133 @@
 import { NextRequest, NextResponse } from "next/server";
-import connectDB from "@/config/models/connectDB";
 import SEO from "@/config/utils/admin/seo/seoSchema";
+import connectDB from "@/config/models/connectDB";
 
-// GET - Fetch all SEO pages
+// GET - Fetch all SEO data
 export async function GET() {
   try {
     await connectDB();
+    
+    // Check if SEO data exists, if not create default data (only once)
+    let seoData = await SEO.find({}).sort({ lastUpdated: -1 });
+    
+    if (seoData.length === 0) {
+      // Create default SEO data if none exists - using upsert to prevent duplicates
+      const defaultSEOData = [
+        {
+          id: "home",
+          pageName: "Home Page",
+          title: "Vinushree Tours & Travels - Best Taxi Services in Tamil Nadu",
+          description: "Book reliable taxi services, tour packages, and travel solutions across Tamil Nadu. One-way trips, round trips, airport taxi, and tour packages available 24/7.",
+          keywords: "taxi service tamil nadu, tour packages, airport taxi, vinushree tours, chennai taxi, bangalore taxi, travel services, one way trip, round trip",
+          lastUpdated: new Date(),
+          isActive: true,
+        },
+        {
+          id: "about",
+          pageName: "About Us",
+          title: "About Vinushree Tours & Travels - Your Trusted Travel Partner",
+          description: "Learn about Vinushree Tours & Travels, your trusted travel partner in Tamil Nadu. We provide reliable taxi services, tour packages, and travel solutions since 2020.",
+          keywords: "about vinushree tours, travel company tamil nadu, trusted taxi service, travel partner, company history, reliable transport",
+          lastUpdated: new Date(),
+          isActive: true,
+        },
+        {
+          id: "tariff",
+          pageName: "Tariff Page",
+          title: "Taxi Tariff & Pricing - Vinushree Tours & Travels",
+          description: "Check our competitive taxi tariff and pricing for one-way trips, round trips, airport taxi, and hourly packages. Transparent pricing with no hidden charges.",
+          keywords: "taxi tariff, taxi pricing, one way taxi rates, round trip rates, airport taxi charges, hourly package rates, transparent pricing",
+          lastUpdated: new Date(),
+          isActive: true,
+        },
+        {
+          id: "packages",
+          pageName: "Packages Page",
+          title: "Tour Packages Tamil Nadu - Ooty, Kodaikanal, Chennai Tours",
+          description: "Explore our exciting tour packages for Ooty, Kodaikanal, Chennai, and other Tamil Nadu destinations. Complete packages with accommodation and sightseeing.",
+          keywords: "tour packages tamil nadu, ooty tour package, kodaikanal tour, chennai tour, hill station packages, south india tours, travel packages",
+          lastUpdated: new Date(),
+          isActive: true,
+        },
+        {
+          id: "contact",
+          pageName: "Contact Us",
+          title: "Contact Vinushree Tours & Travels - Book Your Taxi Now",
+          description: "Contact Vinushree Tours & Travels for taxi booking, tour packages, and travel inquiries. Available 24/7 for all your travel needs across Tamil Nadu.",
+          keywords: "contact vinushree tours, taxi booking, travel inquiry, phone number, whatsapp booking, 24/7 service, customer support",
+          lastUpdated: new Date(),
+          isActive: true,
+        },
+      ];
 
-    // The auto-seeding will happen automatically when the schema is loaded
-    const seoPages = await SEO.find({ isActive: true })
-      .sort({ lastUpdated: -1 })
-      .lean();
+      // Use bulkWrite with upsert to prevent duplicates
+      const bulkOps = defaultSEOData.map(item => ({
+        updateOne: {
+          filter: { id: item.id },
+          update: { $setOnInsert: item },
+          upsert: true
+        }
+      }));
 
-    return NextResponse.json(
-      {
-        success: true,
-        data: seoPages,
-        message: "SEO pages fetched successfully",
-      },
-      { status: 200 }
-    );
+      await SEO.bulkWrite(bulkOps);
+      seoData = await SEO.find({}).sort({ lastUpdated: -1 });
+      console.log("✅ SEO data initialized with default values");
+    }
+    
+    return NextResponse.json({
+      success: true,
+      data: seoData,
+    });
   } catch (error) {
-    console.error("Error fetching SEO pages:", error);
+    console.error("Error fetching SEO data:", error);
     return NextResponse.json(
-      {
-        success: false,
-        message: "Failed to fetch SEO pages",
-        error: error instanceof Error ? error.message : "Unknown error",
-      },
+      { success: false, error: "Failed to fetch SEO data" },
       { status: 500 }
     );
   }
 }
 
-// PUT - Update existing SEO page
+// PUT - Update SEO data
 export async function PUT(request: NextRequest) {
   try {
     await connectDB();
-
     const body = await request.json();
-    const { id, pageName, title, description, keywords } = body;
+    const { id, title, description, keywords } = body;
 
-    // Validate required fields
-    if (!id) {
+    if (!id || !title || !description) {
       return NextResponse.json(
-        {
-          success: false,
-          message: "ID is required for updating",
-        },
+        { success: false, error: "Missing required fields" },
         { status: 400 }
       );
     }
 
-    // Find and update the SEO page
     const updatedSEO = await SEO.findOneAndUpdate(
       { id },
       {
-        ...(pageName && { pageName }),
-        ...(title && { title }),
-        ...(description && { description }),
-        ...(keywords !== undefined && { keywords }),
+        title,
+        description,
+        keywords: keywords || "",
         lastUpdated: new Date(),
       },
-      { new: true, runValidators: true }
+      { new: true }
     );
 
     if (!updatedSEO) {
       return NextResponse.json(
-        {
-          success: false,
-          message: "SEO page not found",
-        },
+        { success: false, error: "SEO page not found" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(
-      {
-        success: true,
-        data: updatedSEO,
-        message: "SEO page updated successfully",
-      },
-      { status: 200 }
-    );
+    return NextResponse.json({
+      success: true,
+      data: updatedSEO,
+      message: "SEO data updated successfully",
+    });
   } catch (error) {
-    console.error("Error updating SEO page:", error);
+    console.error("Error updating SEO data:", error);
     return NextResponse.json(
-      {
-        success: false,
-        message: "Failed to update SEO page",
-        error: error instanceof Error ? error.message : "Unknown error",
-      },
+      { success: false, error: "Failed to update SEO data" },
       { status: 500 }
     );
   }

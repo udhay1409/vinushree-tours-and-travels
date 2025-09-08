@@ -1,12 +1,29 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { BarChart3, Users, Settings, Plus, MapPin, Globe, Mail, Loader2, Package } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
+import { 
+  BarChart3, 
+  Users, 
+  Settings, 
+  Plus, 
+  MapPin, 
+  Globe, 
+  Mail, 
+  Loader2, 
+  Package,
+  RefreshCw,
+  AlertCircle,
+  TrendingUp,
+  CheckCircle,
+  Clock,
+  Star
+} from "lucide-react"
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -22,89 +39,180 @@ const staggerContainer = {
   },
 }
 
-export default function AdminDashboard() {
-  const [loadingAction, setLoadingAction] = useState<string | null>(null);
-  
-  interface Lead {
-    _id: string;
-    fullName: string;
-    email: string;
-    service: string;
-    status: string;
-    priority: string;
-    submittedAt: string;
-  }
+interface DashboardMetrics {
+  totalLeads: number;
+  thisMonthLeads: number;
+  thisWeekLeads: number;
+  leadsGrowth: number;
+  completedLeads: number;
+  pendingLeads: number;
+  completionRate: number;
+  totalTestimonials: number;
+  publishedTestimonials: number;
+  totalPackages: number;
+  activePackages: number;
+  totalTariffs: number;
+  activeTariffs: number;
+  totalLocations: number;
+  popularRoutes: number;
+}
 
-  interface DashboardData {
-    totalLeads: number;
-    totalEnquiries: number;
-    activePackages: number;
-    recentLeads: Lead[];
-  }
+interface RecentLead {
+  _id: string;
+  fullName: string;
+  email: string;
+  service: string;
+  status: string;
+  priority: string;
+  submittedAt: string;
+}
 
-  // Static data for now - will be replaced with API calls later
-  const dashboardData: DashboardData = {
-    totalLeads: 24,
-    totalEnquiries: 18,
-    activePackages: 12,
-    recentLeads: [
-      {
-        _id: "1",
-        fullName: "Rajesh Kumar",
-        email: "rajesh@email.com",
-        service: "Chennai to Bangalore One-way",
-        status: "new",
-        priority: "high",
-        submittedAt: "2024-01-15T10:30:00Z"
-      },
-      {
-        _id: "2", 
-        fullName: "Priya Sharma",
-        email: "priya@email.com",
-        service: "Airport Taxi - Chennai",
-        status: "contacted",
-        priority: "medium",
-        submittedAt: "2024-01-14T15:45:00Z"
-      },
-      {
-        _id: "3",
-        fullName: "Arun Vijay",
-        email: "arun@email.com", 
-        service: "Ooty Tour Package",
-        status: "new",
-        priority: "high",
-        submittedAt: "2024-01-13T09:20:00Z"
-      }
-    ]
+interface DashboardData {
+  metrics: DashboardMetrics;
+  recentLeads: RecentLead[];
+  analytics: {
+    leadsByStatus: { status: string; count: number }[];
+    leadsByService: { service: string; count: number }[];
   };
+}
+
+export default function AdminDashboard() {
+  const { toast } = useToast();
+  const [loadingAction, setLoadingAction] = useState<string | null>(null);
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Fetch dashboard data
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async (showRefreshToast = false) => {
+    try {
+      if (showRefreshToast) setRefreshing(true);
+      else setLoading(true);
+      
+      const response = await fetch('/api/admin/dashboard');
+      const result = await response.json();
+      
+      if (result.success) {
+        setDashboardData(result.data);
+        if (showRefreshToast) {
+          toast({
+            title: "Dashboard Updated",
+            description: "Latest data has been loaded successfully.",
+          });
+        }
+      } else {
+        throw new Error(result.message || 'Failed to fetch dashboard data');
+      }
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load dashboard data. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  const handleRefresh = () => {
+    fetchDashboardData(true);
+  };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-gray-400" />
+          <p className="text-gray-600">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!dashboardData) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <AlertCircle className="h-8 w-8 mx-auto mb-4 text-red-400" />
+          <p className="text-gray-600 mb-4">Failed to load dashboard data</p>
+          <Button onClick={() => fetchDashboardData()} variant="outline">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Try Again
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const { metrics, recentLeads } = dashboardData;
 
   const stats = [
     {
-      title: "Active Leads",
-      value: dashboardData.totalLeads.toString(),
-      change: "New",
-      trend: "up",
+      title: "Total Leads",
+      value: metrics.totalLeads.toString(),
+      change: `${metrics.leadsGrowth >= 0 ? '+' : ''}${metrics.leadsGrowth}%`,
+      trend: metrics.leadsGrowth >= 0 ? "up" : "down",
       icon: <Users className="h-6 w-6" />,
-      color: "text-green-600",
-      bgColor: "bg-green-100",
-    },
-    {
-      title: "No. of Enquiries",
-      value: dashboardData.totalEnquiries.toString(),
-      change: "Total",
-      trend: "up",
-      icon: <Mail className="h-6 w-6" />,
       color: "text-blue-600",
       bgColor: "bg-blue-100",
+      subtitle: "All time"
+    },
+    {
+      title: "This Month",
+      value: metrics.thisMonthLeads.toString(),
+      change: "New leads",
+      trend: "up",
+      icon: <TrendingUp className="h-6 w-6" />,
+      color: "text-green-600",
+      bgColor: "bg-green-100",
+      subtitle: "Current month"
+    },
+    {
+      title: "Completed",
+      value: metrics.completedLeads.toString(),
+      change: `${metrics.completionRate}% rate`,
+      trend: "up",
+      icon: <CheckCircle className="h-6 w-6" />,
+      color: "text-purple-600",
+      bgColor: "bg-purple-100",
+      subtitle: "Success rate"
+    },
+    {
+      title: "Pending",
+      value: metrics.pendingLeads.toString(),
+      change: "In progress",
+      trend: "neutral",
+      icon: <Clock className="h-6 w-6" />,
+      color: "text-orange-600",
+      bgColor: "bg-orange-100",
+      subtitle: "Awaiting action"
+    },
+    {
+      title: "Testimonials",
+      value: metrics.totalTestimonials.toString(),
+      change: `${metrics.publishedTestimonials} published`,
+      trend: "up",
+      icon: <Star className="h-6 w-6" />,
+      color: "text-yellow-600",
+      bgColor: "bg-yellow-100",
+      subtitle: "Customer reviews"
     },
     {
       title: "Active Packages",
-      value: dashboardData.activePackages.toString(),
-      change: "Active",
+      value: metrics.activePackages.toString(),
+      change: `${metrics.totalPackages} total`,
       trend: "up",
       icon: <Package className="h-6 w-6" />,
-      color: "text-purple-600",
-      bgColor: "bg-purple-100",
+      color: "text-indigo-600",
+      bgColor: "bg-indigo-100",
+      subtitle: "Tour packages"
     },
   ];
 
@@ -115,6 +223,22 @@ export default function AdminDashboard() {
       month: 'short',
       day: 'numeric'
     });
+  };
+
+  // Helper function to calculate time ago
+  const getTimeAgo = (date: string): string => {
+    const now = new Date();
+    const past = new Date(date);
+    const diffInMs = now.getTime() - past.getTime();
+    const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    const diffInDays = Math.floor(diffInHours / 24);
+
+    if (diffInMinutes < 1) return 'Just now';
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+    if (diffInHours < 24) return `${diffInHours}h ago`;
+    if (diffInDays < 7) return `${diffInDays}d ago`;
+    return formatDate(date);
   };
     
 
@@ -185,18 +309,33 @@ export default function AdminDashboard() {
             <div>
               <h1 className="text-4xl font-bold mb-2">Welcome to Vinushree Tours & Travels!</h1>
               <p className="text-blue-100 text-lg">Manage your travel services, packages, and customer inquiries.</p>
+              <div className="flex items-center gap-4 mt-4 text-sm text-blue-100">
+                <span>📊 {metrics.totalLeads} Total Leads</span>
+                <span>📦 {metrics.activePackages} Active Packages</span>
+                <span>⭐ {metrics.publishedTestimonials} Reviews</span>
+              </div>
             </div>
-            <div className="hidden md:block">
+            <div className="hidden md:flex flex-col items-center gap-2">
               <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
                 <BarChart3 className="h-12 w-12 text-white" />
               </div>
+              <Button 
+                onClick={handleRefresh}
+                disabled={refreshing}
+                variant="outline"
+                size="sm"
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              >
+                <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+                {refreshing ? 'Refreshing...' : 'Refresh'}
+              </Button>
             </div>
           </div>
         </motion.div>
 
         {/* Stats Grid */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-3 gap-6"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6"
           variants={staggerContainer}
           initial="initial"
           animate="animate"
@@ -219,7 +358,7 @@ export default function AdminDashboard() {
                   <div className="space-y-1">
                     <p className="text-3xl font-bold text-gray-900">{stat.value}</p>
                     <p className="text-sm text-gray-600 font-medium">{stat.title}</p>
-                    <p className="text-xs text-gray-500">vs last month</p>
+                    <p className="text-xs text-gray-500">{stat.subtitle}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -227,7 +366,7 @@ export default function AdminDashboard() {
           ))}
         </motion.div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid lg:grid-cols-3 gap-8">
           {/* Recent Leads */}
           <motion.div variants={fadeInUp} initial="initial" animate="animate">
             <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm h-full">
@@ -253,35 +392,101 @@ export default function AdminDashboard() {
               </CardHeader>
               <CardContent className="p-6">
                 <div className="space-y-4">
-                  {dashboardData.recentLeads.map((lead) => (
+                  {recentLeads.length > 0 ? recentLeads.map((lead) => (
                     <div
                       key={lead._id}
                       className="flex items-center gap-4 p-4 bg-gradient-to-r from-gray-50 to-blue-50 rounded-lg hover:shadow-md transition-all duration-200"
                     >
-                      <div className="w-12 h-12 bg-admin-gradient rounded-full flex items-center justify-center">
-                        <span className="text-white font-semibold text-sm">
+                      {/* Profile Avatar - Updated styling */}
+                      <div className="w-10 h-10 min-w-[40px] bg-admin-gradient rounded-full flex items-center justify-center overflow-hidden">
+                        <span className="text-white font-medium text-xs leading-none">
                           {lead.fullName
                             .split(" ")
+                            .slice(0, 2) // Only take first two names
                             .map((n: string) => n[0])
-                            .join("")}
+                            .join("")
+                            .toUpperCase()}
                         </span>
                       </div>
-                      <div className="flex-1">
-                        <p className="font-semibold text-gray-900">{lead.fullName}</p>
-                        <p className="text-sm text-gray-600">{lead.service}</p>
-                        <p className="text-xs text-gray-500">{lead.email}</p>
+
+                      {/* Lead Details - Added text truncation */}
+                      <div className="flex-1 min-w-0"> {/* Added min-w-0 to enable text truncation */}
+                        <p className="font-semibold text-gray-900 truncate">{lead.fullName}</p>
+                        <p className="text-sm text-gray-600 truncate">{lead.service}</p>
+                        <p className="text-xs text-gray-500 truncate">{lead.email}</p>
                       </div>
-                      <div className="text-right">
+
+                      {/* Status Badge - No changes needed */}
+                      <div className="text-right flex-shrink-0">
                         <Badge
                           variant={lead.status === "new" ? "default" : "secondary"}
-                          className={lead.status === "new" ? "bg-blue-100 text-blue-800" : ""}
+                          className={
+                            lead.status === "new" 
+                              ? "bg-blue-100 text-blue-800" 
+                              : lead.status === "completed"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-gray-100 text-gray-800"
+                          }
                         >
                           {lead.status}
                         </Badge>
-                        <p className="text-xs text-gray-500 mt-1">{formatDate(lead.submittedAt)}</p>
+                        <p className="text-xs text-gray-500 mt-1">{getTimeAgo(lead.submittedAt)}</p>
                       </div>
                     </div>
-                  ))}
+                  )) : (
+                    <div className="text-center py-8 text-gray-500">
+                      <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                      <p>No recent leads found</p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Analytics Overview */}
+          <motion.div variants={fadeInUp} initial="initial" animate="animate">
+            <Card className="shadow-xl border-0 bg-white/90 backdrop-blur-sm h-full">
+              <CardHeader className="bg-gradient-to-r from-green-50 to-teal-50">
+                <CardTitle className="flex items-center gap-2 text-admin-primary">
+                  <BarChart3 className="h-5 w-5" />
+                  Analytics Overview
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-4 bg-blue-50 rounded-lg">
+                      <p className="text-2xl font-bold text-blue-600">{metrics.totalLocations}</p>
+                      <p className="text-sm text-gray-600">Total Locations</p>
+                    </div>
+                    <div className="text-center p-4 bg-green-50 rounded-lg">
+                      <p className="text-2xl font-bold text-green-600">{metrics.popularRoutes}</p>
+                      <p className="text-sm text-gray-600">Popular Routes</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-4 bg-purple-50 rounded-lg">
+                      <p className="text-2xl font-bold text-purple-600">{metrics.totalTariffs}</p>
+                      <p className="text-sm text-gray-600">Total Tariffs</p>
+                    </div>
+                    <div className="text-center p-4 bg-orange-50 rounded-lg">
+                      <p className="text-2xl font-bold text-orange-600">{metrics.activeTariffs}</p>
+                      <p className="text-sm text-gray-600">Active Tariffs</p>
+                    </div>
+                  </div>
+                  <div className="pt-4 border-t">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600">Completion Rate</span>
+                      <span className="font-semibold text-green-600">{metrics.completionRate}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                      <div 
+                        className="bg-green-500 h-2 rounded-full transition-all duration-500" 
+                        style={{ width: `${metrics.completionRate}%` }}
+                      ></div>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>

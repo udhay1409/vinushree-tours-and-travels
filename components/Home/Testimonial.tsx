@@ -71,11 +71,11 @@ export const Testimonials = ({ testimonials = [] }: TestimonialsProps) => {
   const getScrollDistance = () => {
     if (typeof window !== "undefined") {
       const width = window.innerWidth;
-      if (width < 640) return 300; // Mobile: full card width + gap
-      if (width < 1024) return 340; // Tablet: card width + gap
-      return 360; // Desktop: card width + gap
+      if (width < 640) return 290; // Mobile: full card width + gap
+      if (width < 1024) return 330; // Tablet: card width + gap
+      return 350; // Desktop: card width + gap
     }
-    return 360; // Default for SSR
+    return 350; // Default for SSR
   };
 
   if (activeTestimonials.length === 0) {
@@ -96,7 +96,7 @@ export const Testimonials = ({ testimonials = [] }: TestimonialsProps) => {
   return (
     <section className="py-12 sm:py-16 md:py-20 lg:py-24 bg-white relative">
       <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-pink-50/50"></div>
-      <div className="container mx-auto px-3 sm:px-4 md:px-6 relative">
+      <div className="container mx-auto px-2 sm:px-4 md:px-6 relative">
         <motion.div
           className="text-center mb-12 sm:mb-16 md:mb-20"
           variants={fadeInUp}
@@ -120,16 +120,16 @@ export const Testimonials = ({ testimonials = [] }: TestimonialsProps) => {
         </motion.div>
 
         {/* Testimonials container with navigation arrows */}
-        <div className="relative overflow-hidden w-full p-3">
+        <div className="relative overflow-hidden w-full px-1 sm:px-3">
           {/* Previous Arrow */}
           <Button
             variant="outline"
             size="icon"
             onClick={goToPrevious}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/90 backdrop-blur-sm border-gray-200 shadow-lg hover:bg-white hover:shadow-xl transition-all duration-300 hover:scale-110"
+            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full bg-white/90 backdrop-blur-sm border-gray-200 shadow-lg hover:bg-white hover:shadow-xl transition-all duration-300 hover:scale-110"
             aria-label="Previous testimonial"
           >
-            <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700" />
+            <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-gray-700" />
           </Button>
 
           {/* Next Arrow */}
@@ -137,15 +137,15 @@ export const Testimonials = ({ testimonials = [] }: TestimonialsProps) => {
             variant="outline"
             size="icon"
             onClick={goToNext}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/90 backdrop-blur-sm border-gray-200 shadow-lg hover:bg-white hover:shadow-xl transition-all duration-300 hover:scale-110"
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full bg-white/90 backdrop-blur-sm border-gray-200 shadow-lg hover:bg-white hover:shadow-xl transition-all duration-300 hover:scale-110"
             aria-label="Next testimonial"
           >
-            <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 text-gray-700" />
+            <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5 text-gray-700" />
           </Button>
 
           {/* Testimonials slider */}
           <motion.div
-            className="flex gap-6"
+            className="flex gap-3 justify-center sm:gap-4 md:gap-6"
             animate={{
               x: -currentIndex * getScrollDistance(),
             }}
@@ -153,32 +153,35 @@ export const Testimonials = ({ testimonials = [] }: TestimonialsProps) => {
               duration: 0.8,
               ease: "easeInOut",
             }}
+            style={{
+              width: activeTestimonials.length <= 3 ? 'auto' : `${activeTestimonials.length * getScrollDistance()}px`
+            }}
           >
-            {/* Duplicate testimonials for seamless loop */}
-            {[...activeTestimonials, ...activeTestimonials].map(
+              {/* Show testimonials without duplication */}
+              {activeTestimonials.map(
               (testimonial, index) => (
                 <motion.div
-                  key={`${testimonial._id}-${index}`}
-                  className="flex-shrink-0 w-[280px] sm:w-[320px] lg:w-[340px]"
+                key={testimonial._id}
+                  className="flex-shrink-0 w-[270px] sm:w-[310px] lg:w-[330px]"
                   variants={fadeInUp}
                   initial="initial"
                   whileInView="animate"
                   viewport={{ once: true }}
                 >
                   <Card className="hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-0 shadow-md h-full">
-                    <CardContent className="p-6">
+                    <CardContent className="p-4 sm:p-6">
                       {/* Star Rating */}
-                      <div className="flex mb-4">
+                      <div className="flex mb-3 sm:mb-4">
                         {[...Array(testimonial.rating)].map((_, i) => (
                           <Star
                             key={i}
-                            className="h-4 w-4 text-yellow-400 fill-current"
+                            className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400 fill-current"
                           />
                         ))}
                       </div>
 
                       {/* Testimonial Content */}
-                      <p className="text-gray-600 mb-6 italic leading-relaxed text-sm sm:text-base line-clamp-4">
+                      <p className="text-gray-600 mb-4 sm:mb-6 italic leading-relaxed text-sm sm:text-base line-clamp-4">
                         "{testimonial.content}"
                       </p>
 
@@ -187,7 +190,7 @@ export const Testimonials = ({ testimonials = [] }: TestimonialsProps) => {
                         <img
                           src={testimonial.avatar || "/placeholder.svg"}
                           alt={testimonial.name}
-                          className="w-12 h-12 rounded-full mr-3 border-2 border-gray-200 object-cover flex-shrink-0"
+                          className="w-10 h-10 sm:w-12 sm:h-12 rounded-full mr-3 border-2 border-gray-200 object-cover flex-shrink-0"
                         />
                         <div className="min-w-0 flex-1">
                           <div className="font-semibold text-gray-900 text-sm sm:text-base">

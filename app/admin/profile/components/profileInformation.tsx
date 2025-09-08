@@ -3,11 +3,10 @@
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { Avatar, AvatarFallback  , AvatarImage } from "@/components/ui/avatar"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useToast } from "@/hooks/use-toast"
-import { Save, Shield, Calendar, Camera, Eye, EyeOff, Loader2 } from 'lucide-react'
+import { Save, Phone, Mail, Camera, Loader2, User } from 'lucide-react'
 import axios from "axios"
 
 interface ProfileData { 
@@ -107,6 +106,8 @@ export default function ProfileInformation() {
       )
 
       if (response.data.success) {
+        // Dispatch custom event to notify layout of profile update
+        window.dispatchEvent(new CustomEvent('adminProfileUpdated'))
         toast({
           title: "Success",
           description: "Your profile has been updated successfully",
@@ -175,6 +176,8 @@ export default function ProfileInformation() {
 
       if (response.data.success) {
         setProfileData(response.data.admin)
+        // Dispatch custom event to notify layout of profile update
+        window.dispatchEvent(new CustomEvent('adminProfileUpdated'))
         toast({
           title: "Success",
           description: "Profile picture updated successfully",
@@ -191,14 +194,19 @@ export default function ProfileInformation() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
       {/* Profile Picture Section */}
-      <div className="flex flex-col items-center space-y-4"> 
-        {/* <div className="relative">
+      <div className="flex flex-col items-center space-y-4">
+        <div className="relative">
           <Avatar className="w-24 h-24">
-            <AvatarImage src={profileData.avatar || "/placeholder.svg"} alt="Profile picture" />
-            <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-600 text-white text-2xl font-bold">
-              {profileData.firstName.charAt(0)}{profileData.lastName.charAt(0)}
+            <AvatarImage 
+              src={profileData.avatar || "/placeholder.svg"} 
+              alt="Profile picture" 
+            />
+            <AvatarFallback className="bg-admin-gradient text-white text-xl font-semibold">
+              {profileData.firstName && profileData.lastName ? 
+                `${profileData.firstName[0]}${profileData.lastName[0]}`.toUpperCase() 
+                : 'VT'}
             </AvatarFallback>
           </Avatar>
           <label htmlFor="avatar-upload" className="absolute -bottom-2 -right-2">
@@ -211,7 +219,7 @@ export default function ProfileInformation() {
             />
             <Button
               size="sm"
-              className="rounded-full w-8 h-8 p-0"
+              className="rounded-full w-8 h-8 p-0 bg-gradient-to-r from-amber-500 to-orange-600"
               type="button"
               asChild
             >
@@ -220,19 +228,20 @@ export default function ProfileInformation() {
               </span>
             </Button>
           </label>
-        </div> */}
-        {/* <div className="text-center">
+        </div>
+        <div className="text-center">
           <h3 className="text-lg font-semibold text-gray-900">
             {profileData.firstName} {profileData.lastName}
           </h3>
           <p className="text-gray-600">{profileData.role}</p>
-        </div> */}
+        </div>
       </div>
 
       {/* Basic Information */}
       <div className="space-y-6">
-        <h4 className="text-lg font-semibold bg-admin-gradient bg-clip-text text-transparent">
-          Basic Information
+        <h4 className="text-lg font-semibold bg-admin-gradient bg-clip-text text-transparent flex items-center gap-2">
+          <User className="h-5 w-5" />
+          Personal Information
         </h4>
         <div className="grid md:grid-cols-2 gap-6">
           <div>
@@ -258,7 +267,8 @@ export default function ProfileInformation() {
             />
           </div>
           <div>
-            <Label htmlFor="email" className="text-base font-semibold">
+            <Label htmlFor="email" className="text-base font-semibold flex items-center gap-2">
+              <Mail className="h-4 w-4" />
               Email Address *
             </Label>
             <Input
@@ -270,7 +280,8 @@ export default function ProfileInformation() {
             />
           </div>
           <div>
-            <Label htmlFor="phone" className="text-base font-semibold">
+            <Label htmlFor="phone" className="text-base font-semibold flex items-center gap-2">
+              <Phone className="h-4 w-4" />
               Phone Number
             </Label>
             <Input
@@ -286,7 +297,7 @@ export default function ProfileInformation() {
               className="mt-2"
             />
           </div>
-          <div>
+          <div className="md:col-span-2">
             <Label htmlFor="location" className="text-base font-semibold">
               Location
             </Label>
@@ -295,15 +306,11 @@ export default function ProfileInformation() {
               value={profileData.location}
               onChange={(e) => setProfileData({ ...profileData, location: e.target.value })}
               className="mt-2"
+              placeholder="Enter your location"
             />
           </div>
-        
         </div>
-        
-       
       </div>
-
-     
 
       {/* Save Button */}
       <div className="flex justify-end pt-6 border-t">

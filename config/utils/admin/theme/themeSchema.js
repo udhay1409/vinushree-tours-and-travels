@@ -13,7 +13,7 @@ const themeSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      default: "Filigree Solutions"
+      default: "Vinushree Tours & Travels"
     },
     logo: {
       type: String,
@@ -30,14 +30,14 @@ const themeSchema = new mongoose.Schema(
       required: true,
       trim: true,
       match: /^#[0-9A-F]{6}$/i,
-      default: "#2563eb"
+      default: "#F59E0B" // Gold color for travel theme
     },
     secondaryColor: {
       type: String,
       required: true,
       trim: true,
       match: /^#[0-9A-F]{6}$/i,
-      default: "#9333ea"
+      default: "#1F2937" // Dark navy/black color for travel theme
     },
     gradientDirection: {
       type: String,
@@ -63,14 +63,14 @@ themeSchema.index({ isActive: 1 });
 
 const Theme = mongoose.models.Theme || mongoose.model("Theme", themeSchema);
 
-// Default theme data
+// Default theme data for Vinushree Tours & Travels
 const defaultThemeData = {
   id: "default",
-  siteName: "Filigree Solutions",
-  logo: null,
+  siteName: "Vinushree Tours & Travels",
+  logo: "/vinushree-tours-logo.png",
   favicon: null,
-  primaryColor: "#2563eb",
-  secondaryColor: "#9333ea",
+  primaryColor: "#F59E0B", // Gold color for travel theme
+  secondaryColor: "#1F2937", // Dark navy/black color for travel theme
   gradientDirection: "135deg",
   isActive: true,
   lastUpdated: new Date()

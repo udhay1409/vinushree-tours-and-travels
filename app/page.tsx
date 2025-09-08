@@ -2,102 +2,126 @@
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import CompleteHome from "@/components/Home/CompleteHome";
+import FloatingContactButtons from "@/components/FloatingContactButtons";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Filigree Solutions - Advanced CAD & CAE Services | Engineering Excellence',
-  description: 'Leading provider of CAD, CAE, structural analysis, and engineering simulation services across India. Expert solutions for automotive, telecom, and industrial sectors.',
-  keywords: 'CAD services, CAE analysis, structural analysis, 3D modeling, engineering simulation, FEA, automotive engineering, telecom analysis'
+  title: 'Vinushree Tours & Travels - Premium Travel Services',
+  description: 'Experience premium travel services with Vinushree Tours & Travels. Offering one-way trips, round trips, airport taxi, day rentals, hourly packages, and tour packages.',
+  keywords: 'travel services, tour packages, airport taxi, day rental, one way trip, round trip, Vinushree Tours'
 };
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
-
-// Server-side data fetching functions
-async function getServicesData() {
-  const baseUrl =
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:3000"
-      : process.env.APP_URL || "http://localhost:3000";
-
-  try {
-    const response = await fetch(`${baseUrl}/api/admin/services`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      next: { revalidate: 0 },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+// Static data for travel services
+const staticTravelData = {
+  packages: [
+    {
+      id: 1,
+      title: "Chennai to Mahabalipuram",
+      description: "Explore the UNESCO World Heritage sites and beautiful beaches",
+      image: "/images/mahabalipuram.jpg",
+      duration: "1 Day",
+      price: "₹2,500",
+      featured: true
+    },
+    {
+      id: 2,
+      title: "Ooty Hill Station Tour",
+      description: "Experience the Queen of Hills with scenic beauty and pleasant weather",
+      image: "/images/ooty.jpg",
+      duration: "2 Days",
+      price: "₹8,500",
+      featured: true
+    },
+    {
+      id: 3,
+      title: "Kodaikanal Nature Tour",
+      description: "Discover the Princess of Hill Stations with lakes and valleys",
+      image: "/images/kodaikanal.jpg",
+      duration: "2 Days",
+      price: "₹7,500",
+      featured: true
     }
-
-    const data = await response.json();
-
-    // Filter for featured and active services
-    const featuredServices =
-      data.data?.filter(
-        (service: any) =>
-          service.status === "active" && service.featured === true
-      ) || [];
-
-    return { services: featuredServices };
-  } catch (error) {
-    console.error("Error fetching services data:", error);
-    return { services: [] };
-  }
-}
-
-async function getTestimonialsData() {
-  const baseUrl =
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:3000"
-      : process.env.APP_URL || "http://localhost:3000";
-
-  try {
-    const response = await fetch(`${baseUrl}/api/admin/testimonial`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      next: { revalidate: 0 },
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+  ],
+  tariff: [
+    {
+      id: 1,
+      service: "One-way Trip",
+      description: "Comfortable one-way travel to your destination",
+      price: "₹12/km",
+      image: "/images/one-way.jpg"
+    },
+    {
+      id: 2,
+      service: "Round Trip",
+      description: "Complete round trip with waiting time included",
+      price: "₹10/km",
+      image: "/images/round-trip.jpg"
+    },
+    {
+      id: 3,
+      service: "Airport Taxi",
+      description: "Reliable airport pickup and drop services",
+      price: "₹15/km",
+      image: "/images/airport-taxi.jpg"
+    },
+    {
+      id: 4,
+      service: "Day Rental",
+      description: "Full day vehicle rental for local sightseeing",
+      price: "₹2,500/day",
+      image: "/images/day-rental.jpg"
     }
+  ],
+  banners: [
+    {
+      id: 1,
+      title: "Explore Tamil Nadu",
+      subtitle: "Your Journey Begins Here",
+      image: "/images/banner1.jpg"
+    },
+    {
+      id: 2,
+      title: "Comfortable Travel",
+      subtitle: "Safe & Reliable Service",
+      image: "/images/banner2.jpg"
+    }
+  ]
+};
 
-    const data = await response.json();
-
-    // Get all testimonials
-    const testimonials = data.data || [];
-
-    return { testimonials };
-  } catch (error) {
-    console.error("Error fetching testimonials data:", error);
-    return { testimonials: [] };
+const staticTestimonials = [
+  {
+    id: 1,
+    name: "Rajesh Kumar",
+    location: "Chennai",
+    rating: 5,
+    comment: "Excellent service! The driver was punctual and the vehicle was very clean and comfortable.",
+    image: "/images/testimonial1.jpg"
+  },
+  {
+    id: 2,
+    name: "Priya Sharma",
+    location: "Coimbatore",
+    rating: 5,
+    comment: "Had a wonderful trip to Ooty. The team was professional and the pricing was very reasonable.",
+    image: "/images/testimonial2.jpg"
+  },
+  {
+    id: 3,
+    name: "Arun Krishnan",
+    location: "Madurai",
+    rating: 5,
+    comment: "Best travel service in Tamil Nadu. Highly recommend for family trips and business travel.",
+    image: "/images/testimonial3.jpg"
   }
-}
+];
 
-// Server Component (default)
-export default async function HomePage() {
-  // Fetch data on the server
-  const [servicesResult, testimonialsResult] = await Promise.allSettled([
-    getServicesData(),
-    getTestimonialsData(),
-  ]);
-
-  const services =
-    servicesResult.status === "fulfilled" ? servicesResult.value.services : [];
-  const testimonials =
-    testimonialsResult.status === "fulfilled"
-      ? testimonialsResult.value.testimonials
-      : [];
-
+export default function HomePage() {
   return (
     <div className="min-h-screen">
       <Navbar />
-      <CompleteHome services={services} testimonials={testimonials} />
+      <CompleteHome />
       <Footer />
+      <FloatingContactButtons />
     </div>
   );
 }

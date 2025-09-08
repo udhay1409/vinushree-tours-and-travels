@@ -10,62 +10,100 @@ const leadSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: true,
+      required: false,
       trim: true,
       match: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      default: "",
     },
     phone: {
       type: String,
-      trim: true,
-      default: "",
-    },
-    company: {
-      type: String,
-      trim: true,
-      default: "",
-    },
-
-    // Service Information
-    service: {
-      type: String,
       required: true,
       trim: true,
     },
 
-    // Project Details
+    // Travel Service Information
+    serviceType: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    travelDate: {
+      type: String,
+      required: true,
+    },
+    travelTime: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    returnDate: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    pickupLocation: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    dropLocation: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    passengers: {
+      type: Number,
+      default: 1,
+      min: 1,
+      max: 20,
+    },
+
+    // Customer Message
     message: {
       type: String,
       required: true,
       trim: true,
     },
-    projectDescription: {
-      type: String,
-      trim: true,
-      default: "",
-    },
-    additionalRequirements: {
-      type: String,
-      trim: true,
-      default: "",
-    },
 
     // Lead Management
     status: {
       type: String,
-      enum: ["new", "contacted", "qualified", "converted", "closed"],
+      enum: ["new", "contacted", "confirmed", "completed", "cancelled"],
       default: "new",
     },
     priority: {
       type: String,
       enum: ["low", "medium", "high"],
-      default: "high",
+      default: "medium",
     },
 
-    // Form Source Tracking
-    formSource: {
+    // Lead Source Tracking
+    source: {
       type: String,
-      enum: ["quotation", "contact", "lead", "brochure"], // Changed "broucher" to "brochure"
-      required: true,
+      enum: ["website", "whatsapp", "phone", "referral"],
+      default: "website",
+    },
+
+    // Additional Fields
+    estimatedCost: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    notes: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    reviewLink: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    reviewToken: {
+      type: String,
+      trim: true,
+      default: "",
     },
 
     // Timestamps
@@ -87,7 +125,8 @@ const leadSchema = new mongoose.Schema(
 leadSchema.index({ email: 1 });
 leadSchema.index({ status: 1 });
 leadSchema.index({ priority: 1 });
-leadSchema.index({ formSource: 1 });
+leadSchema.index({ source: 1 });
+leadSchema.index({ serviceType: 1 });
 leadSchema.index({ submittedAt: -1 });
 
 // Update lastUpdated on save

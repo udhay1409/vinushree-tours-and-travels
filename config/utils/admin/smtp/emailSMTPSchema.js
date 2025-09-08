@@ -41,7 +41,7 @@ const emailSMTPSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      default: "Filigree Solutions"
+      default: "Vinushree Tours & Travels"
     },
     isActive: {
       type: Boolean,
@@ -79,7 +79,7 @@ const defaultSMTPData = {
   smtpUser: process.env.SMTP_USER || "",
   smtpPassword: process.env.SMTP_PASS || "",
   fromEmail: process.env.SMTP_FROM_EMAIL || "",
-  fromName: "Filigree Solutions",
+  fromName: "Vinushree Tours & Travels",
   isActive: true,
   testStatus: "never",
   lastUpdated: new Date()
@@ -89,7 +89,7 @@ const defaultSMTPData = {
 const autoSeedSMTP = async () => {
   try {
     const count = await EmailSMTP.countDocuments();
-    if (count === 0) {
+    if (count === 0 && process.env.SMTP_USER && process.env.SMTP_PASS && process.env.SMTP_FROM_EMAIL) {
       await EmailSMTP.create(defaultSMTPData);
       console.log("✅ SMTP database auto-seeded with default data");
     }

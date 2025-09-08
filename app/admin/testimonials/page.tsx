@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,6 +47,12 @@ import {
   Loader2
 } from "lucide-react";
 
+const fadeInUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.5 },
+};
+
 interface Testimonial {
   _id?: string;
   name: string;
@@ -53,7 +60,8 @@ interface Testimonial {
   avatar: string;
   content: string;
   rating: number;
-  serviceType: string;
+  serviceType?: string;
+  servicesType?: string;
   date: string;
   status: string;
   tripDetails?: string;
@@ -68,73 +76,114 @@ export default function TestimonialsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const scrollPositionRef = useRef<number>(0);
 
-  // Travel services for Vinushree Tours & Travels
-  const travelServices = [
-    "One-way Trip",
-    "Round Trip", 
-    "Airport Taxi",
-    "Day Rental",
-    "Hourly Package",
-    "Local Pickup/Drop",
-    "Tour Package - Ooty",
-    "Tour Package - Kodaikanal",
-    "Tour Package - Chennai",
-    "Tour Package - Bangalore",
-    "Corporate Travel",
-    "Wedding Transportation"
-  ];
+  // Dynamic testimonials and service types from API
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [serviceTypes, setServiceTypes] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [servicesLoading, setServicesLoading] = useState(true);
 
-  // Sample testimonials for Vinushree Tours & Travels
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([
-    {
-      _id: "1",
-      name: "Rajesh Kumar",
-      location: "Chennai, Tamil Nadu",
-      avatar: "/images/testimonials/rajesh.jpg",
-      content: "Excellent service from Vinushree Tours! The driver was punctual, professional, and the car was clean and comfortable. Used their airport taxi service and it was hassle-free. Highly recommended for reliable travel in Tamil Nadu.",
-      rating: 5,
-      serviceType: "Airport Taxi",
-      date: "2024-01-15",
-      status: "published",
-      tripDetails: "Chennai Airport to Anna Nagar"
-    },
-    {
-      _id: "2",
-      name: "Priya Sharma",
-      location: "Bangalore, Karnataka", 
-      avatar: "/images/testimonials/priya.jpg",
-      content: "Amazing Ooty tour package! Everything was well organized - accommodation, sightseeing, and transportation. The driver was knowledgeable about local attractions. Great value for money. Will definitely book again for our next family trip.",
-      rating: 5,
-      serviceType: "Tour Package - Ooty",
-      date: "2024-01-12",
-      status: "published",
-      tripDetails: "3 Days 2 Nights Ooty Package"
-    },
-    {
-      _id: "3",
-      name: "Arun Vijay",
-      location: "Madurai, Tamil Nadu",
-      avatar: "/images/testimonials/arun.jpg", 
-      content: "Used Vinushree Tours for our Chennai to Bangalore one-way trip. The booking process was smooth, driver was experienced, and the journey was comfortable. Fair pricing with no hidden charges. Trustworthy service!",
-      rating: 4,
-      serviceType: "One-way Trip",
-      date: "2024-01-10",
-      status: "published",
-      tripDetails: "Chennai to Bangalore"
-    },
-    {
-      _id: "4",
-      name: "Meera Nair",
-      location: "Coimbatore, Tamil Nadu",
-      avatar: "/images/testimonials/meera.jpg",
-      content: "Booked their day rental service for local sightseeing in Chennai. The driver was courteous and helped us plan our itinerary. Car was well-maintained and AC worked perfectly. Great service for tourists!",
-      rating: 5,
-      serviceType: "Day Rental", 
-      date: "2024-01-08",
-      status: "published",
-      tripDetails: "Chennai City Tour - 8 Hours"
+  // Fetch testimonials and service types from API
+  useEffect(() => {
+    fetchTestimonials();
+    fetchServiceTypes();
+  }, []);
+
+  const fetchTestimonials = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/admin/testimonial');
+      const result = await response.json();
+      
+      if (result.success) {
+        setTestimonials(result.data);
+      } else {
+        toast({
+          title: "Error",
+          description: "Failed to fetch testimonials",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching testimonials:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch testimonials",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
+
+  const fetchServiceTypes = async () => {
+    try {
+      setServicesLoading(true);
+      
+      // First try to get unique service types from existing testimonials
+      const testimonialsResponse = await fetch('/api/admin/testimonial');
+      const testimonialsResult = await testimonialsResponse.json();
+      
+      let uniqueServices: string[] = [];
+      
+      if (testimonialsResult.success && testimonialsResult.data) {
+        // Extract unique service types from testimonials
+        const servicesFromTestimonials = testimonialsResult.data
+          .map((t: any) => t.servicesType || t.serviceType)
+          .filter((s: string) => s && s.trim().length > 0)
+          .map((s: string) => s.trim());
+        
+        uniqueServices = [...new Set(servicesFromTestimonials)];
+      }
+      
+      // Then try to get services from contact info
+      const contactResponse = await fetch('/api/admin/contact');
+      const contactResult = await contactResponse.json();
+      
+      if (contactResult.success && contactResult.data?.servicesOffered) {
+        const servicesFromContact = contactResult.data.servicesOffered
+          .split(',')
+          .map((s: string) => s.trim())
+          .filter((s: string) => s.length > 0);
+        
+        // Combine both sources and remove duplicates
+        uniqueServices = [...new Set([...uniqueServices, ...servicesFromContact])];
+      }
+      
+      // If we have services from either source, use them
+      if (uniqueServices.length > 0) {
+        setServiceTypes(uniqueServices.sort());
+      } else {
+        // Fallback services
+        setServiceTypes([
+          "One-way Trip",
+          "Round Trip", 
+          "Airport Taxi",
+          "Day Rental",
+          "Hourly Package",
+          "Local Pickup/Drop",
+          "Tour Package",
+          "Corporate Travel",
+          "Wedding Transportation"
+        ]);
+      }
+    } catch (error) {
+      console.error('Error fetching service types:', error);
+      // Fallback services
+      setServiceTypes([
+        "One-way Trip",
+        "Round Trip", 
+        "Airport Taxi",
+        "Day Rental",
+        "Hourly Package",
+        "Local Pickup/Drop",
+        "Tour Package",
+        "Corporate Travel",
+        "Wedding Transportation"
+      ]);
+    } finally {
+      setServicesLoading(false);
+    }
+  };
 
   const [formData, setFormData] = useState({
     name: "",
@@ -165,7 +214,7 @@ export default function TestimonialsPage() {
       date: testimonial.date
         ? new Date(testimonial.date).toISOString().split("T")[0]
         : new Date().toISOString().split("T")[0],
-      serviceType: testimonial.serviceType || "",
+      serviceType: testimonial.serviceType || testimonial.servicesType || "",
       tripDetails: testimonial.tripDetails || "",
     });
 
@@ -197,38 +246,56 @@ export default function TestimonialsPage() {
         return;
       }
 
-      // Simulate API call - replace with actual API later
-      const testimonialData = {
-        ...formData,
-        date: formData.date || new Date().toISOString().split("T")[0],
-        avatar: previewUrl || formData.avatar,
-      };
+      // Prepare form data for API
+      const apiFormData = new FormData();
+      apiFormData.append('name', formData.name.trim());
+      apiFormData.append('location', formData.location.trim());
+      apiFormData.append('content', formData.content.trim());
+      apiFormData.append('rating', formData.rating.toString());
+      apiFormData.append('servicesType', formData.serviceType.trim());
+      apiFormData.append('date', formData.date || new Date().toISOString().split("T")[0]);
+      apiFormData.append('status', formData.status);
+      
+      if (selectedFile) {
+        apiFormData.append('avatar', selectedFile);
+      }
 
       if (editingId) {
-        // Update existing testimonial
-        setTestimonials(testimonials.map(t => 
-          t._id === editingId 
-            ? { ...t, ...testimonialData }
-            : t
-        ));
-        
-        toast({
-          title: "Testimonial Updated",
-          description: "Testimonial has been successfully updated.",
+        // Update existing testimonial - implement PUT endpoint
+        const response = await fetch(`/api/admin/testimonial/${editingId}`, {
+          method: 'PUT',
+          body: apiFormData,
         });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          await fetchTestimonials(); // Refresh the list
+          toast({
+            title: "Testimonial Updated",
+            description: "Testimonial has been successfully updated.",
+          });
+        } else {
+          throw new Error(result.message || 'Failed to update testimonial');
+        }
       } else {
         // Add new testimonial
-        const newTestimonial = {
-          _id: Date.now().toString(),
-          ...testimonialData,
-        };
-        
-        setTestimonials([newTestimonial, ...testimonials]);
-        
-        toast({
-          title: "Testimonial Added",
-          description: "New testimonial has been successfully added.",
+        const response = await fetch('/api/admin/testimonial', {
+          method: 'POST',
+          body: apiFormData,
         });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          await fetchTestimonials(); // Refresh the list
+          toast({
+            title: "Testimonial Added",
+            description: "New testimonial has been successfully added.",
+          });
+        } else {
+          throw new Error(result.message || 'Failed to add testimonial');
+        }
       }
 
       handleCancel();
@@ -250,12 +317,22 @@ export default function TestimonialsPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      setTestimonials(testimonials.filter(t => t._id !== id));
-      
-      toast({
-        title: "Testimonial Deleted",
-        description: "Testimonial has been successfully deleted.",
+      const response = await fetch(`/api/admin/testimonial/${id}`, {
+        method: 'DELETE',
       });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        await fetchTestimonials(); // Refresh the list
+        toast({
+          title: "Testimonial Deleted",
+          description: "Testimonial has been successfully deleted.",
+        });
+      } else {
+        throw new Error(result.message || 'Failed to delete testimonial');
+      }
+      
       setDeletingId(null);
     } catch (error: any) {
       console.error("Error deleting testimonial:", error);
@@ -360,7 +437,12 @@ export default function TestimonialsPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <motion.div 
+      className="space-y-8"
+      initial="initial"
+      animate="animate"
+      variants={fadeInUp}
+    >
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
@@ -604,11 +686,17 @@ export default function TestimonialsPage() {
                         <SelectValue placeholder="Select service type" />
                       </SelectTrigger>
                       <SelectContent>
-                        {travelServices.map((service) => (
-                          <SelectItem key={service} value={service}>
-                            {service}
-                          </SelectItem>
-                        ))}
+                        {servicesLoading ? (
+                          <SelectItem value="" disabled>Loading services...</SelectItem>
+                        ) : serviceTypes.length === 0 ? (
+                          <SelectItem value="" disabled>No services available</SelectItem>
+                        ) : (
+                          serviceTypes.map((service) => (
+                            <SelectItem key={service} value={service}>
+                              {service}
+                            </SelectItem>
+                          ))
+                        )}
                       </SelectContent>
                     </Select>
                     {isFormSubmitted && !formData.serviceType && (
@@ -707,7 +795,12 @@ export default function TestimonialsPage() {
       </div>
 
       {/* Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <motion.div 
+        className="grid grid-cols-1 md:grid-cols-4 gap-6"
+        initial="initial"
+        animate="animate"
+        variants={fadeInUp}
+      >
         <Card className="shadow-lg border-0">
           <CardContent className="p-6 text-center">
             <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
@@ -752,7 +845,7 @@ export default function TestimonialsPage() {
             <div className="text-gray-600 text-sm font-medium">5-Star Reviews</div>
           </CardContent>
         </Card>
-      </div>
+      </motion.div>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog
@@ -791,7 +884,23 @@ export default function TestimonialsPage() {
 
       {/* Testimonials List */}
       <div className="grid gap-6">
-        {testimonials.map((testimonial) => (
+        {loading || servicesLoading ? (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+            <span className="ml-2 text-gray-600">
+              {loading ? 'Loading testimonials...' : 'Loading services...'}
+            </span>
+          </div>
+        ) : testimonials.length === 0 ? (
+          <Card className="shadow-xl border-0">
+            <CardContent className="p-12 text-center">
+              <Users className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-600 mb-2">No Testimonials Found</h3>
+              <p className="text-gray-500">Start by adding your first customer testimonial.</p>
+            </CardContent>
+          </Card>
+        ) : (
+          testimonials.map((testimonial) => (
           <Card
             key={testimonial._id}
             className="shadow-xl border-0 overflow-hidden hover:shadow-2xl transition-all duration-300"
@@ -827,7 +936,7 @@ export default function TestimonialsPage() {
                       </p>
                       <div className="flex flex-wrap gap-2 mb-3">
                         <Badge className="bg-blue-100 text-blue-800 border-blue-200">
-                          {testimonial.serviceType}
+                          {testimonial.serviceType || testimonial.servicesType}
                         </Badge>
                         {testimonial.tripDetails && (
                           <Badge variant="outline" className="text-gray-600">
@@ -879,7 +988,8 @@ export default function TestimonialsPage() {
               </div>
             </CardContent>
           </Card>
-        ))}
+          ))
+        )}
       </div>
 
       {testimonials.length === 0 && (
@@ -902,6 +1012,6 @@ export default function TestimonialsPage() {
           </CardContent>
         </Card>
       )}
-    </div>
+    </motion.div>
   );
 }

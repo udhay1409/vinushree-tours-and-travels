@@ -3,7 +3,18 @@ import mongoose from "mongoose";
 const contactSchema = new mongoose.Schema(
   {
     // Basic Contact Information
-    phone: {
+    primaryPhone: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 20,
+    },
+    secondaryPhone: {
+      type: String,
+      trim: true,
+      maxlength: 20,
+    },
+    whatsappNumber: {
       type: String,
       required: true,
       trim: true,
@@ -47,6 +58,30 @@ const contactSchema = new mongoose.Schema(
       required: true,
       trim: true,
       maxlength: 50,
+    },
+    
+    // Business Information
+    businessHours: {
+      type: String,
+      trim: true,
+      maxlength: 100,
+    },
+    bookingHours: {
+      type: String,
+      trim: true,
+      maxlength: 100,
+    },
+    
+    // Travel Services Information
+    servicesOffered: {
+      type: String,
+      trim: true,
+      maxlength: 500,
+    },
+    coverageAreas: {
+      type: String,
+      trim: true,
+      maxlength: 500,
     },
     
     // Social Media Links
@@ -106,6 +141,16 @@ const contactSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    latitude: {
+      type: String,
+      trim: true,
+      maxlength: 20,
+    },
+    longitude: {
+      type: String,
+      trim: true,
+      maxlength: 20,
+    },
     
     // Contact Page Content
     pageTitle: {
@@ -142,7 +187,8 @@ const contactSchema = new mongoose.Schema(
 
 // Create indexes for better performance
 contactSchema.index({ email: 1 });
-contactSchema.index({ phone: 1 });
+contactSchema.index({ primaryPhone: 1 });
+contactSchema.index({ whatsappNumber: 1 });
 
 const Contact =
   mongoose.models.Contact ||
