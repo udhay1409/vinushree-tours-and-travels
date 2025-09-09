@@ -76,7 +76,7 @@ export default function CompleteHome() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:gap-10">
         {tariffData.slice(0, 6).map((service, index) => (
           <motion.div
-            key={service._id || service.id}
+            key={service._id}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: index * 0.1 }}
@@ -87,14 +87,14 @@ export default function CompleteHome() {
                 <div className="relative h-48 overflow-hidden rounded-t-lg">
                   <Image
                     src={service.image || "/placeholder.svg"}
-                    alt={service.vehicleName || service.title}
+                    alt={service.vehicleName}
                     fill
                     className="object-cover"
                   />
                   <div className="absolute inset-0 bg-black/20" />
                   <div className="absolute top-4 right-4">
                     <Badge className="bg-white/20 text-white border-white/30 backdrop-blur-sm">
-                      ₹{service.oneWayRate ? service.oneWayRate.replace(/[₹$]/g, '').replace(/per\s*km/gi, '').replace(/\/km/gi, '').trim() : service.pricing?.basePrice}+
+                      ₹{service.oneWayRate ? service.oneWayRate.replace(/[₹$]/g, '').replace(/per\s*km/gi, '').replace(/\/km/gi, '').trim() : 'N/A'}+
                     </Badge>
                   </div>
                   {service.featured && (
@@ -107,14 +107,14 @@ export default function CompleteHome() {
                 </div>
                 <div className="p-4 sm:p-6 md:p-8">
                   <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3 md:mb-4">
-                    {service.vehicleName || service.title}
+                    {service.vehicleName}
                   </h3>
                   <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4 md:mb-6 line-clamp-2">
                     {service.description}
                   </p>
                   <div className="flex items-center justify-between">
                     <Button
-                      onClick={() => handleBookNow(service.vehicleName || service.title)}
+                      onClick={() => handleBookNow(service.vehicleName)}
                       className="bg-admin-gradient text-white hover:opacity-90 text-sm sm:text-base py-2 sm:py-2.5"
                     >
                       Book Now
@@ -146,7 +146,7 @@ export default function CompleteHome() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:gap-10">
         {packagesData.slice(0, 6).map((pkg, index) => (
           <motion.div
-            key={pkg._id || pkg.id}
+            key={pkg._id}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: index * 0.1 }}
