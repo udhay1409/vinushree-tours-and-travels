@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/config/models/connectDB";
 import Tariff from "@/config/utils/admin/tariff/tariffSchema";
 import jwt from "jsonwebtoken";
-import { writeFile, mkdir, unlink } from "fs/promises";
-import path from "path";
+import { uploadToCloudinary, deleteFromCloudinary } from "@/config/utils/cloudinary"; // Add this import
 
 interface DecodedToken {
   adminId: string;
@@ -115,28 +114,22 @@ export async function PUT(
     const existingImage = formData.get("existingImage") as string;
 
     if (imageFile) {
-      // Delete old image if it exists and is not a placeholder
-      if (existingTariff.image && existingTariff.image.startsWith("/uploads/")) {
-        try {
-          const oldImagePath = path.join(process.cwd(), "public", existingTariff.image);
-          await unlink(oldImagePath);
-        } catch (error) {
-          console.log("Could not delete old image:", error);
-        }
+      try {
+        const bytes = await imageFile.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+        const folderPath = `tariff`;
+        const result = await uploadToCloudinary(buffer, folderPath);
+        imagePath = result.secure_url;
+      } catch (uploadError) {
+        console.error("Image upload failed:", uploadError);
+        return NextResponse.json(
+          {
+            success: false,
+            message: "Failed to upload image",
+          },
+          { status: 500 }
+        );
       }
-
-      // Upload new image
-      const bytes = await imageFile.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-
-      const uploadsDir = path.join(process.cwd(), "public", "uploads", "tariff");
-      await mkdir(uploadsDir, { recursive: true });
-
-      const filename = `${Date.now()}-${imageFile.name.replace(/[^a-zA-Z0-9.-]/g, "")}`;
-      const filepath = path.join(uploadsDir, filename);
-
-      await writeFile(filepath, buffer);
-      imagePath = `/uploads/tariff/${filename}`;
     } else if (existingImage) {
       imagePath = existingImage;
     }
@@ -216,15 +209,29 @@ export async function DELETE(
 
     const { id } = await params;
 
-    // Find and hard delete the tariff
-    const tariff = await Tariff.findByIdAndDelete(id);
-
+    // Find the tariff
+    const tariff = await Tariff.findOne({ _id: id, isDeleted: false });
     if (!tariff) {
       return NextResponse.json(
         { success: false, message: "Tariff service not found" },
         { status: 404 }
       );
     }
+
+    // Delete image from Cloudinary if it exists
+    if (tariff.image && tariff.image.includes('cloudinary.com')) {
+      try {
+        // Extract public_id from Cloudinary URL
+        const publicId = tariff.image.split('/').slice(-2).join('/').split('.')[0];
+        await deleteFromCloudinary(publicId);
+      } catch (error) {
+        console.error("Error deleting image from Cloudinary:", error);
+        // Continue with deletion even if image deletion fails
+      }
+    }
+
+    // Find and hard delete the tariff
+    await Tariff.findByIdAndDelete(id);
 
     return NextResponse.json({
       success: true,

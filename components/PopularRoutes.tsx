@@ -28,18 +28,18 @@ export default function PopularRoutes({ showAll = false, limit = 12 }: PopularRo
 
   // Fallback routes if API fails
   const fallbackRoutes = [
-    'Chennai Drop Taxi',
-    'Madurai Drop Taxi', 
-    'Coimbatore Drop Taxi',
-    'Kodaikanal Drop Taxi',
-    'Ooty Drop Taxi',
-    'Bangalore Drop Taxi',
-    'Kerala Drop Taxi',
-    'Salem Drop Taxi',
-    'Trichy Drop Taxi',
-    'Thanjavur Drop Taxi',
-    'Rameswaram Drop Taxi',
-    'Kanyakumari Drop Taxi'
+    'Chennai',
+    'Madurai', 
+    'Coimbatore',
+    'Kodaikanal',
+    'Ooty',
+    'Bangalore',
+    'Kerala',
+    'Salem',
+    'Trichy',
+    'Thanjavur',
+    'Rameswaram',
+    'Kanyakumari'
   ];
 
   // Fetch popular routes from API
@@ -50,14 +50,12 @@ export default function PopularRoutes({ showAll = false, limit = 12 }: PopularRo
         const result = await response.json();
         
         if (result.success) {
-          // Filter only popular routes, add "Drop Taxi" suffix, and sort by order
+          // Filter only popular routes and sort by order
           const routes = result.data
             .filter((location: PopularRoute) => location.isActive && location.isPopularRoute)
             .map((location: PopularRoute) => ({
               ...location,
-              name: location.name.toLowerCase().includes('taxi') 
-                ? location.name 
-                : `${location.name} Drop Taxi`
+              name: location.name.replace(/\s*drop\s*taxi/gi, '').trim()
             }))
             .sort((a: PopularRoute, b: PopularRoute) => a.order - b.order);
           setPopularRoutes(routes);
@@ -174,7 +172,7 @@ export default function PopularRoutes({ showAll = false, limit = 12 }: PopularRo
             </span>
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-white/90 max-w-xs sm:max-w-2xl md:max-w-3xl mx-auto px-2">
-            Book drop taxi services to popular destinations with professional drivers
+            Book taxi services to popular destinations with professional drivers
           </p>
         </motion.div>
 

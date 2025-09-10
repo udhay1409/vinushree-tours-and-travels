@@ -361,19 +361,6 @@ export default function ContactPage() {
                   className="mt-2"
                 />
               </div>
-              <div>
-                <Label htmlFor="coverageAreas" className="text-base font-semibold">
-                  Coverage Areas
-                </Label>
-                <Textarea
-                  id="coverageAreas"
-                  value={contactInfo.coverageAreas}
-                  onChange={(e) => handleInputChange("coverageAreas", e.target.value)}
-                  placeholder="Chennai, Bangalore, Madurai, Coimbatore, Ooty, Kodaikanal, Pondicherry, Trichy, Salem, Tirunelveli"
-                  rows={3}
-                  className="mt-2"
-                />
-              </div>
             </div>
           </div>
         </CardContent>

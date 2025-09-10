@@ -137,10 +137,11 @@ export async function PUT(
     
     // Check if maximum featured packages limit reached (3 featured packages max)
     if (body.featured && !existingPackage.featured) {
+      const { id } = await params;
       const existingFeaturedCount = await Package.countDocuments({ 
         featured: true, 
         isDeleted: false,
-        _id: { $ne: params.id }
+        _id: { $ne: id }
       });
       if (existingFeaturedCount >= 3) {
         return NextResponse.json(
@@ -154,7 +155,7 @@ export async function PUT(
     }
     
     // Validate required fields
-    const requiredFields = ['title', 'destination', 'shortDescription', 'fullDescription', 'duration', 'price'];
+    const requiredFields = ['title', 'destination'];
     for (const field of requiredFields) {
       if (!body[field] || body[field].toString().trim() === '') {
         return NextResponse.json(
@@ -165,6 +166,16 @@ export async function PUT(
           { status: 400 }
         );
       }
+    }
+
+    if (!body.image && !mainImageFile) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Package image is required",
+        },
+        { status: 400 }
+      );
     }
     
     // Generate slug from title
@@ -223,7 +234,7 @@ export async function PUT(
     
     // Update package
     const updatedPackage = await Package.findByIdAndUpdate(
-      params.id,
+      id,
       {
         ...body,
         slug,

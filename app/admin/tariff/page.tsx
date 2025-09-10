@@ -217,21 +217,15 @@ export default function TariffPage() {
     setIsFormSubmitted(true);
     setIsSaving(true);
 
-    // Validate required fields
+    // Validate required fields (only minimal required fields)
     if (
       !formData.vehicleType ||
       !formData.vehicleName ||
-      !formData.description ||
-      !formData.oneWayRate ||
-      !formData.roundTripRate ||
-      !formData.driverAllowance ||
-      !formData.minimumKmOneWay ||
-      !formData.minimumKmRoundTrip ||
       !formData.image
     ) {
       toast({
         title: "Validation Error",
-        description: "Please fill in all required fields.",
+        description: "Please fill in vehicle type, vehicle name, and upload an image.",
         variant: "destructive",
       });
       setIsSaving(false);
@@ -907,7 +901,7 @@ export default function TariffPage() {
 
                 <div>
                   <Label htmlFor="description" className="text-base font-semibold">
-                    Description <span className="text-red-500">*</span>
+                    Description <span className="text-gray-500">(Optional)</span>
                   </Label>
                   <Textarea
                     id="description"
@@ -920,17 +914,8 @@ export default function TariffPage() {
                     }
                     placeholder="Detailed description of the vehicle and its features"
                     rows={4}
-                    className={`mt-2 ${
-                      isFormSubmitted && !formData.description
-                        ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
-                        : ""
-                    }`}
+                    className="mt-2"
                   />
-                  {isFormSubmitted && !formData.description && (
-                    <p className="text-sm text-red-500 mt-1">
-                      Description is required
-                    </p>
-                  )}
                 </div>
               </div>
 
@@ -942,7 +927,7 @@ export default function TariffPage() {
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <Label htmlFor="oneWayRate" className="text-base font-semibold">
-                      One Way Rate <span className="text-red-500">*</span>
+                      One Way Rate <span className="text-gray-500">(Optional)</span>
                     </Label>
                     <Input
                       id="oneWayRate"
@@ -952,21 +937,12 @@ export default function TariffPage() {
                         setFormData({ ...formData, oneWayRate: e.target.value })
                       }
                       placeholder="14"
-                      className={`mt-2 ${
-                        isFormSubmitted && !formData.oneWayRate
-                          ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
-                          : ""
-                      }`}
+                      className="mt-2"
                     />
-                    {isFormSubmitted && !formData.oneWayRate && (
-                      <p className="text-sm text-red-500 mt-1">
-                        One way rate is required
-                      </p>
-                    )}
                   </div>
                   <div>
                     <Label htmlFor="roundTripRate" className="text-base font-semibold">
-                      Round Trip Rate <span className="text-red-500">*</span>
+                      Round Trip Rate <span className="text-gray-500">(Optional)</span>
                     </Label>
                     <Input
                       id="roundTripRate"
@@ -976,24 +952,15 @@ export default function TariffPage() {
                         setFormData({ ...formData, roundTripRate: e.target.value })
                       }
                       placeholder="13"
-                      className={`mt-2 ${
-                        isFormSubmitted && !formData.roundTripRate
-                          ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
-                          : ""
-                      }`}
+                      className="mt-2"
                     />
-                    {isFormSubmitted && !formData.roundTripRate && (
-                      <p className="text-sm text-red-500 mt-1">
-                        Round trip rate is required
-                      </p>
-                    )}
                   </div>
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-6">
                   <div>
                     <Label htmlFor="driverAllowance" className="text-base font-semibold">
-                      Driver Allowance <span className="text-red-500">*</span>
+                      Driver Allowance <span className="text-gray-500">(Optional)</span>
                     </Label>
                     <Input
                       id="driverAllowance"
@@ -1003,21 +970,12 @@ export default function TariffPage() {
                         setFormData({ ...formData, driverAllowance: e.target.value })
                       }
                       placeholder="400"
-                      className={`mt-2 ${
-                        isFormSubmitted && !formData.driverAllowance
-                          ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
-                          : ""
-                      }`}
+                      className="mt-2"
                     />
-                    {isFormSubmitted && !formData.driverAllowance && (
-                      <p className="text-sm text-red-500 mt-1">
-                        Driver allowance is required
-                      </p>
-                    )}
                   </div>
                   <div>
                     <Label htmlFor="minimumKmOneWay" className="text-base font-semibold">
-                      Min KM (One Way) <span className="text-red-500">*</span>
+                      Min KM (One Way) <span className="text-gray-500">(Optional)</span>
                     </Label>
                     <Input
                       id="minimumKmOneWay"
@@ -1027,21 +985,12 @@ export default function TariffPage() {
                         setFormData({ ...formData, minimumKmOneWay: e.target.value })
                       }
                       placeholder="130"
-                      className={`mt-2 ${
-                        isFormSubmitted && !formData.minimumKmOneWay
-                          ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
-                          : ""
-                      }`}
+                      className="mt-2"
                     />
-                    {isFormSubmitted && !formData.minimumKmOneWay && (
-                      <p className="text-sm text-red-500 mt-1">
-                        Minimum KM is required
-                      </p>
-                    )}
                   </div>
                   <div>
                     <Label htmlFor="minimumKmRoundTrip" className="text-base font-semibold">
-                      Min KM (Round Trip) <span className="text-red-500">*</span>
+                      Min KM (Round Trip) <span className="text-gray-500">(Optional)</span>
                     </Label>
                     <Input
                       id="minimumKmRoundTrip"
@@ -1051,17 +1000,8 @@ export default function TariffPage() {
                         setFormData({ ...formData, minimumKmRoundTrip: e.target.value })
                       }
                       placeholder="250"
-                      className={`mt-2 ${
-                        isFormSubmitted && !formData.minimumKmRoundTrip
-                          ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
-                          : ""
-                      }`}
+                      className="mt-2"
                     />
-                    {isFormSubmitted && !formData.minimumKmRoundTrip && (
-                      <p className="text-sm text-red-500 mt-1">
-                        Minimum KM is required
-                      </p>
-                    )}
                   </div>
                 </div>
 
@@ -1232,11 +1172,6 @@ export default function TariffPage() {
                       placeholder="e.g., sedan taxi, comfortable travel, airport transfer"
                       className="mt-2"
                     />
-                    {isFormSubmitted && !formData.seoKeywords && (
-                      <p className="text-sm text-red-500 mt-1">
-                        SEO keywords are required
-                      </p>
-                    )}
                   </div>
                 </div>
               </div>

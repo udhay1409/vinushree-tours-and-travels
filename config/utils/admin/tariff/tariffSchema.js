@@ -16,33 +16,39 @@ const tariffSchema = new mongoose.Schema(
     },
     description: {
       type: String,
-      required: true,
-      trim: true
+      required: false,
+      trim: true,
+      default: ""
     },
     oneWayRate: {
       type: String,
-      required: true,
-      trim: true
+      required: false,
+      trim: true,
+      default: ""
     },
     roundTripRate: {
       type: String,
-      required: true,
-      trim: true
+      required: false,
+      trim: true,
+      default: ""
     },
     driverAllowance: {
       type: String,
-      required: true,
-      trim: true
+      required: false,
+      trim: true,
+      default: ""
     },
     minimumKmOneWay: {
       type: String,
-      required: true,
-      trim: true
+      required: false,
+      trim: true,
+      default: ""
     },
     minimumKmRoundTrip: {
       type: String,
-      required: true,
-      trim: true
+      required: false,
+      trim: true,
+      default: ""
     },
     image: {
       type: String,

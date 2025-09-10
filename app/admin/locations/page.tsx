@@ -30,11 +30,11 @@ export default function LocationsPage() {
   const [deletingLocation, setDeletingLocation] = useState<Location | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     name: "",
     isActive: true,
-    isPopularRoute: false,
+    isPopularRoute: true, // always true for popular routes
     order: 0
   });
 
@@ -43,13 +43,13 @@ export default function LocationsPage() {
     try {
       const response = await fetch('/api/admin/locations');
       const result = await response.json();
-      
+
       if (result.success) {
         setLocations(result.data);
       } else {
         toast({
           title: "Error",
-          description: "Failed to fetch locations",
+          description: "Failed to fetch popular routes",
           variant: "destructive",
         });
       }
@@ -57,7 +57,7 @@ export default function LocationsPage() {
       console.error('Error fetching locations:', error);
       toast({
         title: "Error",
-        description: "Failed to fetch locations",
+        description: "Failed to fetch popular routes",
         variant: "destructive",
       });
     } finally {
@@ -75,7 +75,7 @@ export default function LocationsPage() {
       setFormData({
         name: location.name,
         isActive: location.isActive,
-        isPopularRoute: location.isPopularRoute,
+        isPopularRoute: true,
         order: location.order
       });
     } else {
@@ -83,7 +83,7 @@ export default function LocationsPage() {
       setFormData({
         name: "",
         isActive: true,
-        isPopularRoute: false,
+        isPopularRoute: true,
         order: 0
       });
     }
@@ -96,7 +96,7 @@ export default function LocationsPage() {
     setFormData({
       name: "",
       isActive: true,
-      isPopularRoute: false,
+      isPopularRoute: true,
       order: 0
     });
   };
@@ -108,9 +108,9 @@ export default function LocationsPage() {
     try {
       const url = '/api/admin/locations';
       const method = editingLocation ? 'PUT' : 'POST';
-      const body = editingLocation 
-        ? { ...formData, _id: editingLocation._id }
-        : formData;
+      const body = editingLocation
+        ? { ...formData, _id: editingLocation._id, isPopularRoute: true }
+        : { ...formData, isPopularRoute: true };
 
       const response = await fetch(url, {
         method,
@@ -140,7 +140,7 @@ export default function LocationsPage() {
       console.error('Error saving location:', error);
       toast({
         title: "Error",
-        description: "Failed to save location",
+        description: "Failed to save popular route",
         variant: "destructive",
       });
     } finally {
@@ -155,7 +155,7 @@ export default function LocationsPage() {
 
   const handleDelete = async () => {
     if (!deletingLocation) return;
-    
+
     setIsDeleting(true);
     try {
       const response = await fetch(`/api/admin/locations?id=${deletingLocation._id}`, {
@@ -183,7 +183,7 @@ export default function LocationsPage() {
       console.error('Error deleting location:', error);
       toast({
         title: "Error",
-        description: "Failed to delete location",
+        description: "Failed to delete popular route",
         variant: "destructive",
       });
     } finally {
@@ -200,7 +200,8 @@ export default function LocationsPage() {
         },
         body: JSON.stringify({
           ...location,
-          isActive: !location.isActive
+          isActive: !location.isActive,
+          isPopularRoute: true
         }),
       });
 
@@ -209,7 +210,7 @@ export default function LocationsPage() {
       if (result.success) {
         toast({
           title: "Success",
-          description: `Location ${!location.isActive ? 'activated' : 'deactivated'}`,
+          description: `Popular route ${!location.isActive ? 'activated' : 'deactivated'}`,
         });
         fetchLocations();
       } else {
@@ -223,7 +224,7 @@ export default function LocationsPage() {
       console.error('Error toggling location:', error);
       toast({
         title: "Error",
-        description: "Failed to update location",
+        description: "Failed to update popular route",
         variant: "destructive",
       });
     }
@@ -243,16 +244,16 @@ export default function LocationsPage() {
         <div>
           <h1 className="text-3xl font-bold bg-admin-gradient bg-clip-text text-transparent flex items-center">
             <MapPin className="h-8 w-8 mr-3 text-admin-primary" />
-            Manage Locations
+            Manage Popular Routes
           </h1>
-          <p className="text-gray-600 mt-2">Add and manage pickup/drop locations and Most Traveled Routes</p>
+          <p className="text-gray-600 mt-2">Add and manage popular routes</p>
         </div>
         <Button
           onClick={() => handleOpenModal()}
           className="bg-admin-gradient text-white hover:opacity-90"
         >
           <Plus className="h-4 w-4 mr-2" />
-          Add Location
+          Add Popular Route
         </Button>
       </div>
 
@@ -272,11 +273,11 @@ export default function LocationsPage() {
                       )}
                     </h3>
                     <p className="text-sm text-gray-500">
-                      Order: {location.order} | Created: {new Date(location.createdAt).toLocaleDateString()}
+                      Created: {new Date(location.createdAt).toLocaleDateString()}
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center space-x-2">
                     <Label htmlFor={`active-${location._id}`} className="text-sm">
@@ -288,7 +289,7 @@ export default function LocationsPage() {
                       onCheckedChange={() => handleToggleActive(location)}
                     />
                   </div>
-                  
+
                   <Button
                     variant="outline"
                     size="sm"
@@ -296,7 +297,7 @@ export default function LocationsPage() {
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
-                  
+
                   <Button
                     variant="outline"
                     size="sm"
@@ -315,14 +316,14 @@ export default function LocationsPage() {
           <Card>
             <CardContent className="p-8 text-center">
               <MapPin className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No locations found</h3>
-              <p className="text-gray-600 mb-4">Add your first location to get started</p>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No popular routes found</h3>
+              <p className="text-gray-600 mb-4">Add your first popular route to get started</p>
               <Button
                 onClick={() => handleOpenModal()}
                 className="bg-admin-gradient text-white hover:opacity-90"
               >
                 <Plus className="h-4 w-4 mr-2" />
-                Add Location
+                Add Popular Route
               </Button>
             </CardContent>
           </Card>
@@ -334,32 +335,20 @@ export default function LocationsPage() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {editingLocation ? 'Edit Location' : 'Add New Location'}
+              {editingLocation ? 'Edit Popular Route' : 'Add New Popular Route'}
             </DialogTitle>
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="name">Location Name *</Label>
+              <Label htmlFor="name">Route Name *</Label>
               <Input
                 id="name"
                 type="text"
                 required
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                placeholder="Enter location name"
-                className="mt-1"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="order">Display Order</Label>
-              <Input
-                id="order"
-                type="number"
-                value={formData.order}
-                onChange={(e) => setFormData(prev => ({ ...prev, order: parseInt(e.target.value) || 0 }))}
-                placeholder="0"
+                placeholder="Enter route name"
                 className="mt-1"
               />
             </div>
@@ -372,15 +361,6 @@ export default function LocationsPage() {
                   onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isActive: checked }))}
                 />
                 <Label htmlFor="isActive">Active</Label>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="isPopularRoute"
-                  checked={formData.isPopularRoute}
-                  onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isPopularRoute: checked }))}
-                />
-                <Label htmlFor="isPopularRoute">Show in Most Traveled Routes</Label>
               </div>
             </div>
 
@@ -404,7 +384,7 @@ export default function LocationsPage() {
                     Saving...
                   </>
                 ) : (
-                  editingLocation ? 'Update Location' : 'Add Location'
+                  editingLocation ? 'Update Popular Route' : 'Add Popular Route'
                 )}
               </Button>
             </div>
@@ -416,12 +396,12 @@ export default function LocationsPage() {
       <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-red-600">Delete Location</DialogTitle>
+            <DialogTitle className="text-red-600">Delete Popular Route</DialogTitle>
           </DialogHeader>
-          
+
           <div className="py-4">
             <p className="text-gray-700">
-              Are you sure you want to delete <strong>{deletingLocation?.name}</strong>? 
+              Are you sure you want to delete <strong>{deletingLocation?.name}</strong>?
               This action cannot be undone.
             </p>
           </div>
@@ -452,7 +432,7 @@ export default function LocationsPage() {
               ) : (
                 <>
                   <Trash2 className="h-4 w-4 mr-2" />
-                  Delete Location
+                  Delete Popular Route
                 </>
               )}
             </Button>

@@ -251,7 +251,7 @@ Thank you!`;
                   <CardContent className="p-8">
                     <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
                       <Calendar className="h-6 w-6 mr-3 text-admin-primary" />
-                      Day-wise Travel Plan
+                      Travel Places
                     </h2>
                     <div className="space-y-4">
                       {packageData.itinerary.map((item, index) => (
