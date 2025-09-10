@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/config/models/connectDB";
 import Tariff from "@/config/utils/admin/tariff/tariffSchema";
 import jwt from "jsonwebtoken";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import { uploadToCloudinary } from "@/config/utils/cloudinary"; // Add this import
 
 interface DecodedToken {
   adminId: string;
@@ -134,26 +133,28 @@ export async function POST(request: NextRequest) {
     let imagePath = "";
 
     if (imageFile) {
-      const bytes = await imageFile.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-
-      // Create uploads directory if it doesn't exist
-      const uploadsDir = path.join(process.cwd(), "public", "uploads", "tariff");
-      await mkdir(uploadsDir, { recursive: true });
-
-      // Generate unique filename
-      const filename = `${Date.now()}-${imageFile.name.replace(/[^a-zA-Z0-9.-]/g, "")}`;
-      const filepath = path.join(uploadsDir, filename);
-
-      await writeFile(filepath, buffer);
-      imagePath = `/uploads/tariff/${filename}`;
+      try {
+        const bytes = await imageFile.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+        const folderPath = `tariff`;
+        const result = await uploadToCloudinary(buffer, folderPath);
+        imagePath = result.secure_url;
+      } catch (uploadError) {
+        console.error("Image upload failed:", uploadError);
+        return NextResponse.json(
+          {
+            success: false,
+            message: "Failed to upload image",
+          },
+          { status: 500 }
+        );
+      }
     }
 
-    // Validate required fields
-    if (!vehicleType || !vehicleName || !description || !oneWayRate || !roundTripRate || 
-        !driverAllowance || !minimumKmOneWay || !minimumKmRoundTrip || !imagePath) {
+    // Validate required fields (only minimal required fields)
+    if (!vehicleType || !vehicleName || !imagePath) {
       return NextResponse.json(
-        { success: false, message: "All required fields must be provided" },
+        { success: false, message: "Vehicle type, vehicle name, and image are required" },
         { status: 400 }
       );
     }

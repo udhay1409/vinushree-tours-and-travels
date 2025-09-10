@@ -246,18 +246,11 @@ export default function PackagesPage() {
     if (
       !formData.title ||
       !formData.destination ||
-      !formData.shortDescription ||
-      isQuillContentEmpty(formData.fullDescription) ||
-      !formData.duration ||
-      !formData.price ||
-      !formData.inclusions ||
-      !formData.highlights ||
-      !formData.image ||
-      dayPlans.some((day) => !day.title || !day.description)
+      !formData.image
     ) {
       toast({
         title: "Validation Error",
-        description: "Please fill in all required fields.",
+        description: "Please fill in all required fields (Title, Destination, Main Image).",
         variant: "destructive",
       });
       setIsSaving(false);
@@ -832,7 +825,7 @@ export default function PackagesPage() {
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <Label htmlFor="duration" className="text-base font-semibold">
-                      Duration <span className="text-red-500">*</span>
+                      Duration
                     </Label>
                     <Input
                       id="duration"
@@ -841,21 +834,12 @@ export default function PackagesPage() {
                         setFormData({ ...formData, duration: e.target.value })
                       }
                       placeholder="e.g., 3 Days 2 Nights"
-                      className={`mt-2 ${
-                        isFormSubmitted && !formData.duration
-                          ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
-                          : ""
-                      }`}
+                      className="mt-2"
                     />
-                    {isFormSubmitted && !formData.duration && (
-                      <p className="text-sm text-red-500 mt-1">
-                        Duration is required
-                      </p>
-                    )}
                   </div>
                   <div>
                     <Label htmlFor="price" className="text-base font-semibold">
-                      Price <span className="text-red-500">*</span>
+                      Price
                     </Label>
                     <Input
                       id="price"
@@ -864,24 +848,15 @@ export default function PackagesPage() {
                         setFormData({ ...formData, price: e.target.value })
                       }
                       placeholder="e.g., ₹8,500 per person"
-                      className={`mt-2 ${
-                        isFormSubmitted && !formData.price
-                          ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
-                          : ""
-                      }`}
+                      className="mt-2"
                     />
-                    {isFormSubmitted && !formData.price && (
-                      <p className="text-sm text-red-500 mt-1">
-                        Price is required
-                      </p>
-                    )}
                   </div>
                 </div>
 
                 {/* Descriptions */}
                 <div>
                   <Label htmlFor="shortDescription" className="text-base font-semibold">
-                    Short Description <span className="text-red-500">*</span>
+                    Short Description
                   </Label>
                   <Textarea
                     id="shortDescription"
@@ -894,24 +869,15 @@ export default function PackagesPage() {
                     }
                     placeholder="Brief description for package cards and listings"
                     rows={3}
-                    className={`mt-2 ${
-                      isFormSubmitted && !formData.shortDescription
-                        ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
-                        : ""
-                    }`}
+                    className="mt-2"
                   />
-                  {isFormSubmitted && !formData.shortDescription && (
-                    <p className="text-sm text-red-500 mt-1">
-                      Short description is required
-                    </p>
-                  )}
                 </div>
 
                 <div>
                   <Label htmlFor="fullDescription" className="text-base font-semibold">
-                    Full Description <span className="text-red-500">*</span>
+                    Full Description
                   </Label>
-                  <div className={`mt-2 ${isFormSubmitted && isQuillContentEmpty(formData.fullDescription) ? "quill-error" : ""}`}>
+                  <div className="mt-2">
                     <RichTextEditor
                       value={formData.fullDescription}
                       onChange={(content: string) => setFormData({
@@ -923,11 +889,6 @@ export default function PackagesPage() {
                       placeholder="Detailed description for package detail page. Use the toolbar to add bullet points and numbered lists."
                     />
                   </div>
-                  {isFormSubmitted && isQuillContentEmpty(formData.fullDescription) && (
-                    <p className="text-sm text-red-500 mt-1">
-                      Full description is required
-                    </p>
-                  )}
                 </div>
               </div>
 
@@ -939,7 +900,7 @@ export default function PackagesPage() {
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <Label htmlFor="inclusions" className="text-base font-semibold">
-                      Inclusions (comma-separated) <span className="text-red-500">*</span>
+                      Inclusions (comma-separated)
                     </Label>
                     <Textarea
                       id="inclusions"
@@ -949,17 +910,8 @@ export default function PackagesPage() {
                       }
                       placeholder="e.g., Accommodation, Breakfast, Transportation, Sightseeing"
                       rows={3}
-                      className={`mt-2 ${
-                        isFormSubmitted && !formData.inclusions
-                          ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
-                          : ""
-                      }`}
+                      className="mt-2"
                     />
-                    {isFormSubmitted && !formData.inclusions && (
-                      <p className="text-sm text-red-500 mt-1">
-                        Inclusions are required
-                      </p>
-                    )}
                   </div>
                   <div>
                     <Label htmlFor="exclusions" className="text-base font-semibold">
@@ -980,7 +932,7 @@ export default function PackagesPage() {
 
                 <div>
                   <Label htmlFor="highlights" className="text-base font-semibold">
-                    Package Highlights (comma-separated) <span className="text-red-500">*</span>
+                    Package Highlights (comma-separated)
                   </Label>
                   <Textarea
                     id="highlights"
@@ -990,17 +942,8 @@ export default function PackagesPage() {
                     }
                     placeholder="e.g., Botanical Gardens, Ooty Lake, Toy Train Ride, Tea Factory Visit"
                     rows={3}
-                    className={`mt-2 ${
-                      isFormSubmitted && !formData.highlights
-                        ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
-                        : ""
-                    }`}
+                    className="mt-2"
                   />
-                  {isFormSubmitted && !formData.highlights && (
-                    <p className="text-sm text-red-500 mt-1">
-                      Highlights are required
-                    </p>
-                  )}
                 </div>
               </div>
 
@@ -1008,7 +951,7 @@ export default function PackagesPage() {
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
                   <h3 className="text-lg font-semibold bg-admin-gradient bg-clip-text text-transparent">
-                    Day-wise Travel Plan
+                   Travel Places
                   </h3>
                   <Button
                     type="button"
@@ -1040,7 +983,7 @@ export default function PackagesPage() {
                     <div className="space-y-4">
                       <div>
                         <Label className="text-sm font-medium">
-                          Day Title <span className="text-red-500">*</span>
+                         Title
                         </Label>
                         <Input
                           value={day.title}
@@ -1048,16 +991,12 @@ export default function PackagesPage() {
                             updateDayPlan(index, "title", e.target.value)
                           }
                           placeholder="e.g., Arrival & Local Sightseeing"
-                          className={`mt-1 ${
-                            isFormSubmitted && !day.title
-                              ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
-                              : ""
-                          }`}
+                          className="mt-1"
                         />
                       </div>
                       <div>
                         <Label className="text-sm font-medium">
-                          Description <span className="text-red-500">*</span>
+                          Description
                         </Label>
                         <Textarea
                           value={day.description}
@@ -1066,11 +1005,7 @@ export default function PackagesPage() {
                           }
                           placeholder="Detailed description of activities for this day"
                           rows={2}
-                          className={`mt-1 ${
-                            isFormSubmitted && !day.description
-                              ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
-                              : ""
-                          }`}
+                          className="mt-1"
                         />
                       </div>
                     </div>

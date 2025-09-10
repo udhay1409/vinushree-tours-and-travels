@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
     }
     
     // Validate required fields (except image which might be uploaded)
-    const requiredFields = ['title', 'destination', 'shortDescription', 'fullDescription', 'duration', 'price'];
+    const requiredFields = ['title', 'destination'];
     for (const field of requiredFields) {
       if (!body[field] || body[field].toString().trim() === '') {
         return NextResponse.json(

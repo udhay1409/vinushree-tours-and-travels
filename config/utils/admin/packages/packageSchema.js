@@ -34,21 +34,21 @@ const packageSchema = new mongoose.Schema(
     },
     shortDescription: {
       type: String,
-      required: true,
+      required: false, // changed to optional
       trim: true
     },
     fullDescription: {
       type: String,
-      required: true
+      required: false // changed to optional
     },
     duration: {
       type: String,
-      required: true,
+      required: false, // changed to optional
       trim: true
     },
     price: {
       type: String,
-      required: true,
+      required: false, // changed to optional
       trim: true
     },
     inclusions: [{
@@ -65,7 +65,7 @@ const packageSchema = new mongoose.Schema(
     }],
     image: {
       type: String,
-      required: true,
+      required: true, // main image is required
       trim: true
     },
     gallery: [{

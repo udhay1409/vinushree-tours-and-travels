@@ -244,48 +244,34 @@ Please provide availability and pricing details.`;
             {/* Location Fields */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="pickup" className="text-gray-700 font-medium flex items-center">
+                <Label htmlFor="pickupLocation" className="text-gray-700 font-medium flex items-center">
                   <Navigation className="h-4 w-4 mr-1 text-green-500" />
                   Pickup Location *
                 </Label>
-                <Select
-                  value={formData.pickupLocation}
-                  onValueChange={(value) => handleInputChange("pickupLocation", value)}
+                <Input
+                  id="pickupLocation"
+                  type="text"
                   required
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select pickup location" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {locations.map((location) => (
-                      <SelectItem key={location} value={location}>
-                        {location}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  value={formData.pickupLocation}
+                  onChange={(e) => handleInputChange("pickupLocation", e.target.value)}
+                  placeholder="Enter pickup location"
+                  className="mt-1"
+                />
               </div>
               <div>
-                <Label htmlFor="drop" className="text-gray-700 font-medium flex items-center">
+                <Label htmlFor="dropLocation" className="text-gray-700 font-medium flex items-center">
                   <MapPin className="h-4 w-4 mr-1 text-red-500" />
                   Drop Location *
                 </Label>
-                <Select
-                  value={formData.dropLocation}
-                  onValueChange={(value) => handleInputChange("dropLocation", value)}
+                <Input
+                  id="dropLocation"
+                  type="text"
                   required
-                >
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select drop location" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {locations.map((location) => (
-                      <SelectItem key={location} value={location}>
-                        {location}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  value={formData.dropLocation}
+                  onChange={(e) => handleInputChange("dropLocation", e.target.value)}
+                  placeholder="Enter drop location"
+                  className="mt-1"
+                />
               </div>
             </div>
 

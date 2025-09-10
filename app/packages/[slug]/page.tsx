@@ -89,8 +89,8 @@ export default async function PackageDetailPage({ params }: PageProps) {
   // Transform itinerary format for compatibility
   const transformedPackageData = {
     ...packageData,
-    itinerary: packageData.itinerary?.map((item: any, index: number) => ({
-      time: `Day ${item.day} - ${item.title}`,
+    itinerary: packageData.itinerary?.map((item: any) => ({
+      time: item.title, // Only show the title, no "Day 1 -"
       activity: item.description
     })) || []
   };

@@ -76,14 +76,14 @@ export default function CompleteHome() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:gap-10">
         {tariffData.slice(0, 6).map((service, index) => (
           <motion.div
-            key={service._id}
+            key={service._id || `service-${index}`}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: index * 0.1 }}
             viewport={{ once: true }}
           >
-            <Card className="group hover:shadow-2xl transition-all duration-300 border-0 shadow-lg hover:scale-105">
-              <CardContent className="p-0">
+            <Card className="group hover:shadow-2xl transition-all duration-300 border-0 shadow-lg hover:scale-105 h-full">
+              <CardContent className="p-0 h-full flex flex-col">
                 <div className="relative h-48 overflow-hidden rounded-t-lg">
                   <Image
                     src={service.image || "/placeholder.svg"}
@@ -105,14 +105,14 @@ export default function CompleteHome() {
                     </div>
                   )}
                 </div>
-                <div className="p-4 sm:p-6 md:p-8">
+                <div className="p-4 sm:p-6 md:p-8 flex flex-col flex-grow">
                   <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 mb-2 sm:mb-3 md:mb-4">
                     {service.vehicleName}
                   </h3>
-                  <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4 md:mb-6 line-clamp-2">
+                  <p className="text-sm sm:text-base text-gray-600 mb-3 sm:mb-4 md:mb-6 line-clamp-2 flex-grow">
                     {service.description}
                   </p>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between mt-auto">
                     <Button
                       onClick={() => handleBookNow(service.vehicleName)}
                       className="bg-admin-gradient text-white hover:opacity-90 text-sm sm:text-base py-2 sm:py-2.5"
@@ -146,7 +146,7 @@ export default function CompleteHome() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:gap-10">
         {packagesData.slice(0, 6).map((pkg, index) => (
           <motion.div
-            key={pkg._id}
+            key={pkg._id || `package-${index}`}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: index * 0.1 }}
