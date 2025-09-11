@@ -46,6 +46,15 @@ import {
   Clock,
   MapPin
 } from "lucide-react";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 interface TariffService {
   _id?: string;
@@ -217,21 +226,15 @@ export default function TariffPage() {
     setIsFormSubmitted(true);
     setIsSaving(true);
 
-    // Validate required fields
+    // Validate required fields (only minimal required fields)
     if (
       !formData.vehicleType ||
       !formData.vehicleName ||
-      !formData.description ||
-      !formData.oneWayRate ||
-      !formData.roundTripRate ||
-      !formData.driverAllowance ||
-      !formData.minimumKmOneWay ||
-      !formData.minimumKmRoundTrip ||
       !formData.image
     ) {
       toast({
         title: "Validation Error",
-        description: "Please fill in all required fields.",
+        description: "Please fill in vehicle type, vehicle name, and upload an image.",
         variant: "destructive",
       });
       setIsSaving(false);
@@ -334,7 +337,6 @@ export default function TariffPage() {
     setDeletingButtonId(id);
     
     try {
-      // Get JWT token from localStorage
       const token = localStorage.getItem('admin_token');
       if (!token) {
         toast({
@@ -552,6 +554,146 @@ export default function TariffPage() {
       }
     };
     input.click();
+  };
+
+  // Add pagination rendering function
+  const renderPaginationItems = () => {
+    if (!pagination) return [];
+    
+    const items = [];
+    const { currentPage, totalPages } = pagination;
+
+    // Previous button
+    items.push(
+      <PaginationItem key="prev">
+        <PaginationPrevious
+          onClick={() => handlePageChange(currentPage - 1)}
+          className={
+            !pagination.hasPrevPage
+              ? "pointer-events-none opacity-50"
+              : "cursor-pointer"
+          }
+        />
+      </PaginationItem>
+    );
+
+    // Page numbers
+    if (totalPages <= 7) {
+      // Show all pages if total pages are 7 or less
+      for (let i = 1; i <= totalPages; i++) {
+        items.push(
+          <PaginationItem key={i}>
+            <PaginationLink
+              onClick={() => handlePageChange(i)}
+              isActive={currentPage === i}
+              className={`cursor-pointer ${
+                currentPage === i
+                  ? "bg-admin-gradient text-white border-0 hover:bg-admin-gradient"
+                  : ""
+              }`}
+            >
+              {i}
+            </PaginationLink>
+          </PaginationItem>
+        );
+      }
+    } else {
+      // Show first page
+      items.push(
+        <PaginationItem key={1}>
+          <PaginationLink
+            onClick={() => handlePageChange(1)}
+            isActive={currentPage === 1}
+            className={`cursor-pointer ${
+              currentPage === 1
+                ? "bg-admin-gradient text-white border-0 hover:bg-admin-gradient"
+                : ""
+            }`}
+          >
+            1
+          </PaginationLink>
+        </PaginationItem>
+      );
+
+      if (currentPage > 3) {
+        items.push(
+          <PaginationItem key="ellipsis1">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      }
+
+      // Show current page and surrounding pages
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+
+      for (let i = start; i <= end; i++) {
+        items.push(
+          <PaginationItem key={i}>
+            <PaginationLink
+              onClick={() => handlePageChange(i)}
+              isActive={currentPage === i}
+              className={`cursor-pointer ${
+                currentPage === i
+                  ? "bg-admin-gradient text-white border-0 hover:bg-admin-gradient"
+                  : ""
+              }`}
+            >
+              {i}
+            </PaginationLink>
+          </PaginationItem>
+        );
+      }
+
+      if (currentPage < totalPages - 2) {
+        items.push(
+          <PaginationItem key="ellipsis2">
+            <PaginationEllipsis />
+          </PaginationItem>
+        );
+      }
+
+      // Show last page
+      items.push(
+        <PaginationItem key={totalPages}>
+          <PaginationLink
+            onClick={() => handlePageChange(totalPages)}
+            isActive={currentPage === totalPages}
+            className={`cursor-pointer ${
+              currentPage === totalPages
+                ? "bg-admin-gradient text-white border-0 hover:bg-admin-gradient"
+                : ""
+            }`}
+          >
+            {totalPages}
+          </PaginationLink>
+        </PaginationItem>
+      );
+    }
+
+    // Next button
+    items.push(
+      <PaginationItem key="next">
+        <PaginationNext
+          onClick={() => handlePageChange(currentPage + 1)}
+          className={
+            !pagination.hasNextPage
+              ? "pointer-events-none opacity-50"
+              : "cursor-pointer"
+          }
+        />
+      </PaginationItem>
+    );
+
+    return items;
+  };
+
+  // Add page change handler
+  const handlePageChange = (page: number) => {
+    if (pagination && page >= 1 && page <= pagination.totalPages) {
+      setCurrentPage(page);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
   };
 
   if (loading) {
@@ -907,7 +1049,7 @@ export default function TariffPage() {
 
                 <div>
                   <Label htmlFor="description" className="text-base font-semibold">
-                    Description <span className="text-red-500">*</span>
+                    Description <span className="text-gray-500">(Optional)</span>
                   </Label>
                   <Textarea
                     id="description"
@@ -920,17 +1062,8 @@ export default function TariffPage() {
                     }
                     placeholder="Detailed description of the vehicle and its features"
                     rows={4}
-                    className={`mt-2 ${
-                      isFormSubmitted && !formData.description
-                        ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
-                        : ""
-                    }`}
+                    className="mt-2"
                   />
-                  {isFormSubmitted && !formData.description && (
-                    <p className="text-sm text-red-500 mt-1">
-                      Description is required
-                    </p>
-                  )}
                 </div>
               </div>
 
@@ -942,7 +1075,7 @@ export default function TariffPage() {
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     <Label htmlFor="oneWayRate" className="text-base font-semibold">
-                      One Way Rate <span className="text-red-500">*</span>
+                      One Way Rate <span className="text-gray-500">(Optional)</span>
                     </Label>
                     <Input
                       id="oneWayRate"
@@ -952,21 +1085,12 @@ export default function TariffPage() {
                         setFormData({ ...formData, oneWayRate: e.target.value })
                       }
                       placeholder="14"
-                      className={`mt-2 ${
-                        isFormSubmitted && !formData.oneWayRate
-                          ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
-                          : ""
-                      }`}
+                      className="mt-2"
                     />
-                    {isFormSubmitted && !formData.oneWayRate && (
-                      <p className="text-sm text-red-500 mt-1">
-                        One way rate is required
-                      </p>
-                    )}
                   </div>
                   <div>
                     <Label htmlFor="roundTripRate" className="text-base font-semibold">
-                      Round Trip Rate <span className="text-red-500">*</span>
+                      Round Trip Rate <span className="text-gray-500">(Optional)</span>
                     </Label>
                     <Input
                       id="roundTripRate"
@@ -976,24 +1100,15 @@ export default function TariffPage() {
                         setFormData({ ...formData, roundTripRate: e.target.value })
                       }
                       placeholder="13"
-                      className={`mt-2 ${
-                        isFormSubmitted && !formData.roundTripRate
-                          ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
-                          : ""
-                      }`}
+                      className="mt-2"
                     />
-                    {isFormSubmitted && !formData.roundTripRate && (
-                      <p className="text-sm text-red-500 mt-1">
-                        Round trip rate is required
-                      </p>
-                    )}
                   </div>
                 </div>
 
                 <div className="grid md:grid-cols-3 gap-6">
                   <div>
                     <Label htmlFor="driverAllowance" className="text-base font-semibold">
-                      Driver Allowance <span className="text-red-500">*</span>
+                      Driver Allowance <span className="text-gray-500">(Optional)</span>
                     </Label>
                     <Input
                       id="driverAllowance"
@@ -1003,21 +1118,12 @@ export default function TariffPage() {
                         setFormData({ ...formData, driverAllowance: e.target.value })
                       }
                       placeholder="400"
-                      className={`mt-2 ${
-                        isFormSubmitted && !formData.driverAllowance
-                          ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
-                          : ""
-                      }`}
+                      className="mt-2"
                     />
-                    {isFormSubmitted && !formData.driverAllowance && (
-                      <p className="text-sm text-red-500 mt-1">
-                        Driver allowance is required
-                      </p>
-                    )}
                   </div>
                   <div>
                     <Label htmlFor="minimumKmOneWay" className="text-base font-semibold">
-                      Min KM (One Way) <span className="text-red-500">*</span>
+                      Min KM (One Way) <span className="text-gray-500">(Optional)</span>
                     </Label>
                     <Input
                       id="minimumKmOneWay"
@@ -1027,21 +1133,12 @@ export default function TariffPage() {
                         setFormData({ ...formData, minimumKmOneWay: e.target.value })
                       }
                       placeholder="130"
-                      className={`mt-2 ${
-                        isFormSubmitted && !formData.minimumKmOneWay
-                          ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
-                          : ""
-                      }`}
+                      className="mt-2"
                     />
-                    {isFormSubmitted && !formData.minimumKmOneWay && (
-                      <p className="text-sm text-red-500 mt-1">
-                        Minimum KM is required
-                      </p>
-                    )}
                   </div>
                   <div>
                     <Label htmlFor="minimumKmRoundTrip" className="text-base font-semibold">
-                      Min KM (Round Trip) <span className="text-red-500">*</span>
+                      Min KM (Round Trip) <span className="text-gray-500">(Optional)</span>
                     </Label>
                     <Input
                       id="minimumKmRoundTrip"
@@ -1051,17 +1148,8 @@ export default function TariffPage() {
                         setFormData({ ...formData, minimumKmRoundTrip: e.target.value })
                       }
                       placeholder="250"
-                      className={`mt-2 ${
-                        isFormSubmitted && !formData.minimumKmRoundTrip
-                          ? "ring-1 ring-red-500 focus:ring-2 focus:ring-red-500"
-                          : ""
-                      }`}
+                      className="mt-2"
                     />
-                    {isFormSubmitted && !formData.minimumKmRoundTrip && (
-                      <p className="text-sm text-red-500 mt-1">
-                        Minimum KM is required
-                      </p>
-                    )}
                   </div>
                 </div>
 
@@ -1232,11 +1320,6 @@ export default function TariffPage() {
                       placeholder="e.g., sedan taxi, comfortable travel, airport transfer"
                       className="mt-2"
                     />
-                    {isFormSubmitted && !formData.seoKeywords && (
-                      <p className="text-sm text-red-500 mt-1">
-                        SEO keywords are required
-                      </p>
-                    )}
                   </div>
                 </div>
               </div>
@@ -1414,6 +1497,15 @@ export default function TariffPage() {
               </CardContent>
             </Card>
           ))}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {pagination && pagination.totalPages > 1 && (
+        <div className="flex justify-center mt-8">
+          <Pagination>
+            <PaginationContent>{renderPaginationItems()}</PaginationContent>
+          </Pagination>
         </div>
       )}
 

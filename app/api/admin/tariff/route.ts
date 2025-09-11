@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/config/models/connectDB";
 import Tariff from "@/config/utils/admin/tariff/tariffSchema";
 import jwt from "jsonwebtoken";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import { uploadToCloudinary } from "@/config/utils/cloudinary"; // Add this import
 
 interface DecodedToken {
   adminId: string;
@@ -21,65 +20,51 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "6");
     const vehicleType = searchParams.get("vehicleType");
 
-    // Build query for active tariffs only (for public API)
-    let query: any = { 
-      status: "active", 
-      isDeleted: false 
-    };
-
-    // For admin requests, check authorization
-    const authHeader = request.headers.get("authorization");
-    let isAdmin = false;
+    // Build query
+    const query: any = { isDeleted: false };
     
-    if (authHeader?.startsWith("Bearer ")) {
-      const token = authHeader.substring(7);
-      try {
-        jwt.verify(token, process.env.JWT_SECRET!) as DecodedToken;
-        isAdmin = true;
-        // Admin can see all tariffs
-        query = { isDeleted: false };
-      } catch (error) {
-        // Not admin, continue with public query
-      }
-    }
-
     // Filter by vehicle type if provided
     if (vehicleType && vehicleType !== "all") {
       query.vehicleType = new RegExp(vehicleType, 'i');
     }
 
-    // Calculate pagination
     const skip = (page - 1) * limit;
-    const total = await Tariff.countDocuments(query);
-    const totalPages = Math.ceil(total / limit);
 
-    // Get tariffs with sorting (featured first, then newest)
-    const tariffs = await Tariff.find(query)
-      .sort({ featured: -1, createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .select('-isDeleted -__v'); // Exclude internal fields
+    // Get tariffs and total count
+    const [tariffs, totalTariffs] = await Promise.all([
+      Tariff.find(query)
+        .sort({ featured: -1, createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .select('-isDeleted -__v')
+        .lean(),
+      Tariff.countDocuments(query)
+    ]);
 
-    // Pagination metadata
-    const pagination = {
-      currentPage: page,
-      totalPages,
-      totalTariffs: total,
-      limit,
-      hasNextPage: page < totalPages,
-      hasPrevPage: page > 1,
-    };
+    const totalPages = Math.ceil(totalTariffs / limit);
 
     return NextResponse.json({
       success: true,
       data: tariffs,
-      pagination: isAdmin ? pagination : undefined
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalTariffs,
+        limit,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+      message: "Tariffs fetched successfully"
     });
 
   } catch (error) {
     console.error("Error fetching tariffs:", error);
     return NextResponse.json(
-      { success: false, message: "Failed to fetch tariffs" },
+      {
+        success: false,
+        message: "Failed to fetch tariffs",
+        error: error instanceof Error ? error.message : "Unknown error",
+      },
       { status: 500 }
     );
   }
@@ -134,26 +119,28 @@ export async function POST(request: NextRequest) {
     let imagePath = "";
 
     if (imageFile) {
-      const bytes = await imageFile.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-
-      // Create uploads directory if it doesn't exist
-      const uploadsDir = path.join(process.cwd(), "public", "uploads", "tariff");
-      await mkdir(uploadsDir, { recursive: true });
-
-      // Generate unique filename
-      const filename = `${Date.now()}-${imageFile.name.replace(/[^a-zA-Z0-9.-]/g, "")}`;
-      const filepath = path.join(uploadsDir, filename);
-
-      await writeFile(filepath, buffer);
-      imagePath = `/uploads/tariff/${filename}`;
+      try {
+        const bytes = await imageFile.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+        const folderPath = `tariff`;
+        const result = await uploadToCloudinary(buffer, folderPath);
+        imagePath = result.secure_url;
+      } catch (uploadError) {
+        console.error("Image upload failed:", uploadError);
+        return NextResponse.json(
+          {
+            success: false,
+            message: "Failed to upload image",
+          },
+          { status: 500 }
+        );
+      }
     }
 
-    // Validate required fields
-    if (!vehicleType || !vehicleName || !description || !oneWayRate || !roundTripRate || 
-        !driverAllowance || !minimumKmOneWay || !minimumKmRoundTrip || !imagePath) {
+    // Validate required fields (only minimal required fields)
+    if (!vehicleType || !vehicleName || !imagePath) {
       return NextResponse.json(
-        { success: false, message: "All required fields must be provided" },
+        { success: false, message: "Vehicle type, vehicle name, and image are required" },
         { status: 400 }
       );
     }
